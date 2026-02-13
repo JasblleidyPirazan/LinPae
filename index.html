@@ -1,1 +1,1668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard PAE Colombia - Programa de Alimentacion Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --primary-dark: #1a365d;
+  --primary: #2b6cb0;
+  --accent: #38b2ac;
+  --accent-light: #e6fffa;
+  --bg: #f7fafc;
+  --card-bg: #ffffff;
+  --text: #2d3748;
+  --text-light: #718096;
+  --border: #e2e8f0;
+  --sidebar-w: 260px;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+  --transition: .25s ease;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: linear-gradient(180deg, var(--primary-dark) 0%, #1e4976 100%);
+  color: #fff;
+  display: flex; flex-direction: column;
+  z-index: 1000;
+  transition: transform var(--transition);
+  overflow-y: auto;
+}
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.sidebar-header h1 {
+  font-size: 18px; font-weight: 700; letter-spacing: -.3px;
+  margin-bottom: 2px;
+}
+.sidebar-header p {
+  font-size: 11px; color: rgba(255,255,255,.6); font-weight: 400;
+}
+.sidebar nav { flex: 1; padding: 12px 0; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px;
+  color: rgba(255,255,255,.75);
+  text-decoration: none;
+  font-size: 13.5px; font-weight: 500;
+  transition: all var(--transition);
+  border-left: 3px solid transparent;
+}
+.sidebar nav a:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+.sidebar nav a.active {
+  background: rgba(56,178,172,.18);
+  color: #e6fffa;
+  border-left-color: var(--accent);
+}
+.sidebar nav a .nav-icon {
+  width: 20px; text-align: center; font-size: 16px;
+}
+
+/* ========== MOBILE TOGGLE ========== */
+.menu-toggle {
+  display: none;
+  position: fixed; top: 12px; left: 12px; z-index: 1100;
+  background: var(--primary-dark); color: #fff;
+  border: none; border-radius: 8px; width: 42px; height: 42px;
+  font-size: 22px; cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.4); z-index: 999;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 32px 36px 60px;
+  min-height: 100vh;
+  transition: margin var(--transition);
+}
+.main-header {
+  margin-bottom: 32px;
+}
+.main-header h2 {
+  font-size: 26px; font-weight: 700; color: var(--primary-dark);
+}
+.main-header p { color: var(--text-light); font-size: 14px; margin-top: 4px; }
+
+/* Sections */
+.section { display: none; }
+.section.active { display: block; animation: fadeIn .3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== CARDS / KPI ========== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 16px; margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.kpi-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.kpi-card .kpi-value {
+  font-size: 32px; font-weight: 800; color: var(--primary-dark);
+  line-height: 1.1;
+}
+.kpi-card .kpi-label {
+  font-size: 12.5px; color: var(--text-light); font-weight: 500;
+  margin-top: 4px; text-transform: uppercase; letter-spacing: .4px;
+}
+
+/* Chart containers */
+.charts-row {
+  display: grid; gap: 24px; margin-bottom: 28px;
+}
+.charts-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.charts-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.chart-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 24px; box-shadow: var(--shadow);
+}
+.chart-card h3 {
+  font-size: 15px; font-weight: 600; color: var(--primary-dark);
+  margin-bottom: 16px;
+}
+.chart-wrap { position: relative; width: 100%; }
+
+/* ========== DOCUMENT CARDS ========== */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; margin-bottom: 28px;
+}
+.doc-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  border-top: 3px solid var(--primary);
+  transition: box-shadow var(--transition);
+}
+.doc-card:hover { box-shadow: var(--shadow-lg); }
+.doc-card h4 { font-size: 14px; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; }
+.doc-card .doc-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-tipo { background: #ebf4ff; color: var(--primary); }
+.badge-jer { background: var(--accent-light); color: #285e61; }
+.doc-card p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+.doc-card .doc-rol { margin-top: 6px; font-style: italic; font-size: 12px; }
+
+/* ========== CATEGORY TREE ========== */
+.cat-tree { margin-bottom: 28px; }
+.cat-item {
+  background: var(--card-bg); border-radius: var(--radius);
+  margin-bottom: 10px; box-shadow: var(--shadow); overflow: hidden;
+}
+.cat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer;
+  transition: background var(--transition);
+}
+.cat-header:hover { background: #f7fafc; }
+.cat-header .cat-name { font-weight: 600; font-size: 14px; color: var(--primary-dark); }
+.cat-header .cat-count {
+  background: var(--primary); color: #fff; border-radius: 20px;
+  padding: 2px 12px; font-size: 12px; font-weight: 600;
+}
+.cat-header .cat-arrow {
+  transition: transform var(--transition); font-size: 12px; color: var(--text-light); margin-left: 8px;
+}
+.cat-item.open .cat-arrow { transform: rotate(180deg); }
+.cat-body { display: none; padding: 0 20px 14px; }
+.cat-item.open .cat-body { display: block; }
+.subcat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; border-radius: 6px; margin-bottom: 4px;
+  font-size: 13px;
+}
+.subcat-row:hover { background: var(--accent-light); }
+.subcat-row .subcat-count {
+  background: #edf2f7; padding: 1px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 600; color: var(--text-light);
+}
+
+/* ========== TABLE ========== */
+.table-controls {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+  align-items: center;
+}
+.table-controls input,
+.table-controls select {
+  padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 13px; font-family: inherit;
+  background: #fff; color: var(--text);
+  transition: border var(--transition);
+}
+.table-controls input:focus,
+.table-controls select:focus { outline: none; border-color: var(--accent); }
+.table-controls input { min-width: 220px; }
+.table-controls select { min-width: 130px; max-width: 200px; }
+
+.data-table-wrap {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow-x: auto; margin-bottom: 16px;
+}
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.data-table th {
+  background: var(--primary-dark); color: #fff;
+  padding: 12px 14px; text-align: left; font-weight: 600;
+  font-size: 12px; text-transform: uppercase; letter-spacing: .3px;
+  cursor: pointer; white-space: nowrap; user-select: none;
+}
+.data-table th:hover { background: #1e4976; }
+.data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+.data-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.data-table tr:hover td { background: #f7fafc; }
+.data-table .expandable { cursor: pointer; }
+.data-table .expand-icon { margin-right: 6px; font-size: 11px; color: var(--primary); }
+.detail-row td {
+  background: #f0fff4 !important; padding: 16px 20px !important;
+}
+.detail-row .detail-content {
+  font-size: 13px; line-height: 1.7;
+}
+.detail-row .detail-content strong { color: var(--primary-dark); }
+.detail-row .ver-list { margin-top: 10px; }
+.detail-row .ver-item {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 8px; font-size: 12.5px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+  flex-wrap: wrap;
+}
+.pagination button {
+  padding: 6px 14px; border: 1px solid var(--border);
+  background: #fff; border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-family: inherit; color: var(--text);
+  transition: all var(--transition);
+}
+.pagination button:hover { border-color: var(--primary); color: var(--primary); }
+.pagination button.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.pagination button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ========== NETWORK ========== */
+#network-container {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+  position: relative; width: 100%; height: 600px;
+}
+#network-svg { width: 100%; height: 100%; }
+.network-tooltip {
+  position: absolute; padding: 10px 14px;
+  background: rgba(26,54,93,.95); color: #fff;
+  border-radius: 8px; font-size: 12px; line-height: 1.5;
+  pointer-events: none; opacity: 0;
+  transition: opacity .15s; max-width: 320px;
+  z-index: 10;
+}
+.network-legend {
+  display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;
+}
+.legend-group h4 { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--primary-dark); }
+.legend-item {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 3px;
+}
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-line {
+  width: 20px; height: 3px; border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ========== ACTOR CARDS ========== */
+.actor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px; margin-bottom: 28px;
+}
+.actor-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+}
+.actor-card h4 { font-size: 14px; font-weight: 600; color: var(--primary-dark); margin-bottom: 4px; }
+.actor-card .actor-tipo {
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .3px; margin-bottom: 6px;
+}
+.actor-card p { font-size: 13px; color: var(--text-light); }
+.actor-card .actor-count { font-weight: 700; color: var(--primary); margin-top: 6px; font-size: 13px; }
+
+/* ========== INDICATOR TABLE ========== */
+.ind-table-wrap {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow-x: auto; margin-top: 20px;
+}
+.ind-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ind-table th {
+  background: var(--primary-dark); color: #fff;
+  padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600;
+  white-space: nowrap;
+}
+.ind-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top;
+}
+.ind-table tr:hover td { background: #f7fafc; }
+
+/* ========== GLOSSARY ========== */
+.glossary-search {
+  padding: 10px 16px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  width: 100%; max-width: 400px; margin-bottom: 16px;
+  background: #fff;
+}
+.glossary-search:focus { outline: none; border-color: var(--accent); }
+.alpha-nav {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 20px;
+}
+.alpha-nav button {
+  width: 32px; height: 32px; border: 1px solid var(--border);
+  background: #fff; border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  color: var(--text); transition: all var(--transition);
+}
+.alpha-nav button:hover,
+.alpha-nav button.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.glossary-list { }
+.glossary-item {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 10px; box-shadow: var(--shadow);
+}
+.glossary-item h4 {
+  font-size: 15px; font-weight: 600; color: var(--primary-dark); margin-bottom: 4px;
+}
+.glossary-item .gl-meta {
+  font-size: 11px; color: var(--accent); font-weight: 500; margin-bottom: 6px;
+}
+.glossary-item p { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+/* ========== HEATMAP ========== */
+.heatmap-wrap {
+  overflow-x: auto; margin-bottom: 28px;
+}
+.heatmap-table { border-collapse: collapse; font-size: 11px; }
+.heatmap-table th {
+  padding: 6px 8px; font-weight: 600;
+  background: var(--primary-dark); color: #fff;
+  white-space: nowrap;
+}
+.heatmap-table th.row-header { background: #2d4a77; text-align: right; }
+.heatmap-table td {
+  padding: 8px; text-align: center; font-weight: 600;
+  min-width: 40px; border: 1px solid #fff;
+  transition: transform .15s;
+}
+.heatmap-table td:hover { transform: scale(1.15); z-index: 2; position: relative; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .overlay.show { display: block; }
+  .menu-toggle { display: flex; align-items: center; justify-content: center; }
+  .main { margin-left: 0; padding: 60px 16px 40px; }
+  .charts-row.cols-2,
+  .charts-row.cols-3 { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .doc-grid { grid-template-columns: 1fr; }
+  .actor-grid { grid-template-columns: 1fr; }
+  .table-controls { flex-direction: column; align-items: stretch; }
+  .table-controls input, .table-controls select { min-width: unset; max-width: unset; width: 100%; }
+}
+
+/* Risk badges */
+.risk-critico { background: #fed7d7; color: #c53030; }
+.risk-alto { background: #feebc8; color: #c05621; }
+.risk-medio { background: #fefcbf; color: #975a16; }
+.risk-bajo { background: #c6f6d5; color: #276749; }
+
+.badge-oblig { background: #fed7d7; color: #c53030; }
+.badge-cond { background: #feebc8; color: #c05621; }
+.badge-recom { background: #c6f6d5; color: #276749; }
+
+.badge-etapa { background: #e9d8fd; color: #553c9a; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+
+.chart-card canvas { max-height: 400px; }
+</style>
+</head>
+<body>
+
+<!-- Mobile menu toggle -->
+<button class="menu-toggle" id="menuToggle">&#9776;</button>
+<div class="overlay" id="overlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>PAE Colombia</h1>
+    <p>Programa de Alimentacion Escolar</p>
+  </div>
+  <nav>
+    <a href="#resumen" class="nav-link active" data-section="sec-resumen">
+      <span class="nav-icon">&#9635;</span> Resumen General
+    </a>
+    <a href="#documentos" class="nav-link" data-section="sec-documentos">
+      <span class="nav-icon">&#128196;</span> Documentos y Normativa
+    </a>
+    <a href="#categorias" class="nav-link" data-section="sec-categorias">
+      <span class="nav-icon">&#128193;</span> Categorias y Subcategorias
+    </a>
+    <a href="#lineamientos" class="nav-link" data-section="sec-lineamientos">
+      <span class="nav-icon">&#128220;</span> Lineamientos
+    </a>
+    <a href="#red" class="nav-link" data-section="sec-red">
+      <span class="nav-icon">&#128279;</span> Red de Conexiones
+    </a>
+    <a href="#actores" class="nav-link" data-section="sec-actores">
+      <span class="nav-icon">&#128101;</span> Actores
+    </a>
+    <a href="#indicadores" class="nav-link" data-section="sec-indicadores">
+      <span class="nav-icon">&#128200;</span> Indicadores
+    </a>
+    <a href="#conceptos" class="nav-link" data-section="sec-conceptos">
+      <span class="nav-icon">&#128214;</span> Conceptos
+    </a>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="mainContent">
+
+  <!-- ==================== SECTION 1: RESUMEN ==================== -->
+  <div class="section active" id="sec-resumen">
+    <div class="main-header">
+      <h2>Resumen General</h2>
+      <p>Vision global del sistema de lineamientos del PAE</p>
+    </div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="charts-row cols-2">
+      <div class="chart-card">
+        <h3>Lineamientos por Etapa del PAE</h3>
+        <div class="chart-wrap"><canvas id="chartEtapa"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Lineamientos por Nivel de Riesgo</h3>
+        <div class="chart-wrap"><canvas id="chartRiesgo"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-row cols-2">
+      <div class="chart-card">
+        <h3>Top Actores Responsables</h3>
+        <div class="chart-wrap"><canvas id="chartActores"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Lineamientos por Tipo de Regla</h3>
+        <div class="chart-wrap"><canvas id="chartTipoRegla"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 2: DOCUMENTOS ==================== -->
+  <div class="section" id="sec-documentos">
+    <div class="main-header">
+      <h2>Documentos y Normativa</h2>
+      <p>Marco documental que sustenta los lineamientos del PAE</p>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
+    <div class="chart-card">
+      <h3>Lineamientos por Documento</h3>
+      <div class="chart-wrap"><canvas id="chartDocLin"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3: CATEGORIAS ==================== -->
+  <div class="section" id="sec-categorias">
+    <div class="main-header">
+      <h2>Categorias y Subcategorias</h2>
+      <p>Organizacion tematica de los lineamientos</p>
+    </div>
+    <div class="charts-row cols-2">
+      <div class="chart-card">
+        <h3>Lineamientos por Categoria</h3>
+        <div class="chart-wrap"><canvas id="chartCategorias"></canvas></div>
+      </div>
+      <div class="chart-card" style="display:flex;flex-direction:column;">
+        <h3>Distribucion por Categoria</h3>
+        <div class="chart-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <canvas id="chartCatPie"></canvas>
+        </div>
+      </div>
+    </div>
+    <h3 style="margin: 20px 0 12px; font-size:15px; color:var(--primary-dark); font-weight:600;">
+      Explorar por Categoria
+    </h3>
+    <div class="cat-tree" id="catTree"></div>
+  </div>
+
+  <!-- ==================== SECTION 4: LINEAMIENTOS ==================== -->
+  <div class="section" id="sec-lineamientos">
+    <div class="main-header">
+      <h2>Lineamientos</h2>
+      <p>Tabla interactiva con los 395 lineamientos del PAE</p>
+    </div>
+    <div class="table-controls" id="linFilters"></div>
+    <div class="data-table-wrap">
+      <table class="data-table" id="linTable">
+        <thead><tr id="linTableHead"></tr></thead>
+        <tbody id="linTableBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="linPagination"></div>
+  </div>
+
+  <!-- ==================== SECTION 5: RED ==================== -->
+  <div class="section" id="sec-red">
+    <div class="main-header">
+      <h2>Red de Conexiones</h2>
+      <p>Grafo de relaciones entre lineamientos del PAE</p>
+    </div>
+    <div class="network-legend" id="networkLegend"></div>
+    <div id="network-container">
+      <svg id="network-svg"></svg>
+      <div class="network-tooltip" id="netTooltip"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 6: ACTORES ==================== -->
+  <div class="section" id="sec-actores">
+    <div class="main-header">
+      <h2>Actores del PAE</h2>
+      <p>Entidades, roles y responsabilidades en el sistema</p>
+    </div>
+    <div class="actor-grid" id="actorGrid"></div>
+    <div class="charts-row cols-2">
+      <div class="chart-card">
+        <h3>Lineamientos por Actor Responsable</h3>
+        <div class="chart-wrap"><canvas id="chartActorBar"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Relacion Actor - Categoria (Mapa de Calor)</h3>
+        <div class="heatmap-wrap" id="heatmapWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 7: INDICADORES ==================== -->
+  <div class="section" id="sec-indicadores">
+    <div class="main-header">
+      <h2>Indicadores</h2>
+      <p>Metricas de seguimiento y evaluacion del PAE</p>
+    </div>
+    <div class="charts-row cols-2">
+      <div class="chart-card">
+        <h3>Indicadores por Etapa del PAE</h3>
+        <div class="chart-wrap"><canvas id="chartIndEtapa"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Indicadores por Tipo</h3>
+        <div class="chart-wrap"><canvas id="chartIndTipo"></canvas></div>
+      </div>
+    </div>
+    <div class="ind-table-wrap">
+      <table class="ind-table" id="indTable">
+        <thead><tr>
+          <th>ID</th><th>Nombre</th><th>Formula</th><th>Tipo</th>
+          <th>Etapa PAE</th><th>Periodicidad</th><th>Meta</th><th>Documento</th>
+        </tr></thead>
+        <tbody id="indTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 8: CONCEPTOS ==================== -->
+  <div class="section" id="sec-conceptos">
+    <div class="main-header">
+      <h2>Glosario de Conceptos</h2>
+      <p>Definiciones clave del sistema PAE (90 conceptos)</p>
+    </div>
+    <input class="glossary-search" id="glossarySearch" type="text"
+           placeholder="Buscar concepto...">
+    <div class="alpha-nav" id="alphaNav"></div>
+    <div class="glossary-list" id="glossaryList"></div>
+  </div>
+
+</div><!-- /main -->
+
+<script src="data.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // ===== HELPERS =====
+  var $$ = function(s) { return document.querySelectorAll(s); };
+  var byId = function(id) { return document.getElementById(id); };
+
+  function countBy(arr, key) {
+    var m = {};
+    arr.forEach(function(r) { var v = r[key] || '(vacio)'; m[v] = (m[v]||0)+1; });
+    return m;
+  }
+  function sortedEntries(obj, desc) {
+    if (desc === undefined) desc = true;
+    return Object.entries(obj).sort(function(a,b) { return desc ? b[1]-a[1] : a[1]-b[1]; });
+  }
+  function truncate(s, n) {
+    if (!n) n = 80;
+    if (!s) return '';
+    return s.length > n ? s.slice(0, n) + '...' : s;
+  }
+  function escHtml(s) {
+    if (!s) return '';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(s));
+    return div.innerHTML;
+  }
+
+  var D = DATA;
+  var docMap = {}; D.DOCUMENTOS.forEach(function(d) { docMap[d.doc_id] = d; });
+  var catMap = {}; D.CATEGORIAS.forEach(function(c) { catMap[c.cat_id] = c; });
+  var subcatMap = {}; D.SUBCATEGORIAS.forEach(function(s) { subcatMap[s.subcat_id] = s; });
+  var actorMap = {}; D.ACTORES.forEach(function(a) { actorMap[a.actor_id] = a; });
+
+  // Precompute verifiers by lineamiento
+  var verByLin = {};
+  D.VERIFICADORES.forEach(function(v) {
+    if (!verByLin[v.lin_id]) verByLin[v.lin_id] = [];
+    verByLin[v.lin_id].push(v);
+  });
+
+  // color palettes
+  var PAL = {
+    blue: ['#1a365d','#2b6cb0','#3182ce','#4299e1','#63b3ed','#90cdf4','#38b2ac','#319795','#2c5282','#2a4365','#4a5568','#718096'],
+    etapa: { planeacion:'#3182ce', operacion:'#38b2ac', transversal:'#805ad5', seguimiento:'#dd6b20', evaluacion:'#e53e3e' },
+    riesgo: { critico:'#e53e3e', alto:'#dd6b20', medio:'#ecc94b', bajo:'#38a169' },
+    conn: { complementa:'#3182ce', requiere_insumo:'#e53e3e', alimenta:'#38a169', misma_regla_en:'#805ad5', activa_condicionalmente:'#dd6b20' }
+  };
+
+  // ===== CHART DEFAULTS =====
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.padding = 14;
+  Chart.defaults.animation.duration = 600;
+  var chartInstances = {};
+
+  function makeChart(id, cfg) {
+    if (chartInstances[id]) chartInstances[id].destroy();
+    chartInstances[id] = new Chart(byId(id), cfg);
+    return chartInstances[id];
+  }
+
+  // ===== NAVIGATION =====
+  var navLinks = $$('.nav-link');
+  var sections = $$('.section');
+  var networkInited = false;
+
+  function switchSection(secId) {
+    sections.forEach(function(s) { s.classList.remove('active'); });
+    navLinks.forEach(function(a) { a.classList.remove('active'); });
+    var sec = byId(secId);
+    if (sec) sec.classList.add('active');
+    var link = document.querySelector('[data-section="' + secId + '"]');
+    if (link) link.classList.add('active');
+    if (secId === 'sec-red' && !networkInited) {
+      networkInited = true;
+      setTimeout(initNetwork, 150);
+    }
+  }
+
+  navLinks.forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      switchSection(a.dataset.section);
+      byId('sidebar').classList.remove('open');
+      byId('overlay').classList.remove('show');
+    });
+  });
+
+  // mobile menu
+  byId('menuToggle').addEventListener('click', function() {
+    byId('sidebar').classList.toggle('open');
+    byId('overlay').classList.toggle('show');
+  });
+  byId('overlay').addEventListener('click', function() {
+    byId('sidebar').classList.remove('open');
+    byId('overlay').classList.remove('show');
+  });
+
+  // =============================================
+  // SECTION 1: RESUMEN GENERAL
+  // =============================================
+  function initResumen() {
+    // KPIs
+    var kpis = [
+      { value: D.LINEAMIENTOS.length, label: 'Lineamientos' },
+      { value: D.DOCUMENTOS.length, label: 'Documentos' },
+      { value: D.ACTORES.length, label: 'Actores' },
+      { value: D.CATEGORIAS.length, label: 'Categorias' },
+      { value: D.VERIFICADORES.length, label: 'Verificadores' },
+      { value: D.INDICADORES.length, label: 'Indicadores' }
+    ];
+    byId('kpiGrid').innerHTML = kpis.map(function(k) {
+      return '<div class="kpi-card"><div class="kpi-value">' + k.value +
+        '</div><div class="kpi-label">' + k.label + '</div></div>';
+    }).join('');
+
+    // Donut: Etapa PAE
+    var etapaCounts = countBy(D.LINEAMIENTOS, 'etapa_pae');
+    var etapaLabels = Object.keys(etapaCounts);
+    var etapaData = Object.values(etapaCounts);
+    var etapaColors = etapaLabels.map(function(l) { return PAL.etapa[l] || '#a0aec0'; });
+    var totalLin = D.LINEAMIENTOS.length;
+    makeChart('chartEtapa', {
+      type: 'doughnut',
+      data: {
+        labels: etapaLabels.map(function(l) { return l.charAt(0).toUpperCase() + l.slice(1); }),
+        datasets: [{ data: etapaData, backgroundColor: etapaColors, borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + ' (' + (ctx.raw/totalLin*100).toFixed(1) + '%)'; } } }
+        }
+      }
+    });
+
+    // Horizontal bar: Riesgo
+    var riesgoOrder = ['critico','alto','medio','bajo'];
+    var riesgoLabels = ['Critico','Alto','Medio','Bajo'];
+    var riesgoCounts = countBy(D.LINEAMIENTOS, 'riesgo_incumplimiento');
+    var riesgoData = riesgoOrder.map(function(r) { return riesgoCounts[r]||0; });
+    var riesgoColors = riesgoOrder.map(function(r) { return PAL.riesgo[r]; });
+    makeChart('chartRiesgo', {
+      type: 'bar',
+      data: {
+        labels: riesgoLabels,
+        datasets: [{ data: riesgoData, backgroundColor: riesgoColors, borderRadius: 6, barThickness: 32 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Horizontal bar: Actores
+    var actorCounts = countBy(D.LINEAMIENTOS, 'actor_responsable');
+    var actorSorted = sortedEntries(actorCounts).slice(0, 10);
+    makeChart('chartActores', {
+      type: 'bar',
+      data: {
+        labels: actorSorted.map(function(e) {
+          var a = actorMap[e[0]];
+          return a ? truncate(a.nombre, 35) : e[0];
+        }),
+        datasets: [{
+          data: actorSorted.map(function(e) { return e[1]; }),
+          backgroundColor: actorSorted.map(function(_, i) { return PAL.blue[i % PAL.blue.length]; }),
+          borderRadius: 6, barThickness: 28
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Tipo regla
+    var tipoCounts = countBy(D.LINEAMIENTOS, 'tipo_regla');
+    var tipoSorted = sortedEntries(tipoCounts);
+    makeChart('chartTipoRegla', {
+      type: 'bar',
+      data: {
+        labels: tipoSorted.map(function(e) { return e[0].replace(/_/g, ' '); }),
+        datasets: [{
+          data: tipoSorted.map(function(e) { return e[1]; }),
+          backgroundColor: ['#2b6cb0','#38b2ac','#805ad5','#dd6b20','#e53e3e'],
+          borderRadius: 6, barThickness: 32
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // =============================================
+  // SECTION 2: DOCUMENTOS
+  // =============================================
+  function initDocumentos() {
+    var linPerDoc = countBy(D.LINEAMIENTOS, 'doc_id');
+    byId('docGrid').innerHTML = D.DOCUMENTOS.map(function(d) {
+      return '<div class="doc-card">' +
+        '<h4>' + escHtml(d.nombre) + '</h4>' +
+        '<div class="doc-meta">' +
+          '<span class="badge badge-tipo">' + escHtml((d.tipo_documento||'').replace(/_/g,' ')) + '</span>' +
+          '<span class="badge badge-jer">' + escHtml(d.jerarquia_normativa||'') + '</span>' +
+          '<span class="badge" style="background:#edf2f7;color:#4a5568;">' + (linPerDoc[d.doc_id]||0) + ' lineamientos</span>' +
+        '</div>' +
+        '<p>' + escHtml(d.descripcion||'') + '</p>' +
+        '<p class="doc-rol"><strong>Rol:</strong> ' + escHtml(d.rol_en_sistema||'') + '</p>' +
+      '</div>';
+    }).join('');
+
+    // Chart: lineamientos per doc
+    var sorted = D.DOCUMENTOS.map(function(d) { return [d.doc_id, linPerDoc[d.doc_id]||0]; })
+      .sort(function(a,b) { return b[1]-a[1]; });
+    makeChart('chartDocLin', {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e) {
+          var d = docMap[e[0]];
+          return d ? truncate(d.nombre, 30) : e[0];
+        }),
+        datasets: [{
+          data: sorted.map(function(e) { return e[1]; }),
+          backgroundColor: sorted.map(function(_, i) { return PAL.blue[i % PAL.blue.length]; }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 11 } } }
+        }
+      }
+    });
+  }
+
+  // =============================================
+  // SECTION 3: CATEGORIAS
+  // =============================================
+  function initCategorias() {
+    var linPerSubcat = countBy(D.LINEAMIENTOS, 'subcat_id');
+
+    // Count per category (via subcategory mapping)
+    var linPerCat = {};
+    D.LINEAMIENTOS.forEach(function(l) {
+      var sc = subcatMap[l.subcat_id];
+      if (sc) {
+        linPerCat[sc.cat_id] = (linPerCat[sc.cat_id]||0) + 1;
+      }
+    });
+
+    // Bar chart
+    var catSorted = D.CATEGORIAS.map(function(c) { return [c.cat_id, c.nombre, linPerCat[c.cat_id]||0]; })
+      .sort(function(a,b) { return b[2]-a[2]; });
+    makeChart('chartCategorias', {
+      type: 'bar',
+      data: {
+        labels: catSorted.map(function(e) { return truncate(e[1], 25); }),
+        datasets: [{
+          data: catSorted.map(function(e) { return e[2]; }),
+          backgroundColor: catSorted.map(function(_, i) { return PAL.blue[i % PAL.blue.length]; }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Pie chart
+    var catColors = ['#1a365d','#2b6cb0','#3182ce','#38b2ac','#319795','#805ad5','#d69e2e','#dd6b20','#e53e3e','#718096'];
+    makeChart('chartCatPie', {
+      type: 'doughnut',
+      data: {
+        labels: catSorted.map(function(e) { return truncate(e[1], 20); }),
+        datasets: [{
+          data: catSorted.map(function(e) { return e[2]; }),
+          backgroundColor: catColors,
+          borderWidth: 2, borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 11 } } },
+          tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw; } } }
+        }
+      }
+    });
+
+    // Expandable tree
+    var subcatsByCat = {};
+    D.SUBCATEGORIAS.forEach(function(s) {
+      if (!subcatsByCat[s.cat_id]) subcatsByCat[s.cat_id] = [];
+      subcatsByCat[s.cat_id].push(s);
+    });
+
+    byId('catTree').innerHTML = D.CATEGORIAS.map(function(c) {
+      var subs = (subcatsByCat[c.cat_id]||[]).map(function(s) {
+        var cnt = linPerSubcat[s.subcat_id]||0;
+        return '<div class="subcat-row">' +
+          '<span>' + escHtml(s.nombre) + '</span>' +
+          '<span class="subcat-count">' + cnt + '</span>' +
+        '</div>';
+      }).join('');
+      var total = linPerCat[c.cat_id]||0;
+      return '<div class="cat-item">' +
+        '<div class="cat-header" onclick="this.parentElement.classList.toggle(\'open\')">' +
+          '<span class="cat-name">' + escHtml(c.nombre) + '</span>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<span class="cat-count">' + total + '</span>' +
+            '<span class="cat-arrow">&#9660;</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cat-body">' + (subs || '<p style="font-size:13px;color:#718096;">Sin subcategorias</p>') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // =============================================
+  // SECTION 4: LINEAMIENTOS TABLE
+  // =============================================
+  var linState = {
+    filtered: D.LINEAMIENTOS.slice(),
+    page: 1,
+    perPage: 20,
+    sortCol: null,
+    sortAsc: true,
+    expanded: {}
+  };
+
+  var linColumns = [
+    { key: 'lin_id', label: 'ID', width: '140px' },
+    { key: 'texto_lineamiento', label: 'Texto', width: '' },
+    { key: 'doc_id', label: 'Doc', width: '70px' },
+    { key: 'etapa_pae', label: 'Etapa', width: '100px' },
+    { key: 'riesgo_incumplimiento', label: 'Riesgo', width: '90px' },
+    { key: 'obligatoriedad', label: 'Oblig.', width: '95px' },
+    { key: 'actor_responsable', label: 'Actor', width: '70px' }
+  ];
+
+  var filterFields = [
+    { key: 'doc_id', label: 'Documento' },
+    { key: 'etapa_pae', label: 'Etapa' },
+    { key: 'riesgo_incumplimiento', label: 'Riesgo' },
+    { key: 'obligatoriedad', label: 'Obligatoriedad' },
+    { key: 'actor_responsable', label: 'Actor' },
+    { key: 'tipo_regla', label: 'Tipo regla' },
+    { key: 'subcat_id', label: 'Subcategoria' }
+  ];
+
+  function initLineamientos() {
+    // Build filter controls
+    var html = '<input type="text" id="linSearch" placeholder="Buscar en lineamientos...">';
+    filterFields.forEach(function(f) {
+      var vals = [];
+      var seen = {};
+      D.LINEAMIENTOS.forEach(function(l) {
+        var v = l[f.key];
+        if (v && !seen[v]) { seen[v] = true; vals.push(v); }
+      });
+      vals.sort();
+      html += '<select id="linFilter_' + f.key + '"><option value="">Todos: ' + f.label + '</option>';
+      vals.forEach(function(v) {
+        var displayVal = v;
+        if (f.key === 'doc_id' && docMap[v]) displayVal = docMap[v].nombre;
+        else if (f.key === 'subcat_id' && subcatMap[v]) displayVal = subcatMap[v].nombre;
+        else if (f.key === 'actor_responsable' && actorMap[v]) displayVal = truncate(actorMap[v].nombre, 30);
+        html += '<option value="' + escHtml(v) + '">' + escHtml(truncate(displayVal, 40)) + '</option>';
+      });
+      html += '</select>';
+    });
+    byId('linFilters').innerHTML = html;
+
+    // Table head
+    byId('linTableHead').innerHTML = linColumns.map(function(c) {
+      return '<th style="width:' + c.width + '" data-sort="' + c.key + '">' +
+        c.label + ' <span class="sort-arrow"></span></th>';
+    }).join('');
+
+    // Events
+    byId('linSearch').addEventListener('input', function() { linState.page = 1; applyLinFilters(); });
+    filterFields.forEach(function(f) {
+      byId('linFilter_' + f.key).addEventListener('change', function() { linState.page = 1; applyLinFilters(); });
+    });
+    $$('#linTableHead th').forEach(function(th) {
+      th.addEventListener('click', function() {
+        var col = th.dataset.sort;
+        if (linState.sortCol === col) linState.sortAsc = !linState.sortAsc;
+        else { linState.sortCol = col; linState.sortAsc = true; }
+        applyLinFilters();
+      });
+    });
+
+    applyLinFilters();
+  }
+
+  function applyLinFilters() {
+    var search = (byId('linSearch').value || '').toLowerCase();
+    var filters = {};
+    filterFields.forEach(function(f) {
+      var v = byId('linFilter_' + f.key).value;
+      if (v) filters[f.key] = v;
+    });
+
+    var result = D.LINEAMIENTOS.filter(function(l) {
+      var keys = Object.keys(filters);
+      for (var i = 0; i < keys.length; i++) {
+        if (l[keys[i]] !== filters[keys[i]]) return false;
+      }
+      if (search) {
+        var txt = (l.lin_id + ' ' + l.texto_lineamiento + ' ' + (l.notas||'')).toLowerCase();
+        if (txt.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+
+    // Sort
+    if (linState.sortCol) {
+      var col = linState.sortCol;
+      var asc = linState.sortAsc;
+      result.sort(function(a,b) {
+        var va = (a[col]||'').toString().toLowerCase();
+        var vb = (b[col]||'').toString().toLowerCase();
+        var cmp = va.localeCompare(vb, 'es');
+        return asc ? cmp : -cmp;
+      });
+    }
+
+    linState.filtered = result;
+    linState.expanded = {};
+    renderLinTable();
+  }
+
+  function renderLinTable() {
+    var filtered = linState.filtered;
+    var page = linState.page;
+    var perPage = linState.perPage;
+    var totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+    if (page > totalPages) { linState.page = totalPages; page = totalPages; }
+    var start = (page - 1) * perPage;
+    var pageData = filtered.slice(start, start + perPage);
+
+    var html = '';
+    pageData.forEach(function(l) {
+      var isExpanded = !!linState.expanded[l.lin_id];
+      var riskClass = l.riesgo_incumplimiento ? 'risk-' + l.riesgo_incumplimiento : '';
+      html += '<tr class="expandable" data-lin="' + escHtml(l.lin_id) + '">' +
+        '<td><span class="expand-icon">' + (isExpanded ? '&#9660;' : '&#9654;') + '</span>' + escHtml(l.lin_id) + '</td>' +
+        '<td>' + escHtml(truncate(l.texto_lineamiento, 120)) + '</td>' +
+        '<td>' + escHtml(l.doc_id||'') + '</td>' +
+        '<td><span class="badge badge-etapa">' + escHtml(l.etapa_pae||'') + '</span></td>' +
+        '<td><span class="badge ' + riskClass + '">' + escHtml(l.riesgo_incumplimiento||'') + '</span></td>' +
+        '<td>' + escHtml(l.obligatoriedad||'') + '</td>' +
+        '<td>' + escHtml(l.actor_responsable||'') + '</td>' +
+      '</tr>';
+      if (isExpanded) {
+        var vers = verByLin[l.lin_id] || [];
+        var verHtml = '';
+        if (vers.length > 0) {
+          verHtml = '<div class="ver-list"><strong>Verificadores (' + vers.length + '):</strong>';
+          vers.forEach(function(v) {
+            verHtml += '<div class="ver-item">' +
+              '<strong>' + escHtml(v.ver_id) + '</strong> - ' + escHtml(v.descripcion) + '<br>' +
+              '<em>Tipo:</em> ' + escHtml(v.tipo_verificador||'') +
+              ' | <em>Instrumento:</em> ' + escHtml(v.instrumento||'') +
+              ' | <em>Frecuencia:</em> ' + escHtml(v.frecuencia||'') +
+            '</div>';
+          });
+          verHtml += '</div>';
+        } else {
+          verHtml = '<p style="margin-top:8px;font-size:13px;color:#718096;">Sin verificadores asociados</p>';
+        }
+        var subcatName = subcatMap[l.subcat_id] ? subcatMap[l.subcat_id].nombre : l.subcat_id;
+        html += '<tr class="detail-row"><td colspan="7"><div class="detail-content">' +
+          '<strong>Texto completo:</strong><br>' + escHtml(l.texto_lineamiento) + '<br><br>' +
+          '<strong>Tipo regla:</strong> ' + escHtml(l.tipo_regla||'') +
+          ' | <strong>Subcategoria:</strong> ' + escHtml(subcatName) +
+          ' | <strong>Obligatoriedad:</strong> ' + escHtml(l.obligatoriedad||'') + '<br>' +
+          '<strong>Seccion fuente:</strong> ' + escHtml(l.seccion_fuente||'') + '<br>' +
+          '<strong>Condicion:</strong> ' + escHtml(l.condicion_activacion || 'N/A') + '<br>' +
+          '<strong>Consecuencia incumplimiento:</strong> ' + escHtml(l.consecuencia_incumplimiento || 'N/A') + '<br>' +
+          '<strong>Notas:</strong> ' + escHtml(l.notas || 'N/A') +
+          verHtml +
+        '</div></td></tr>';
+      }
+    });
+    byId('linTableBody').innerHTML = html;
+
+    // click to expand
+    $$('#linTableBody .expandable').forEach(function(tr) {
+      tr.addEventListener('click', function() {
+        var id = tr.dataset.lin;
+        if (linState.expanded[id]) delete linState.expanded[id];
+        else linState.expanded[id] = true;
+        renderLinTable();
+      });
+    });
+
+    // Pagination
+    var pagHtml = '<button ' + (page<=1?'disabled':'') + ' data-p="1">&laquo;</button>';
+    pagHtml += '<button ' + (page<=1?'disabled':'') + ' data-p="' + (page-1) + '">&lsaquo;</button>';
+    var startP = Math.max(1, page - 3);
+    var endP = Math.min(totalPages, page + 3);
+    for (var i = startP; i <= endP; i++) {
+      pagHtml += '<button class="' + (i===page?'active':'') + '" data-p="' + i + '">' + i + '</button>';
+    }
+    pagHtml += '<button ' + (page>=totalPages?'disabled':'') + ' data-p="' + (page+1) + '">&rsaquo;</button>';
+    pagHtml += '<button ' + (page>=totalPages?'disabled':'') + ' data-p="' + totalPages + '">&raquo;</button>';
+    pagHtml += '<span style="font-size:12px;color:#718096;margin-left:8px;">' +
+      filtered.length + ' resultados | Pagina ' + page + ' de ' + totalPages + '</span>';
+    byId('linPagination').innerHTML = pagHtml;
+
+    $$('#linPagination button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var p = parseInt(btn.dataset.p);
+        if (!isNaN(p) && p >= 1 && p <= totalPages) {
+          linState.page = p;
+          renderLinTable();
+        }
+      });
+    });
+  }
+
+  // =============================================
+  // SECTION 5: RED DE CONEXIONES (D3 Force Graph)
+  // =============================================
+  function initNetwork() {
+    var container = byId('network-container');
+    var svg = d3.select('#network-svg');
+    var tooltip = byId('netTooltip');
+    var width = container.clientWidth;
+    var height = container.clientHeight;
+
+    svg.attr('viewBox', [0, 0, width, height]);
+
+    // Build lineamiento map
+    var linMap = {};
+    D.LINEAMIENTOS.forEach(function(l) { linMap[l.lin_id] = l; });
+
+    // Collect unique node IDs from CONEXIONES, resolving wildcards
+    var nodeIdSet = {};
+    var validConnections = [];
+
+    D.CONEXIONES.forEach(function(c) {
+      var orig = c.lin_id_origen;
+      var dest = c.lin_id_destino;
+      if (!orig || !dest) return;
+
+      var resolvedOrig = orig;
+      var resolvedDest = dest;
+
+      // Resolve wildcard origins
+      if (orig.indexOf('*') !== -1) {
+        var prefix = orig.replace('*', '');
+        var match = D.LINEAMIENTOS.find(function(l) { return l.lin_id.indexOf(prefix) === 0; });
+        if (match) resolvedOrig = match.lin_id;
+        else return;
+      }
+      // Resolve wildcard destinations
+      if (dest.indexOf('*') !== -1) {
+        var prefix2 = dest.replace('*', '');
+        var match2 = D.LINEAMIENTOS.find(function(l) { return l.lin_id.indexOf(prefix2) === 0; });
+        if (match2) resolvedDest = match2.lin_id;
+        else return;
+      }
+
+      // Both must exist in lineamientos
+      if (!linMap[resolvedOrig] || !linMap[resolvedDest]) return;
+      // No self-loops
+      if (resolvedOrig === resolvedDest) return;
+
+      validConnections.push({
+        con_id: c.con_id,
+        lin_id_origen: resolvedOrig,
+        lin_id_destino: resolvedDest,
+        tipo_conexion: c.tipo_conexion,
+        descripcion: c.descripcion
+      });
+      nodeIdSet[resolvedOrig] = true;
+      nodeIdSet[resolvedDest] = true;
+    });
+
+    // Build nodes
+    var nodes = [];
+    Object.keys(nodeIdSet).forEach(function(id) {
+      var l = linMap[id];
+      if (l) {
+        nodes.push({
+          id: l.lin_id,
+          doc_id: l.doc_id,
+          etapa: l.etapa_pae,
+          label: l.lin_id,
+          text: truncate(l.texto_lineamiento, 60)
+        });
+      }
+    });
+
+    // Deduplicate links (same source+target pair)
+    var linkKey = {};
+    var links = [];
+    validConnections.forEach(function(c) {
+      var key = c.lin_id_origen + '|' + c.lin_id_destino;
+      if (!linkKey[key]) {
+        linkKey[key] = true;
+        links.push({
+          source: c.lin_id_origen,
+          target: c.lin_id_destino,
+          tipo: c.tipo_conexion,
+          desc: c.descripcion
+        });
+      }
+    });
+
+    // Doc color scale
+    var docIds = [];
+    var docSeen = {};
+    nodes.forEach(function(n) {
+      if (!docSeen[n.doc_id]) { docSeen[n.doc_id] = true; docIds.push(n.doc_id); }
+    });
+    var docColorScale = d3.scaleOrdinal()
+      .domain(docIds)
+      .range(['#1a365d','#2b6cb0','#38b2ac','#805ad5','#e53e3e','#dd6b20','#d69e2e','#38a169','#3182ce','#e53e3e','#d53f8c','#718096']);
+
+    // Build legend
+    var legendHtml = '<div class="legend-group"><h4>Documentos (nodos)</h4>';
+    docIds.forEach(function(id) {
+      var name = docMap[id] ? truncate(docMap[id].nombre, 30) : id;
+      legendHtml += '<div class="legend-item"><span class="legend-dot" style="background:' + docColorScale(id) + '"></span>' + escHtml(name) + '</div>';
+    });
+    legendHtml += '</div><div class="legend-group"><h4>Tipo de conexion (aristas)</h4>';
+    Object.keys(PAL.conn).forEach(function(k) {
+      legendHtml += '<div class="legend-item"><span class="legend-line" style="background:' + PAL.conn[k] + '"></span>' + k.replace(/_/g,' ') + '</div>';
+    });
+    legendHtml += '</div>';
+    byId('networkLegend').innerHTML = legendHtml;
+
+    // D3 simulation
+    var simulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(function(d) { return d.id; }).distance(70).strength(0.3))
+      .force('charge', d3.forceManyBody().strength(-100))
+      .force('center', d3.forceCenter(width/2, height/2))
+      .force('collision', d3.forceCollide().radius(16));
+
+    // Zoom
+    var g = svg.append('g');
+    var zoom = d3.zoom()
+      .scaleExtent([0.15, 6])
+      .on('zoom', function(e) { g.attr('transform', e.transform); });
+    svg.call(zoom);
+
+    // Arrow markers for directed edges
+    var defs = svg.append('defs');
+    Object.keys(PAL.conn).forEach(function(tipo) {
+      defs.append('marker')
+        .attr('id', 'arrow-' + tipo)
+        .attr('viewBox', '0 -3 6 6')
+        .attr('refX', 14)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-3L6,0L0,3')
+        .attr('fill', PAL.conn[tipo]);
+    });
+
+    // Links
+    var link = g.append('g')
+      .selectAll('line')
+      .data(links)
+      .join('line')
+      .attr('stroke', function(d) { return PAL.conn[d.tipo] || '#a0aec0'; })
+      .attr('stroke-width', 1.5)
+      .attr('stroke-opacity', 0.6)
+      .attr('marker-end', function(d) { return 'url(#arrow-' + d.tipo + ')'; });
+
+    // Nodes
+    var node = g.append('g')
+      .selectAll('circle')
+      .data(nodes)
+      .join('circle')
+      .attr('r', 7)
+      .attr('fill', function(d) { return docColorScale(d.doc_id); })
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 1.5)
+      .style('cursor', 'pointer')
+      .call(d3.drag()
+        .on('start', function(e, d) { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on('drag', function(e, d) { d.fx = e.x; d.fy = e.y; })
+        .on('end', function(e, d) { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+      );
+
+    // Tooltips on nodes
+    node.on('mouseover', function(e, d) {
+      tooltip.style.opacity = 1;
+      tooltip.innerHTML = '<strong>' + escHtml(d.id) + '</strong><br>' +
+        escHtml(d.text) + '<br><em>Doc:</em> ' + escHtml(d.doc_id) +
+        ' | <em>Etapa:</em> ' + escHtml(d.etapa);
+    })
+    .on('mousemove', function(e) {
+      var rect = container.getBoundingClientRect();
+      tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
+      tooltip.style.top = (e.clientY - rect.top - 12) + 'px';
+    })
+    .on('mouseout', function() { tooltip.style.opacity = 0; });
+
+    // Tooltips on links
+    link.on('mouseover', function(e, d) {
+      tooltip.style.opacity = 1;
+      var srcId = (typeof d.source === 'object') ? d.source.id : d.source;
+      var tgtId = (typeof d.target === 'object') ? d.target.id : d.target;
+      tooltip.innerHTML = '<strong>' + escHtml(d.tipo.replace(/_/g,' ')) + '</strong><br>' +
+        escHtml(srcId) + ' &rarr; ' + escHtml(tgtId) + '<br>' + escHtml(truncate(d.desc, 150));
+    })
+    .on('mousemove', function(e) {
+      var rect = container.getBoundingClientRect();
+      tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
+      tooltip.style.top = (e.clientY - rect.top - 12) + 'px';
+    })
+    .on('mouseout', function() { tooltip.style.opacity = 0; });
+
+    // Node labels
+    var label = g.append('g')
+      .selectAll('text')
+      .data(nodes)
+      .join('text')
+      .text(function(d) {
+        var parts = d.id.split('-');
+        return parts.length > 2 ? parts.slice(-2).join('-') : d.id;
+      })
+      .attr('font-size', 7)
+      .attr('dx', 10)
+      .attr('dy', 3)
+      .attr('fill', '#4a5568')
+      .attr('pointer-events', 'none');
+
+    simulation.on('tick', function() {
+      link
+        .attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });
+      node
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; });
+      label
+        .attr('x', function(d) { return d.x; })
+        .attr('y', function(d) { return d.y; });
+    });
+
+    // Initial zoom to fit
+    setTimeout(function() {
+      svg.call(zoom.transform, d3.zoomIdentity.translate(width*0.1, height*0.1).scale(0.8));
+    }, 1500);
+  }
+
+  // =============================================
+  // SECTION 6: ACTORES
+  // =============================================
+  function initActores() {
+    var linPerActor = countBy(D.LINEAMIENTOS, 'actor_responsable');
+
+    byId('actorGrid').innerHTML = D.ACTORES.map(function(a) {
+      return '<div class="actor-card">' +
+        '<h4>' + escHtml(a.nombre) + '</h4>' +
+        '<div class="actor-tipo">' + escHtml((a.tipo_actor||'').replace(/_/g, ' ')) + '</div>' +
+        '<p>' + escHtml(a.descripcion||'') + '</p>' +
+        '<div class="actor-count">' + (linPerActor[a.actor_id]||0) + ' lineamientos como responsable</div>' +
+      '</div>';
+    }).join('');
+
+    // Chart
+    var sorted = D.ACTORES.map(function(a) { return [a.actor_id, a.nombre, linPerActor[a.actor_id]||0]; })
+      .filter(function(e) { return e[2] > 0; })
+      .sort(function(a,b) { return b[2]-a[2]; });
+    makeChart('chartActorBar', {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e) { return truncate(e[1], 30); }),
+        datasets: [{
+          data: sorted.map(function(e) { return e[2]; }),
+          backgroundColor: sorted.map(function(_, i) { return PAL.blue[i % PAL.blue.length]; }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#edf2f7' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Heatmap: Actor x Category
+    var actorsWithLin = [];
+    var actorSeen = {};
+    D.LINEAMIENTOS.forEach(function(l) {
+      if (l.actor_responsable && !actorSeen[l.actor_responsable]) {
+        actorSeen[l.actor_responsable] = true;
+        actorsWithLin.push(l.actor_responsable);
+      }
+    });
+    actorsWithLin.sort();
+
+    var matrix = {};
+    actorsWithLin.forEach(function(a) {
+      matrix[a] = {};
+      D.CATEGORIAS.forEach(function(c) { matrix[a][c.cat_id] = 0; });
+    });
+    D.LINEAMIENTOS.forEach(function(l) {
+      if (!l.actor_responsable || !matrix[l.actor_responsable]) return;
+      var sc = subcatMap[l.subcat_id];
+      if (sc) {
+        matrix[l.actor_responsable][sc.cat_id] = (matrix[l.actor_responsable][sc.cat_id]||0) + 1;
+      }
+    });
+
+    // find max for color scale
+    var maxVal = 0;
+    actorsWithLin.forEach(function(a) {
+      D.CATEGORIAS.forEach(function(c) {
+        var v = matrix[a][c.cat_id]||0;
+        if (v > maxVal) maxVal = v;
+      });
+    });
+
+    function heatColor(v) {
+      if (v === 0) return '#f7fafc';
+      var intensity = v / maxVal;
+      var r = Math.round(255 - intensity * (255-26));
+      var g = Math.round(255 - intensity * (255-54));
+      var b = Math.round(255 - intensity * (255-93));
+      return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
+    var thtml = '<table class="heatmap-table"><thead><tr><th class="row-header">Actor</th>';
+    D.CATEGORIAS.forEach(function(c) { thtml += '<th>' + escHtml(c.cat_id) + '</th>'; });
+    thtml += '</tr></thead><tbody>';
+    actorsWithLin.forEach(function(a) {
+      var aName = actorMap[a] ? truncate(actorMap[a].nombre, 25) : a;
+      thtml += '<tr><th class="row-header">' + escHtml(aName) + '</th>';
+      D.CATEGORIAS.forEach(function(c) {
+        var v = matrix[a][c.cat_id]||0;
+        var textColor = v > maxVal*0.4 ? '#fff' : '#2d3748';
+        thtml += '<td style="background:' + heatColor(v) + ';color:' + textColor + '" title="' +
+          escHtml(aName) + ' / ' + escHtml(c.nombre) + ': ' + v + '">' + (v||'') + '</td>';
+      });
+      thtml += '</tr>';
+    });
+    thtml += '</tbody></table>';
+    byId('heatmapWrap').innerHTML = thtml;
+  }
+
+  // =============================================
+  // SECTION 7: INDICADORES
+  // =============================================
+  function initIndicadores() {
+    // Table
+    byId('indTableBody').innerHTML = D.INDICADORES.map(function(ind) {
+      return '<tr>' +
+        '<td style="white-space:nowrap;font-weight:600;font-size:12px;">' + escHtml(ind.ind_id) + '</td>' +
+        '<td>' + escHtml(ind.nombre||'') + '</td>' +
+        '<td style="font-size:12px;">' + escHtml(ind.formula||'') + '</td>' +
+        '<td><span class="badge badge-tipo">' + escHtml(ind.tipo_indicador||'') + '</span></td>' +
+        '<td><span class="badge badge-etapa">' + escHtml(ind.etapa_pae||'') + '</span></td>' +
+        '<td>' + escHtml(ind.periodicidad||'') + '</td>' +
+        '<td>' + escHtml(ind.meta||'') + '</td>' +
+        '<td>' + escHtml(ind.doc_id||'') + '</td>' +
+      '</tr>';
+    }).join('');
+
+    // Chart by etapa
+    var indByEtapa = countBy(D.INDICADORES, 'etapa_pae');
+    var etapaSorted = sortedEntries(indByEtapa);
+    makeChart('chartIndEtapa', {
+      type: 'bar',
+      data: {
+        labels: etapaSorted.map(function(e) { return e[0].charAt(0).toUpperCase() + e[0].slice(1); }),
+        datasets: [{
+          data: etapaSorted.map(function(e) { return e[1]; }),
+          backgroundColor: etapaSorted.map(function(e) { return PAL.etapa[e[0]]||'#a0aec0'; }),
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#edf2f7' }, ticks: { stepSize: 1 } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Chart by type
+    var indByTipo = countBy(D.INDICADORES, 'tipo_indicador');
+    var tipoSorted = sortedEntries(indByTipo);
+    makeChart('chartIndTipo', {
+      type: 'doughnut',
+      data: {
+        labels: tipoSorted.map(function(e) { return e[0]; }),
+        datasets: [{
+          data: tipoSorted.map(function(e) { return e[1]; }),
+          backgroundColor: ['#2b6cb0','#38b2ac','#805ad5','#dd6b20','#e53e3e'],
+          borderWidth: 2, borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  }
+
+  // =============================================
+  // SECTION 8: CONCEPTOS (GLOSSARY)
+  // =============================================
+  function initConceptos() {
+    var sorted = D.CONCEPTOS.slice().sort(function(a,b) {
+      return (a.termino||'').localeCompare(b.termino||'', 'es');
+    });
+    var activeFilter = '';
+
+    // Alpha nav
+    var letterSet = {};
+    sorted.forEach(function(c) {
+      var first = (c.termino||'')[0];
+      if (first) letterSet[first.toUpperCase()] = true;
+    });
+    var letters = Object.keys(letterSet).sort();
+    byId('alphaNav').innerHTML =
+      '<button class="active" data-letter="">Todos</button>' +
+      letters.map(function(l) { return '<button data-letter="' + l + '">' + l + '</button>'; }).join('');
+
+    function renderGlossary() {
+      var search = (byId('glossarySearch').value||'').toLowerCase();
+      var filtered = sorted;
+      if (activeFilter) {
+        filtered = filtered.filter(function(c) {
+          return (c.termino||'')[0] && (c.termino||'')[0].toUpperCase() === activeFilter;
+        });
+      }
+      if (search) {
+        filtered = filtered.filter(function(c) {
+          return (c.termino||'').toLowerCase().indexOf(search) !== -1 ||
+            (c.definicion||'').toLowerCase().indexOf(search) !== -1;
+        });
+      }
+      if (filtered.length > 0) {
+        byId('glossaryList').innerHTML = filtered.map(function(c) {
+          var docName = docMap[c.doc_id] ? docMap[c.doc_id].nombre : c.doc_id;
+          return '<div class="glossary-item">' +
+            '<h4>' + escHtml(c.termino||'') + '</h4>' +
+            '<div class="gl-meta">Fuente: ' + escHtml(docName) +
+              (c.norma_origen ? ' | ' + escHtml(c.norma_origen) : '') + '</div>' +
+            '<p>' + escHtml(c.definicion||'') + '</p>' +
+          '</div>';
+        }).join('');
+      } else {
+        byId('glossaryList').innerHTML = '<p style="padding:20px;color:#718096;">No se encontraron conceptos.</p>';
+      }
+    }
+
+    byId('glossarySearch').addEventListener('input', renderGlossary);
+    $$('#alphaNav button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        $$('#alphaNav button').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeFilter = btn.dataset.letter;
+        renderGlossary();
+      });
+    });
+
+    renderGlossary();
+  }
+
+  // ===== INIT ALL =====
+  initResumen();
+  initDocumentos();
+  initCategorias();
+  initLineamientos();
+  initActores();
+  initIndicadores();
+  initConceptos();
+
+})();
+</script>
+</body>
+</html>
