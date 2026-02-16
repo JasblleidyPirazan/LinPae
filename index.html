@@ -1037,8 +1037,8 @@ body {
     if (secId === 'sec-mapa') {
       setTimeout(function() {
         if (mapa.level === 0) renderLevel0();
-        else if (mapa.level === 1) renderLevel1(mapa.selectedCat);
-        else if (mapa.level === 2) renderLevel2(mapa.selectedSubcat);
+        else if (mapa.level === 1) renderLevel1(mapa.selectedEtapa);
+        else if (mapa.level === 2) renderLevel2(mapa.selectedEtapa, mapa.selectedCat);
       }, 50);
     }
   }
@@ -1066,19 +1066,29 @@ body {
   // SECTION 0: MAPA CONCEPTUAL
   // =============================================
 
-  // Color palette per category
+  // Etapa display names and colors
+  var ETAPA_NAMES = {
+    planeacion: 'Planeacion',
+    operacion: 'Operacion',
+    transversal: 'Transversal',
+    seguimiento: 'Seguimiento',
+    evaluacion: 'Evaluacion'
+  };
+  var ETAPA_LIST = ['planeacion','operacion','transversal','seguimiento','evaluacion'];
+
+  // Color palette per category (kept for Level 1)
   var CAT_COLORS = {
     NOR: '#1a365d', DIA: '#2b6cb0', CON: '#3182ce', ALI: '#38b2ac',
     CPL: '#319795', CAL: '#805ad5', FIN: '#d69e2e', GOB: '#dd6b20',
     EVA: '#e53e3e', TRA: '#2f855a'
   };
 
-  // Mapa state
+  // Mapa state — new hierarchy: etapa → categoria → lineamientos → detalle
   var mapa = {
-    level: 0,           // 0=categories, 1=subcategories, 2=lineamientos, 3=detail
-    selectedCat: null,   // cat_id
-    selectedSubcat: null,// subcat_id
-    selectedLin: null,   // lin_id
+    level: 0,              // 0=etapas, 1=categorias, 2=lineamientos, 3=detail
+    selectedEtapa: null,   // etapa_pae value
+    selectedCat: null,     // cat_id
+    selectedLin: null,     // lin_id
     filteredLins: D.LINEAMIENTOS.slice(),
     simulation: null
   };
@@ -1110,47 +1120,50 @@ body {
     indBySubcat[ind.subcat_id].push(ind);
   });
 
-  // --- Helper: get filtered lineamiento counts per category ---
-  function getLinCountsByCat() {
+  // --- Helper: get filtered lineamiento counts per etapa ---
+  function getLinCountsByEtapa() {
     var counts = {};
-    D.CATEGORIAS.forEach(function(c) { counts[c.cat_id] = 0; });
+    ETAPA_LIST.forEach(function(e) { counts[e] = 0; });
     mapa.filteredLins.forEach(function(l) {
-      var sc = subcatMap[l.subcat_id];
-      if (sc) counts[sc.cat_id] = (counts[sc.cat_id] || 0) + 1;
+      if (l.etapa_pae) counts[l.etapa_pae] = (counts[l.etapa_pae] || 0) + 1;
     });
     return counts;
   }
 
-  // --- Helper: get filtered lineamiento counts per subcategory ---
-  function getLinCountsBySubcat(catId) {
+  // --- Helper: get filtered lineamiento counts per category within an etapa ---
+  function getLinCountsByCatInEtapa(etapa) {
     var counts = {};
-    (subcatsByCat[catId] || []).forEach(function(s) { counts[s.subcat_id] = 0; });
+    D.CATEGORIAS.forEach(function(c) { counts[c.cat_id] = 0; });
     mapa.filteredLins.forEach(function(l) {
-      var sc = subcatMap[l.subcat_id];
-      if (sc && sc.cat_id === catId) {
-        counts[l.subcat_id] = (counts[l.subcat_id] || 0) + 1;
+      if (l.etapa_pae === etapa) {
+        var sc = subcatMap[l.subcat_id];
+        if (sc) counts[sc.cat_id] = (counts[sc.cat_id] || 0) + 1;
       }
     });
     return counts;
   }
 
-  // --- Helper: get filtered lineamientos for a subcategory ---
-  function getLinsForSubcat(subcatId) {
-    return mapa.filteredLins.filter(function(l) { return l.subcat_id === subcatId; });
+  // --- Helper: get filtered lineamientos for etapa + categoria ---
+  function getLinsForEtapaCat(etapa, catId) {
+    return mapa.filteredLins.filter(function(l) {
+      if (l.etapa_pae !== etapa) return false;
+      var sc = subcatMap[l.subcat_id];
+      return sc && sc.cat_id === catId;
+    });
   }
 
   // --- Update breadcrumb ---
   function updateBreadcrumb() {
     var html = '<span class="bc-item' + (mapa.level === 0 ? ' active' : '') + '" data-level="0">PAE</span>';
-    if (mapa.level >= 1 && mapa.selectedCat) {
+    if (mapa.level >= 1 && mapa.selectedEtapa) {
+      var eName = ETAPA_NAMES[mapa.selectedEtapa] || mapa.selectedEtapa;
+      html += '<span class="bc-sep">&#9654;</span>';
+      html += '<span class="bc-item' + (mapa.level === 1 ? ' active' : '') + '" data-level="1">' + escHtml(eName) + '</span>';
+    }
+    if (mapa.level >= 2 && mapa.selectedCat) {
       var catName = catMap[mapa.selectedCat] ? catMap[mapa.selectedCat].nombre : mapa.selectedCat;
       html += '<span class="bc-sep">&#9654;</span>';
-      html += '<span class="bc-item' + (mapa.level === 1 ? ' active' : '') + '" data-level="1">' + escHtml(catName) + '</span>';
-    }
-    if (mapa.level >= 2 && mapa.selectedSubcat) {
-      var scName = subcatMap[mapa.selectedSubcat] ? subcatMap[mapa.selectedSubcat].nombre : mapa.selectedSubcat;
-      html += '<span class="bc-sep">&#9654;</span>';
-      html += '<span class="bc-item' + (mapa.level === 2 ? ' active' : '') + '" data-level="2">' + escHtml(scName) + '</span>';
+      html += '<span class="bc-item' + (mapa.level === 2 ? ' active' : '') + '" data-level="2">' + escHtml(catName) + '</span>';
     }
     byId('mapaBreadcrumb').innerHTML = html;
 
@@ -1167,17 +1180,17 @@ body {
   function navigateToLevel(level) {
     if (level === 0) {
       mapa.level = 0;
+      mapa.selectedEtapa = null;
       mapa.selectedCat = null;
-      mapa.selectedSubcat = null;
       mapa.selectedLin = null;
       closeDetalle();
       renderLevel0();
     } else if (level === 1) {
       mapa.level = 1;
-      mapa.selectedSubcat = null;
+      mapa.selectedCat = null;
       mapa.selectedLin = null;
       closeDetalle();
-      renderLevel1(mapa.selectedCat);
+      renderLevel1(mapa.selectedEtapa);
     }
     updateBreadcrumb();
   }
@@ -1194,7 +1207,7 @@ body {
   }
 
   // =============================================
-  // LEVEL 0: Category Bubbles (D3 Pack)
+  // LEVEL 0: Etapa Bubbles (D3 Pack)
   // =============================================
   function renderLevel0() {
     var svg = d3.select('#mapa-svg');
@@ -1208,18 +1221,17 @@ body {
 
     svg.attr('viewBox', '0 0 ' + width + ' ' + height);
 
-    var counts = getLinCountsByCat();
+    var counts = getLinCountsByEtapa();
     var totalFiltered = mapa.filteredLins.length;
 
     // Build hierarchy data for d3.pack
-    var children = D.CATEGORIAS.map(function(c) {
+    var children = ETAPA_LIST.map(function(e) {
       return {
-        id: c.cat_id,
-        name: c.nombre,
-        desc: c.descripcion,
-        value: Math.max(counts[c.cat_id] || 0, 1), // min 1 to show bubble
-        count: counts[c.cat_id] || 0,
-        color: CAT_COLORS[c.cat_id] || '#718096'
+        id: e,
+        name: ETAPA_NAMES[e] || e,
+        value: Math.max(counts[e] || 0, 1),
+        count: counts[e] || 0,
+        color: PAL.etapa[e] || '#718096'
       };
     });
 
@@ -1229,7 +1241,7 @@ body {
 
     var pack = d3.pack()
       .size([width - 40, height - 40])
-      .padding(12);
+      .padding(16);
 
     pack(root);
 
@@ -1257,71 +1269,45 @@ body {
       .ease(d3.easeCubicOut)
       .attr('r', function(d) { return d.r; });
 
-    // Category name (multiline for long names)
+    // Etapa name
     groups.each(function(d) {
       var group = d3.select(this);
-      var name = d.data.name;
       var r = d.r;
-      var fontSize = Math.max(11, Math.min(r / 4, 16));
+      var fontSize = Math.max(13, Math.min(r / 3.5, 20));
 
-      // Split name into lines if too long
-      var words = name.split(' ');
-      var lines = [];
-      var currentLine = '';
-      var maxCharsPerLine = Math.max(8, Math.floor(r / (fontSize * 0.35)));
-
-      words.forEach(function(word) {
-        if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
-          currentLine = (currentLine + ' ' + word).trim();
-        } else {
-          if (currentLine) lines.push(currentLine);
-          currentLine = word;
-        }
-      });
-      if (currentLine) lines.push(currentLine);
-
-      // Limit to 3 lines
-      if (lines.length > 3) lines = lines.slice(0, 3);
-
-      var totalTextHeight = lines.length * (fontSize * 1.2) + fontSize;
-      var startY = -totalTextHeight / 2 + fontSize * 0.4;
-
-      lines.forEach(function(line, i) {
-        group.append('text')
-          .attr('class', 'bubble-label')
-          .attr('text-anchor', 'middle')
-          .attr('y', startY + i * fontSize * 1.2)
-          .attr('font-size', fontSize + 'px')
-          .text(line)
-          .attr('opacity', 0)
-          .transition().delay(300 + i * 50).duration(400)
-          .attr('opacity', 1);
-      });
+      group.append('text')
+        .attr('class', 'bubble-label')
+        .attr('text-anchor', 'middle')
+        .attr('y', -fontSize * 0.3)
+        .attr('font-size', fontSize + 'px')
+        .text(d.data.name)
+        .attr('opacity', 0)
+        .transition().delay(300).duration(400)
+        .attr('opacity', 1);
 
       // Count below name
-      var countY = startY + lines.length * fontSize * 1.2 + 4;
       group.append('text')
         .attr('class', 'bubble-count')
         .attr('text-anchor', 'middle')
-        .attr('y', countY)
-        .attr('font-size', Math.max(10, fontSize - 2) + 'px')
+        .attr('y', fontSize * 0.9)
+        .attr('font-size', Math.max(11, fontSize - 3) + 'px')
         .text(d.data.count + ' lineamientos')
         .attr('opacity', 0)
         .transition().delay(500).duration(400)
         .attr('opacity', 0.85);
     });
 
-    // Click handler - drill into category
+    // Click handler - drill into etapa
     groups.filter(function(d) { return d.data.count > 0; })
       .style('cursor', 'pointer')
       .on('click', function(event, d) {
         mapa.level = 1;
-        mapa.selectedCat = d.data.id;
+        mapa.selectedEtapa = d.data.id;
         updateBreadcrumb();
         renderLevel1(d.data.id);
       });
 
-    // Tooltip on hover
+    // Hover
     groups.on('mouseenter', function(event, d) {
       if (d.data.count === 0) return;
       d3.select(this).select('circle')
@@ -1338,9 +1324,9 @@ body {
   }
 
   // =============================================
-  // LEVEL 1: Subcategory Bubbles (D3 Pack)
+  // LEVEL 1: Category Bubbles within Etapa
   // =============================================
-  function renderLevel1(catId) {
+  function renderLevel1(etapa) {
     var svg = d3.select('#mapa-svg');
     svg.selectAll('*').remove();
     byId('mapa-svg').style.display = 'block';
@@ -1349,32 +1335,31 @@ body {
     var container = byId('mapaArea');
     var width = container.clientWidth;
     var height = 560;
-    var catColor = CAT_COLORS[catId] || '#718096';
-    var catName = catMap[catId] ? catMap[catId].nombre : catId;
+    var etapaColor = PAL.etapa[etapa] || '#718096';
+    var etapaName = ETAPA_NAMES[etapa] || etapa;
 
     svg.attr('viewBox', '0 0 ' + width + ' ' + height);
 
-    var counts = getLinCountsBySubcat(catId);
-    var subs = subcatsByCat[catId] || [];
+    var counts = getLinCountsByCatInEtapa(etapa);
 
-    var children = subs.map(function(s) {
+    // Only show categories that have lineamientos in this etapa
+    var children = D.CATEGORIAS.map(function(c) {
       return {
-        id: s.subcat_id,
-        name: s.nombre,
-        desc: s.descripcion,
-        value: Math.max(counts[s.subcat_id] || 0, 1),
-        count: counts[s.subcat_id] || 0,
-        color: catColor
+        id: c.cat_id,
+        name: c.nombre,
+        desc: c.descripcion,
+        value: Math.max(counts[c.cat_id] || 0, 1),
+        count: counts[c.cat_id] || 0,
+        color: CAT_COLORS[c.cat_id] || '#718096'
       };
-    });
+    }).filter(function(c) { return c.count > 0; });
 
-    // If no subcategories, show message
     if (children.length === 0) {
       svg.append('text')
         .attr('x', width / 2).attr('y', height / 2)
         .attr('text-anchor', 'middle')
         .attr('fill', '#718096').attr('font-size', '16px')
-        .text('Sin subcategorias para ' + catName);
+        .text('Sin categorias en etapa ' + etapaName + ' con los filtros actuales');
       return;
     }
 
@@ -1388,19 +1373,18 @@ body {
 
     pack(root);
 
-    // Background with category color
     var g = svg.append('g')
       .attr('transform', 'translate(20,20)')
       .attr('class', 'level-enter');
 
-    // Title of parent category
+    // Title of parent etapa
     svg.append('text')
       .attr('x', 20).attr('y', 28)
       .attr('font-size', '13px')
       .attr('font-weight', '600')
-      .attr('fill', catColor)
+      .attr('fill', etapaColor)
       .attr('font-family', "'Inter', sans-serif")
-      .text(catName)
+      .text(etapaName)
       .attr('opacity', 0)
       .transition().duration(400)
       .attr('opacity', 1);
@@ -1408,20 +1392,13 @@ body {
     var groups = g.selectAll('.bubble-group')
       .data(root.children)
       .join('g')
-      .attr('class', function(d) {
-        return 'bubble-group' + (d.data.count === 0 ? ' disabled' : '');
-      })
+      .attr('class', 'bubble-group')
       .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
-    // Circles with lighter shade of category color
+    // Circles with category colors
     groups.append('circle')
       .attr('r', 0)
-      .attr('fill', function(d) {
-        // Slightly vary the color per subcategory
-        var base = d3.color(catColor);
-        var idx = subs.indexOf(subs.find(function(s) { return s.subcat_id === d.data.id; }));
-        return base.brighter(idx * 0.15).toString();
-      })
+      .attr('fill', function(d) { return d.data.color; })
       .attr('stroke', '#fff')
       .attr('stroke-width', 2.5)
       .attr('opacity', 0.88)
@@ -1478,19 +1455,17 @@ body {
         .attr('opacity', 0.85);
     });
 
-    // Click handler - drill into subcategory
-    groups.filter(function(d) { return d.data.count > 0; })
-      .style('cursor', 'pointer')
+    // Click handler - drill into category (within etapa)
+    groups.style('cursor', 'pointer')
       .on('click', function(event, d) {
         mapa.level = 2;
-        mapa.selectedSubcat = d.data.id;
+        mapa.selectedCat = d.data.id;
         updateBreadcrumb();
-        renderLevel2(d.data.id);
+        renderLevel2(mapa.selectedEtapa, d.data.id);
       });
 
     // Hover
     groups.on('mouseenter', function(event, d) {
-      if (d.data.count === 0) return;
       d3.select(this).select('circle')
         .transition().duration(200)
         .attr('stroke-width', 4).attr('opacity', 1);
@@ -1503,18 +1478,18 @@ body {
   }
 
   // =============================================
-  // LEVEL 2: Lineamiento Cards
+  // LEVEL 2: Lineamiento Cards (etapa + categoria)
   // =============================================
-  function renderLevel2(subcatId) {
+  function renderLevel2(etapa, catId) {
     byId('mapa-svg').style.display = 'none';
     var cardsEl = byId('mapaCards');
     cardsEl.style.display = 'grid';
     // Re-trigger animation
     cardsEl.classList.remove('level-enter');
-    void cardsEl.offsetWidth; // force reflow
+    void cardsEl.offsetWidth;
     cardsEl.classList.add('level-enter');
 
-    var lins = getLinsForSubcat(subcatId);
+    var lins = getLinsForEtapaCat(etapa, catId);
 
     // Sort: critico first, then alto, medio, bajo
     var rOrder = { critico: 0, alto: 1, medio: 2, bajo: 3 };
@@ -1534,13 +1509,13 @@ body {
       var obligClass = l.obligatoriedad === 'obligatorio' ? 'badge-oblig' :
                        l.obligatoriedad === 'condicional' ? 'badge-cond' : 'badge-recom';
       var docName = docMap[l.doc_id] ? truncate(docMap[l.doc_id].nombre, 35) : l.doc_id;
-      var actorName = actorMap[l.actor_responsable] ? truncate(actorMap[l.actor_responsable].nombre, 30) : (l.actor_responsable || '');
+      var subcatName = subcatMap[l.subcat_id] ? truncate(subcatMap[l.subcat_id].nombre, 30) : '';
 
       return '<div class="mapa-lin-card" data-linid="' + escHtml(l.lin_id) + '">' +
         '<div class="mlc-id">' + escHtml(l.lin_id) + '</div>' +
         '<div class="mlc-text">' + escHtml(l.texto_lineamiento || '') + '</div>' +
         '<div class="mlc-badges">' +
-          (l.etapa_pae ? '<span class="badge badge-etapa">' + escHtml(l.etapa_pae) + '</span>' : '') +
+          (subcatName ? '<span class="badge badge-etapa">' + escHtml(subcatName) + '</span>' : '') +
           (l.riesgo_incumplimiento ? '<span class="badge ' + riskClass + '">' + escHtml(l.riesgo_incumplimiento) + '</span>' : '') +
           '<span class="badge ' + obligClass + '">' + escHtml(l.obligatoriedad || '') + '</span>' +
           (l.actor_responsable ? '<span class="badge badge-tipo">' + escHtml(l.actor_responsable) + '</span>' : '') +
@@ -1680,15 +1655,17 @@ body {
         // Find the target lineamiento
         var targetData = D.LINEAMIENTOS.find(function(l) { return l.lin_id === targetLin; });
         if (targetData) {
-          // If target is in a different subcategory, navigate there
-          if (targetData.subcat_id !== mapa.selectedSubcat) {
-            var sc = subcatMap[targetData.subcat_id];
-            if (sc) {
-              mapa.selectedCat = sc.cat_id;
-              mapa.selectedSubcat = targetData.subcat_id;
+          // If target is in a different etapa+cat, navigate there
+          var sc = subcatMap[targetData.subcat_id];
+          var targetCat = sc ? sc.cat_id : null;
+          var targetEtapa = targetData.etapa_pae;
+          if (targetEtapa !== mapa.selectedEtapa || targetCat !== mapa.selectedCat) {
+            if (targetEtapa && targetCat) {
+              mapa.selectedEtapa = targetEtapa;
+              mapa.selectedCat = targetCat;
               mapa.level = 2;
               updateBreadcrumb();
-              renderLevel2(targetData.subcat_id);
+              renderLevel2(targetEtapa, targetCat);
             }
           }
           // Select the card
@@ -1786,8 +1763,8 @@ body {
 
       // Re-render current level
       if (mapa.level === 0) renderLevel0();
-      else if (mapa.level === 1) renderLevel1(mapa.selectedCat);
-      else if (mapa.level === 2) renderLevel2(mapa.selectedSubcat);
+      else if (mapa.level === 1) renderLevel1(mapa.selectedEtapa);
+      else if (mapa.level === 2) renderLevel2(mapa.selectedEtapa, mapa.selectedCat);
     }
 
     byId('mfDoc').addEventListener('change', applyMapaFilters);
