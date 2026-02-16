@@ -1495,13 +1495,206 @@ body {
   }
 
   // =============================================
-  // LEVEL 2: Lineamiento Cards (placeholder - Paso 5)
+  // LEVEL 2: Lineamiento Cards
   // =============================================
   function renderLevel2(subcatId) {
-    // Will be implemented in Paso 5
     byId('mapa-svg').style.display = 'none';
-    byId('mapaCards').style.display = 'grid';
-    byId('mapaCards').innerHTML = '<p style="padding:20px;color:#718096;">Nivel 2 - Cards de lineamientos (Paso 5)</p>';
+    var cardsEl = byId('mapaCards');
+    cardsEl.style.display = 'grid';
+    cardsEl.classList.add('level-enter');
+
+    var lins = getLinsForSubcat(subcatId);
+
+    // Sort: critico first, then alto, medio, bajo
+    var rOrder = { critico: 0, alto: 1, medio: 2, bajo: 3 };
+    lins.sort(function(a, b) {
+      var ra = rOrder[a.riesgo_incumplimiento] !== undefined ? rOrder[a.riesgo_incumplimiento] : 9;
+      var rb = rOrder[b.riesgo_incumplimiento] !== undefined ? rOrder[b.riesgo_incumplimiento] : 9;
+      return ra - rb;
+    });
+
+    if (lins.length === 0) {
+      cardsEl.innerHTML = '<p style="padding:24px;color:#718096;font-size:14px;">No hay lineamientos con los filtros actuales.</p>';
+      return;
+    }
+
+    cardsEl.innerHTML = lins.map(function(l) {
+      var riskClass = l.riesgo_incumplimiento ? 'risk-' + l.riesgo_incumplimiento : '';
+      var obligClass = l.obligatoriedad === 'obligatorio' ? 'badge-oblig' :
+                       l.obligatoriedad === 'condicional' ? 'badge-cond' : 'badge-recom';
+      var docName = docMap[l.doc_id] ? truncate(docMap[l.doc_id].nombre, 35) : l.doc_id;
+      var actorName = actorMap[l.actor_responsable] ? truncate(actorMap[l.actor_responsable].nombre, 30) : (l.actor_responsable || '');
+
+      return '<div class="mapa-lin-card" data-linid="' + escHtml(l.lin_id) + '">' +
+        '<div class="mlc-id">' + escHtml(l.lin_id) + '</div>' +
+        '<div class="mlc-text">' + escHtml(l.texto_lineamiento || '') + '</div>' +
+        '<div class="mlc-badges">' +
+          (l.etapa_pae ? '<span class="badge badge-etapa">' + escHtml(l.etapa_pae) + '</span>' : '') +
+          (l.riesgo_incumplimiento ? '<span class="badge ' + riskClass + '">' + escHtml(l.riesgo_incumplimiento) + '</span>' : '') +
+          '<span class="badge ' + obligClass + '">' + escHtml(l.obligatoriedad || '') + '</span>' +
+          (l.actor_responsable ? '<span class="badge badge-tipo">' + escHtml(l.actor_responsable) + '</span>' : '') +
+        '</div>' +
+        '<div class="mlc-doc">' + escHtml(docName) + '</div>' +
+      '</div>';
+    }).join('');
+
+    // Bind click on cards
+    cardsEl.querySelectorAll('.mapa-lin-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var linId = card.dataset.linid;
+        // Deselect previous
+        cardsEl.querySelectorAll('.mapa-lin-card.selected').forEach(function(c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        mapa.selectedLin = linId;
+        renderLevel3(linId);
+      });
+    });
+  }
+
+  // =============================================
+  // LEVEL 3: Detail Panel
+  // =============================================
+  function renderLevel3(linId) {
+    var lin = D.LINEAMIENTOS.find(function(l) { return l.lin_id === linId; });
+    if (!lin) return;
+
+    var panel = byId('mapaDetalle');
+    var header = byId('detalleHeader');
+    var body = byId('detalleBody');
+
+    // Open panel
+    panel.classList.add('open');
+    byId('mapaArea').classList.add('with-detalle');
+
+    // --- Header ---
+    var riskClass = lin.riesgo_incumplimiento ? 'risk-' + lin.riesgo_incumplimiento : '';
+    var obligClass = lin.obligatoriedad === 'obligatorio' ? 'badge-oblig' :
+                     lin.obligatoriedad === 'condicional' ? 'badge-cond' : 'badge-recom';
+
+    header.innerHTML =
+      '<div class="dh-id">' + escHtml(lin.lin_id) + '</div>' +
+      '<div class="dh-badges">' +
+        (lin.etapa_pae ? '<span class="badge badge-etapa">' + escHtml(lin.etapa_pae) + '</span>' : '') +
+        (lin.riesgo_incumplimiento ? '<span class="badge ' + riskClass + '">' + escHtml(lin.riesgo_incumplimiento) + '</span>' : '') +
+        '<span class="badge ' + obligClass + '">' + escHtml(lin.obligatoriedad || '') + '</span>' +
+        (lin.tipo_regla ? '<span class="badge badge-jer">' + escHtml(lin.tipo_regla.replace(/_/g, ' ')) + '</span>' : '') +
+      '</div>';
+
+    // --- Body ---
+    var html = '';
+
+    // Full text
+    html += '<h4>Texto del lineamiento</h4>';
+    html += '<p class="det-text">' + escHtml(lin.texto_lineamiento || '') + '</p>';
+
+    // Metadata
+    html += '<h4>Informacion</h4>';
+    var docName = docMap[lin.doc_id] ? docMap[lin.doc_id].nombre : lin.doc_id;
+    var actorName = actorMap[lin.actor_responsable] ? actorMap[lin.actor_responsable].nombre : (lin.actor_responsable || 'N/A');
+    var actorVerName = actorMap[lin.actor_verificador] ? actorMap[lin.actor_verificador].nombre : (lin.actor_verificador || 'N/A');
+    var subcatName = subcatMap[lin.subcat_id] ? subcatMap[lin.subcat_id].nombre : (lin.subcat_id || 'N/A');
+
+    html += '<div class="det-meta">' +
+      '<strong>Documento:</strong> ' + escHtml(docName) + '<br>' +
+      '<strong>Seccion fuente:</strong> ' + escHtml(lin.seccion_fuente || 'N/A') + '<br>' +
+      '<strong>Subcategoria:</strong> ' + escHtml(subcatName) + '<br>' +
+      '<strong>Actor responsable:</strong> ' + escHtml(actorName) + '<br>' +
+      '<strong>Actor verificador:</strong> ' + escHtml(actorVerName) + '<br>' +
+      (lin.plazo ? '<strong>Plazo:</strong> ' + escHtml(lin.plazo) + '<br>' : '') +
+      (lin.periodicidad ? '<strong>Periodicidad:</strong> ' + escHtml(lin.periodicidad) + '<br>' : '') +
+      (lin.condicion_activacion ? '<strong>Condicion:</strong> ' + escHtml(lin.condicion_activacion) + '<br>' : '') +
+      (lin.consecuencia_incumplimiento ? '<strong>Consecuencia:</strong> ' + escHtml(lin.consecuencia_incumplimiento) + '<br>' : '') +
+      (lin.notas ? '<strong>Notas:</strong> ' + escHtml(lin.notas) + '<br>' : '') +
+    '</div>';
+
+    // Verificadores
+    var vers = verByLin[lin.lin_id] || [];
+    if (vers.length > 0) {
+      html += '<h4>Verificadores (' + vers.length + ')</h4>';
+      vers.forEach(function(v) {
+        html += '<div class="det-ver-item">' +
+          '<strong>' + escHtml(v.ver_id) + '</strong><br>' +
+          escHtml(v.descripcion || '') + '<br>' +
+          '<span style="color:#718096;">' +
+            '<em>Tipo:</em> ' + escHtml(v.tipo_verificador || '') +
+            ' &middot; <em>Instrumento:</em> ' + escHtml(truncate(v.instrumento || '', 60)) +
+            ' &middot; <em>Frecuencia:</em> ' + escHtml(v.frecuencia || '') +
+          '</span>' +
+          (v.criterio_cumple ? '<br><span style="color:#2f855a;font-size:11px;"><em>Criterio:</em> ' + escHtml(truncate(v.criterio_cumple, 120)) + '</span>' : '') +
+        '</div>';
+      });
+    }
+
+    // Conexiones
+    var conns = connByLin[lin.lin_id] || [];
+    if (conns.length > 0) {
+      html += '<h4>Conexiones (' + conns.length + ')</h4>';
+      conns.forEach(function(c) {
+        var otherLin = c.lin_id_origen === lin.lin_id ? c.lin_id_destino : c.lin_id_origen;
+        var direction = c.lin_id_origen === lin.lin_id ? '&rarr;' : '&larr;';
+        var isClickable = otherLin && otherLin.indexOf('*') === -1;
+
+        html += '<div class="det-con-item' + (isClickable ? '' : ' disabled') + '"' +
+          (isClickable ? ' data-target-lin="' + escHtml(otherLin) + '"' : '') + '>' +
+          '<span class="det-con-tipo ' + escHtml(c.tipo_conexion || '') + '">' +
+            escHtml((c.tipo_conexion || '').replace(/_/g, ' ')) +
+          '</span>' +
+          '<span>' + direction + ' ' + escHtml(otherLin || '') + '</span>' +
+        '</div>';
+      });
+    }
+
+    // Indicadores (via subcat)
+    var inds = indBySubcat[lin.subcat_id] || [];
+    if (inds.length > 0) {
+      html += '<h4>Indicadores relacionados (' + inds.length + ')</h4>';
+      inds.forEach(function(ind) {
+        html += '<div class="det-ind-item">' +
+          '<strong>' + escHtml(ind.nombre || '') + '</strong><br>' +
+          '<span style="color:#718096;">' +
+            '<em>Formula:</em> ' + escHtml(truncate(ind.formula || '', 80)) +
+            ' &middot; <em>Meta:</em> ' + escHtml(ind.meta || '') +
+            ' &middot; <em>Periodicidad:</em> ' + escHtml(ind.periodicidad || '') +
+          '</span>' +
+        '</div>';
+      });
+    }
+
+    body.innerHTML = html;
+
+    // Bind click on connection items to navigate to that lineamiento
+    body.querySelectorAll('.det-con-item[data-target-lin]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var targetLin = el.dataset.targetLin;
+        // Find the target lineamiento
+        var targetData = D.LINEAMIENTOS.find(function(l) { return l.lin_id === targetLin; });
+        if (targetData) {
+          // If target is in a different subcategory, navigate there
+          if (targetData.subcat_id !== mapa.selectedSubcat) {
+            var sc = subcatMap[targetData.subcat_id];
+            if (sc) {
+              mapa.selectedCat = sc.cat_id;
+              mapa.selectedSubcat = targetData.subcat_id;
+              mapa.level = 2;
+              updateBreadcrumb();
+              renderLevel2(targetData.subcat_id);
+            }
+          }
+          // Select the card
+          var cardEl = byId('mapaCards').querySelector('[data-linid="' + targetLin + '"]');
+          if (cardEl) {
+            byId('mapaCards').querySelectorAll('.mapa-lin-card.selected').forEach(function(c) { c.classList.remove('selected'); });
+            cardEl.classList.add('selected');
+            cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          mapa.selectedLin = targetLin;
+          renderLevel3(targetLin);
+        }
+      });
+    });
+
+    // Scroll panel to top
+    panel.scrollTop = 0;
   }
 
   // =============================================
