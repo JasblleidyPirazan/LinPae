@@ -1033,6 +1033,14 @@ body {
       networkInited = true;
       setTimeout(initNetwork, 150);
     }
+    // Re-render mapa when switching back to it (SVG needs visible container for width)
+    if (secId === 'sec-mapa') {
+      setTimeout(function() {
+        if (mapa.level === 0) renderLevel0();
+        else if (mapa.level === 1) renderLevel1(mapa.selectedCat);
+        else if (mapa.level === 2) renderLevel2(mapa.selectedSubcat);
+      }, 50);
+    }
   }
 
   navLinks.forEach(function(a) {
@@ -1501,6 +1509,9 @@ body {
     byId('mapa-svg').style.display = 'none';
     var cardsEl = byId('mapaCards');
     cardsEl.style.display = 'grid';
+    // Re-trigger animation
+    cardsEl.classList.remove('level-enter');
+    void cardsEl.offsetWidth; // force reflow
     cardsEl.classList.add('level-enter');
 
     var lins = getLinsForSubcat(subcatId);
