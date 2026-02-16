@@ -479,6 +479,97 @@ body {
   white-space: nowrap;
 }
 
+/* Search input */
+.mapa-search-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.mapa-search-wrap input {
+  padding: 7px 12px 7px 32px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 12.5px; font-family: inherit;
+  background: #fff; color: var(--text); width: 220px;
+  transition: border var(--transition), box-shadow var(--transition);
+}
+.mapa-search-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(49,130,206,.12); }
+.mapa-search-wrap input::placeholder { color: #a0aec0; }
+.mapa-search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: #a0aec0; font-size: 14px; pointer-events: none;
+}
+
+/* Etapa flow (Level 0) */
+.etapa-flow {
+  display: flex; align-items: stretch; justify-content: center;
+  gap: 0; padding: 40px 20px 20px;
+  width: 100%; min-height: 400px;
+}
+.etapa-flow-main {
+  display: flex; align-items: center; gap: 0; flex: 1;
+  justify-content: center; max-width: 900px;
+}
+.etapa-card {
+  flex: 1; max-width: 200px; min-height: 160px;
+  border-radius: 14px; padding: 24px 16px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  cursor: pointer; position: relative;
+  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  border: 3px solid transparent;
+  opacity: 0; animation: etapaFadeIn .5s ease forwards;
+}
+.etapa-card:nth-child(1) { animation-delay: .05s; }
+.etapa-card:nth-child(2) { animation-delay: .15s; }
+.etapa-card:nth-child(3) { animation-delay: .25s; }
+.etapa-card:nth-child(4) { animation-delay: .35s; }
+.etapa-card:hover { transform: translateY(-6px) scale(1.04); box-shadow: 0 8px 28px rgba(0,0,0,.18); }
+.etapa-card.disabled { opacity: .45; cursor: default; }
+.etapa-card.disabled:hover { transform: none; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.etapa-card-name {
+  font-size: 17px; font-weight: 700; color: #fff;
+  margin-bottom: 8px; line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.etapa-card-count {
+  font-size: 28px; font-weight: 800; color: rgba(255,255,255,.95);
+  line-height: 1;
+}
+.etapa-card-label {
+  font-size: 11px; color: rgba(255,255,255,.75);
+  margin-top: 4px; font-weight: 500;
+}
+.etapa-card-num {
+  position: absolute; top: 10px; left: 14px;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,.5);
+}
+.etapa-arrow {
+  display: flex; align-items: center; padding: 0 4px;
+  color: #a0aec0; font-size: 24px; flex-shrink: 0;
+  opacity: 0; animation: etapaFadeIn .4s ease .2s forwards;
+}
+/* Transversal bar */
+.etapa-transversal {
+  margin-top: 18px; border-radius: 14px;
+  padding: 18px 28px; display: flex; align-items: center;
+  justify-content: center; gap: 16px;
+  cursor: pointer; max-width: 900px; margin-left: auto; margin-right: auto;
+  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  opacity: 0; animation: etapaFadeIn .5s ease .45s forwards;
+}
+.etapa-transversal:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+.etapa-transversal.disabled { opacity: .45; cursor: default; }
+.etapa-transversal.disabled:hover { transform: none; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.etapa-transversal .etapa-card-name { font-size: 16px; margin-bottom: 0; }
+.etapa-transversal .etapa-card-count { font-size: 22px; }
+.etapa-transversal .etapa-card-label { font-size: 11px; }
+.etapa-trans-icon {
+  font-size: 20px; color: rgba(255,255,255,.6);
+}
+@keyframes etapaFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* Breadcrumb */
 .mapa-breadcrumb {
   display: flex; align-items: center; gap: 0;
@@ -701,10 +792,14 @@ body {
   .mapa-filters { flex-direction: column; align-items: stretch; }
   .mapa-filters-left { flex-direction: column; }
   .mapa-filters select { max-width: unset; width: 100%; }
+  .mapa-search-wrap input { width: 100%; }
   .mapa-container { flex-direction: column; }
   .mapa-detalle.open { width: 100%; max-height: 400px; border-radius: 0 0 var(--radius) var(--radius); }
   .mapa-area.with-detalle { border-radius: var(--radius) var(--radius) 0 0; }
   .mapa-cards-grid { grid-template-columns: 1fr; }
+  .etapa-flow-main { flex-direction: column; gap: 0; align-items: stretch; }
+  .etapa-card { max-width: unset; min-height: 100px; }
+  .etapa-arrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
 }
 </style>
 </head>
@@ -767,7 +862,13 @@ body {
         <select id="mfRiesgo"><option value="">Todos los riesgos</option></select>
         <button class="mapa-clear-btn" id="mfClear">Limpiar</button>
       </div>
-      <div class="mapa-filter-count" id="mfCount">Mostrando 395 de 395 lineamientos</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="mapa-search-wrap">
+          <span class="mapa-search-icon">&#128269;</span>
+          <input type="text" id="mfSearch" placeholder="Buscar por palabra clave..." autocomplete="off">
+        </div>
+        <div class="mapa-filter-count" id="mfCount">Mostrando 395 de 395 lineamientos</div>
+      </div>
     </div>
 
     <!-- Breadcrumb -->
@@ -1207,126 +1308,97 @@ body {
   }
 
   // =============================================
-  // LEVEL 0: Etapa Bubbles (D3 Pack)
+  // LEVEL 0: Etapa Flow (Rectangles in sequence)
   // =============================================
   function renderLevel0() {
     var svg = d3.select('#mapa-svg');
     svg.selectAll('*').remove();
-    byId('mapa-svg').style.display = 'block';
+    byId('mapa-svg').style.display = 'none';
     byId('mapaCards').style.display = 'none';
 
-    var container = byId('mapaArea');
-    var width = container.clientWidth;
-    var height = 560;
-
-    svg.attr('viewBox', '0 0 ' + width + ' ' + height);
+    // Use a dedicated container for etapa flow (HTML-based, not SVG)
+    var area = byId('mapaArea');
+    var existing = area.querySelector('.etapa-flow-wrap');
+    if (existing) existing.remove();
 
     var counts = getLinCountsByEtapa();
-    var totalFiltered = mapa.filteredLins.length;
+    var sequential = ['planeacion','operacion','seguimiento','evaluacion'];
+    var transversal = 'transversal';
 
-    // Build hierarchy data for d3.pack
-    var children = ETAPA_LIST.map(function(e) {
-      return {
-        id: e,
-        name: ETAPA_NAMES[e] || e,
-        value: Math.max(counts[e] || 0, 1),
-        count: counts[e] || 0,
-        color: PAL.etapa[e] || '#718096'
-      };
+    var wrap = document.createElement('div');
+    wrap.className = 'etapa-flow-wrap';
+
+    // --- Main row: 4 sequential etapas with arrows ---
+    var mainRow = document.createElement('div');
+    mainRow.className = 'etapa-flow-main';
+
+    sequential.forEach(function(etapaId, idx) {
+      var color = PAL.etapa[etapaId] || '#718096';
+      var count = counts[etapaId] || 0;
+      var card = document.createElement('div');
+      card.className = 'etapa-card' + (count === 0 ? ' disabled' : '');
+      card.style.background = 'linear-gradient(135deg, ' + color + ', ' + d3.color(color).darker(0.4) + ')';
+      card.innerHTML =
+        '<div class="etapa-card-num">' + (idx + 1) + '</div>' +
+        '<div class="etapa-card-name">' + escHtml(ETAPA_NAMES[etapaId]) + '</div>' +
+        '<div class="etapa-card-count">' + count + '</div>' +
+        '<div class="etapa-card-label">lineamientos</div>';
+
+      if (count > 0) {
+        card.addEventListener('click', function() {
+          mapa.level = 1;
+          mapa.selectedEtapa = etapaId;
+          updateBreadcrumb();
+          renderLevel1(etapaId);
+        });
+      }
+
+      mainRow.appendChild(card);
+
+      // Arrow between cards (not after last)
+      if (idx < sequential.length - 1) {
+        var arrow = document.createElement('div');
+        arrow.className = 'etapa-arrow';
+        arrow.innerHTML = '&#10132;';
+        mainRow.appendChild(arrow);
+      }
     });
 
-    var root = d3.hierarchy({ children: children })
-      .sum(function(d) { return d.value; })
-      .sort(function(a, b) { return b.value - a.value; });
+    wrap.appendChild(mainRow);
 
-    var pack = d3.pack()
-      .size([width - 40, height - 40])
-      .padding(16);
+    // --- Transversal bar below ---
+    var tCount = counts[transversal] || 0;
+    var tColor = PAL.etapa[transversal] || '#805ad5';
+    var tBar = document.createElement('div');
+    tBar.className = 'etapa-transversal' + (tCount === 0 ? ' disabled' : '');
+    tBar.style.background = 'linear-gradient(90deg, ' + tColor + ', ' + d3.color(tColor).darker(0.3) + ')';
+    tBar.innerHTML =
+      '<div class="etapa-trans-icon">&#8596;</div>' +
+      '<div class="etapa-card-name">' + escHtml(ETAPA_NAMES[transversal]) + '</div>' +
+      '<div class="etapa-card-count">' + tCount + '</div>' +
+      '<div class="etapa-card-label">lineamientos</div>';
 
-    pack(root);
-
-    var g = svg.append('g')
-      .attr('transform', 'translate(20,20)')
-      .attr('class', 'level-enter');
-
-    var groups = g.selectAll('.bubble-group')
-      .data(root.children)
-      .join('g')
-      .attr('class', function(d) {
-        return 'bubble-group' + (d.data.count === 0 ? ' disabled' : '');
-      })
-      .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
-
-    // Circles
-    groups.append('circle')
-      .attr('r', 0)
-      .attr('fill', function(d) { return d.data.color; })
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 2.5)
-      .attr('opacity', 0.9)
-      .transition()
-      .duration(600)
-      .ease(d3.easeCubicOut)
-      .attr('r', function(d) { return d.r; });
-
-    // Etapa name
-    groups.each(function(d) {
-      var group = d3.select(this);
-      var r = d.r;
-      var fontSize = Math.max(13, Math.min(r / 3.5, 20));
-
-      group.append('text')
-        .attr('class', 'bubble-label')
-        .attr('text-anchor', 'middle')
-        .attr('y', -fontSize * 0.3)
-        .attr('font-size', fontSize + 'px')
-        .text(d.data.name)
-        .attr('opacity', 0)
-        .transition().delay(300).duration(400)
-        .attr('opacity', 1);
-
-      // Count below name
-      group.append('text')
-        .attr('class', 'bubble-count')
-        .attr('text-anchor', 'middle')
-        .attr('y', fontSize * 0.9)
-        .attr('font-size', Math.max(11, fontSize - 3) + 'px')
-        .text(d.data.count + ' lineamientos')
-        .attr('opacity', 0)
-        .transition().delay(500).duration(400)
-        .attr('opacity', 0.85);
-    });
-
-    // Click handler - drill into etapa
-    groups.filter(function(d) { return d.data.count > 0; })
-      .style('cursor', 'pointer')
-      .on('click', function(event, d) {
+    if (tCount > 0) {
+      tBar.addEventListener('click', function() {
         mapa.level = 1;
-        mapa.selectedEtapa = d.data.id;
+        mapa.selectedEtapa = transversal;
         updateBreadcrumb();
-        renderLevel1(d.data.id);
+        renderLevel1(transversal);
       });
+    }
 
-    // Hover
-    groups.on('mouseenter', function(event, d) {
-      if (d.data.count === 0) return;
-      d3.select(this).select('circle')
-        .transition().duration(200)
-        .attr('stroke-width', 4)
-        .attr('opacity', 1);
-    })
-    .on('mouseleave', function(event, d) {
-      d3.select(this).select('circle')
-        .transition().duration(200)
-        .attr('stroke-width', 2.5)
-        .attr('opacity', 0.9);
-    });
+    wrap.appendChild(tBar);
+    area.appendChild(wrap);
   }
 
   // =============================================
   // LEVEL 1: Category Bubbles within Etapa
   // =============================================
   function renderLevel1(etapa) {
+    // Remove etapa flow if present
+    var flowWrap = byId('mapaArea').querySelector('.etapa-flow-wrap');
+    if (flowWrap) flowWrap.remove();
+
     var svg = d3.select('#mapa-svg');
     svg.selectAll('*').remove();
     byId('mapa-svg').style.display = 'block';
@@ -1481,6 +1553,9 @@ body {
   // LEVEL 2: Lineamiento Cards (etapa + categoria)
   // =============================================
   function renderLevel2(etapa, catId) {
+    // Remove etapa flow if present
+    var flowWrap = byId('mapaArea').querySelector('.etapa-flow-wrap');
+    if (flowWrap) flowWrap.remove();
     byId('mapa-svg').style.display = 'none';
     var cardsEl = byId('mapaCards');
     cardsEl.style.display = 'grid';
@@ -1750,12 +1825,21 @@ body {
       var fEtapa = byId('mfEtapa').value;
       var fActor = byId('mfActor').value;
       var fRiesgo = byId('mfRiesgo').value;
+      var fSearch = (byId('mfSearch').value || '').trim().toLowerCase();
 
       mapa.filteredLins = D.LINEAMIENTOS.filter(function(l) {
         if (fDoc && l.doc_id !== fDoc) return false;
         if (fEtapa && l.etapa_pae !== fEtapa) return false;
         if (fActor && l.actor_responsable !== fActor) return false;
         if (fRiesgo && l.riesgo_incumplimiento !== fRiesgo) return false;
+        if (fSearch) {
+          var haystack = [
+            l.lin_id, l.texto_lineamiento, l.etapa_pae, l.obligatoriedad,
+            l.actor_responsable, l.riesgo_incumplimiento,
+            l.seccion_fuente, l.notas, l.condicion_activacion, l.consecuencia_incumplimiento
+          ].filter(Boolean).join(' ').toLowerCase();
+          if (haystack.indexOf(fSearch) === -1) return false;
+        }
         return true;
       });
 
@@ -1772,11 +1856,19 @@ body {
     byId('mfActor').addEventListener('change', applyMapaFilters);
     byId('mfRiesgo').addEventListener('change', applyMapaFilters);
 
+    // Search with debounce
+    var searchTimer = null;
+    byId('mfSearch').addEventListener('input', function() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applyMapaFilters, 300);
+    });
+
     byId('mfClear').addEventListener('click', function() {
       byId('mfDoc').value = '';
       byId('mfEtapa').value = '';
       byId('mfActor').value = '';
       byId('mfRiesgo').value = '';
+      byId('mfSearch').value = '';
       applyMapaFilters();
     });
 
