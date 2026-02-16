@@ -1033,6 +1033,14 @@ body {
       networkInited = true;
       setTimeout(initNetwork, 150);
     }
+    // Re-render mapa when switching back to it (SVG needs visible container for width)
+    if (secId === 'sec-mapa') {
+      setTimeout(function() {
+        if (mapa.level === 0) renderLevel0();
+        else if (mapa.level === 1) renderLevel1(mapa.selectedCat);
+        else if (mapa.level === 2) renderLevel2(mapa.selectedSubcat);
+      }, 50);
+    }
   }
 
   navLinks.forEach(function(a) {
@@ -1053,6 +1061,754 @@ body {
     byId('sidebar').classList.remove('open');
     byId('overlay').classList.remove('show');
   });
+
+  // =============================================
+  // SECTION 0: MAPA CONCEPTUAL
+  // =============================================
+
+  // Color palette per category
+  var CAT_COLORS = {
+    NOR: '#1a365d', DIA: '#2b6cb0', CON: '#3182ce', ALI: '#38b2ac',
+    CPL: '#319795', CAL: '#805ad5', FIN: '#d69e2e', GOB: '#dd6b20',
+    EVA: '#e53e3e', TRA: '#2f855a'
+  };
+
+  // Mapa state
+  var mapa = {
+    level: 0,           // 0=categories, 1=subcategories, 2=lineamientos, 3=detail
+    selectedCat: null,   // cat_id
+    selectedSubcat: null,// subcat_id
+    selectedLin: null,   // lin_id
+    filteredLins: D.LINEAMIENTOS.slice(),
+    simulation: null
+  };
+
+  // Precompute subcategories by category
+  var subcatsByCat = {};
+  D.SUBCATEGORIAS.forEach(function(s) {
+    if (!subcatsByCat[s.cat_id]) subcatsByCat[s.cat_id] = [];
+    subcatsByCat[s.cat_id].push(s);
+  });
+
+  // Precompute connections by lineamiento
+  var connByLin = {};
+  D.CONEXIONES.forEach(function(c) {
+    if (c.lin_id_origen) {
+      if (!connByLin[c.lin_id_origen]) connByLin[c.lin_id_origen] = [];
+      connByLin[c.lin_id_origen].push(c);
+    }
+    if (c.lin_id_destino && c.lin_id_destino.indexOf('*') === -1) {
+      if (!connByLin[c.lin_id_destino]) connByLin[c.lin_id_destino] = [];
+      connByLin[c.lin_id_destino].push(c);
+    }
+  });
+
+  // Precompute indicators by subcat
+  var indBySubcat = {};
+  D.INDICADORES.forEach(function(ind) {
+    if (!indBySubcat[ind.subcat_id]) indBySubcat[ind.subcat_id] = [];
+    indBySubcat[ind.subcat_id].push(ind);
+  });
+
+  // --- Helper: get filtered lineamiento counts per category ---
+  function getLinCountsByCat() {
+    var counts = {};
+    D.CATEGORIAS.forEach(function(c) { counts[c.cat_id] = 0; });
+    mapa.filteredLins.forEach(function(l) {
+      var sc = subcatMap[l.subcat_id];
+      if (sc) counts[sc.cat_id] = (counts[sc.cat_id] || 0) + 1;
+    });
+    return counts;
+  }
+
+  // --- Helper: get filtered lineamiento counts per subcategory ---
+  function getLinCountsBySubcat(catId) {
+    var counts = {};
+    (subcatsByCat[catId] || []).forEach(function(s) { counts[s.subcat_id] = 0; });
+    mapa.filteredLins.forEach(function(l) {
+      var sc = subcatMap[l.subcat_id];
+      if (sc && sc.cat_id === catId) {
+        counts[l.subcat_id] = (counts[l.subcat_id] || 0) + 1;
+      }
+    });
+    return counts;
+  }
+
+  // --- Helper: get filtered lineamientos for a subcategory ---
+  function getLinsForSubcat(subcatId) {
+    return mapa.filteredLins.filter(function(l) { return l.subcat_id === subcatId; });
+  }
+
+  // --- Update breadcrumb ---
+  function updateBreadcrumb() {
+    var html = '<span class="bc-item' + (mapa.level === 0 ? ' active' : '') + '" data-level="0">PAE</span>';
+    if (mapa.level >= 1 && mapa.selectedCat) {
+      var catName = catMap[mapa.selectedCat] ? catMap[mapa.selectedCat].nombre : mapa.selectedCat;
+      html += '<span class="bc-sep">&#9654;</span>';
+      html += '<span class="bc-item' + (mapa.level === 1 ? ' active' : '') + '" data-level="1">' + escHtml(catName) + '</span>';
+    }
+    if (mapa.level >= 2 && mapa.selectedSubcat) {
+      var scName = subcatMap[mapa.selectedSubcat] ? subcatMap[mapa.selectedSubcat].nombre : mapa.selectedSubcat;
+      html += '<span class="bc-sep">&#9654;</span>';
+      html += '<span class="bc-item' + (mapa.level === 2 ? ' active' : '') + '" data-level="2">' + escHtml(scName) + '</span>';
+    }
+    byId('mapaBreadcrumb').innerHTML = html;
+
+    // Bind breadcrumb clicks
+    byId('mapaBreadcrumb').querySelectorAll('.bc-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var lvl = parseInt(el.dataset.level);
+        if (lvl < mapa.level) navigateToLevel(lvl);
+      });
+    });
+  }
+
+  // --- Navigate to a level ---
+  function navigateToLevel(level) {
+    if (level === 0) {
+      mapa.level = 0;
+      mapa.selectedCat = null;
+      mapa.selectedSubcat = null;
+      mapa.selectedLin = null;
+      closeDetalle();
+      renderLevel0();
+    } else if (level === 1) {
+      mapa.level = 1;
+      mapa.selectedSubcat = null;
+      mapa.selectedLin = null;
+      closeDetalle();
+      renderLevel1(mapa.selectedCat);
+    }
+    updateBreadcrumb();
+  }
+
+  // --- Close detail panel ---
+  function closeDetalle() {
+    byId('mapaDetalle').classList.remove('open');
+    byId('mapaArea').classList.remove('with-detalle');
+    mapa.selectedLin = null;
+    // Deselect cards
+    byId('mapaCards').querySelectorAll('.mapa-lin-card.selected').forEach(function(c) {
+      c.classList.remove('selected');
+    });
+  }
+
+  // =============================================
+  // LEVEL 0: Category Bubbles (D3 Pack)
+  // =============================================
+  function renderLevel0() {
+    var svg = d3.select('#mapa-svg');
+    svg.selectAll('*').remove();
+    byId('mapa-svg').style.display = 'block';
+    byId('mapaCards').style.display = 'none';
+
+    var container = byId('mapaArea');
+    var width = container.clientWidth;
+    var height = 560;
+
+    svg.attr('viewBox', '0 0 ' + width + ' ' + height);
+
+    var counts = getLinCountsByCat();
+    var totalFiltered = mapa.filteredLins.length;
+
+    // Build hierarchy data for d3.pack
+    var children = D.CATEGORIAS.map(function(c) {
+      return {
+        id: c.cat_id,
+        name: c.nombre,
+        desc: c.descripcion,
+        value: Math.max(counts[c.cat_id] || 0, 1), // min 1 to show bubble
+        count: counts[c.cat_id] || 0,
+        color: CAT_COLORS[c.cat_id] || '#718096'
+      };
+    });
+
+    var root = d3.hierarchy({ children: children })
+      .sum(function(d) { return d.value; })
+      .sort(function(a, b) { return b.value - a.value; });
+
+    var pack = d3.pack()
+      .size([width - 40, height - 40])
+      .padding(12);
+
+    pack(root);
+
+    var g = svg.append('g')
+      .attr('transform', 'translate(20,20)')
+      .attr('class', 'level-enter');
+
+    var groups = g.selectAll('.bubble-group')
+      .data(root.children)
+      .join('g')
+      .attr('class', function(d) {
+        return 'bubble-group' + (d.data.count === 0 ? ' disabled' : '');
+      })
+      .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+
+    // Circles
+    groups.append('circle')
+      .attr('r', 0)
+      .attr('fill', function(d) { return d.data.color; })
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2.5)
+      .attr('opacity', 0.9)
+      .transition()
+      .duration(600)
+      .ease(d3.easeCubicOut)
+      .attr('r', function(d) { return d.r; });
+
+    // Category name (multiline for long names)
+    groups.each(function(d) {
+      var group = d3.select(this);
+      var name = d.data.name;
+      var r = d.r;
+      var fontSize = Math.max(11, Math.min(r / 4, 16));
+
+      // Split name into lines if too long
+      var words = name.split(' ');
+      var lines = [];
+      var currentLine = '';
+      var maxCharsPerLine = Math.max(8, Math.floor(r / (fontSize * 0.35)));
+
+      words.forEach(function(word) {
+        if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+          currentLine = (currentLine + ' ' + word).trim();
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+
+      // Limit to 3 lines
+      if (lines.length > 3) lines = lines.slice(0, 3);
+
+      var totalTextHeight = lines.length * (fontSize * 1.2) + fontSize;
+      var startY = -totalTextHeight / 2 + fontSize * 0.4;
+
+      lines.forEach(function(line, i) {
+        group.append('text')
+          .attr('class', 'bubble-label')
+          .attr('text-anchor', 'middle')
+          .attr('y', startY + i * fontSize * 1.2)
+          .attr('font-size', fontSize + 'px')
+          .text(line)
+          .attr('opacity', 0)
+          .transition().delay(300 + i * 50).duration(400)
+          .attr('opacity', 1);
+      });
+
+      // Count below name
+      var countY = startY + lines.length * fontSize * 1.2 + 4;
+      group.append('text')
+        .attr('class', 'bubble-count')
+        .attr('text-anchor', 'middle')
+        .attr('y', countY)
+        .attr('font-size', Math.max(10, fontSize - 2) + 'px')
+        .text(d.data.count + ' lineamientos')
+        .attr('opacity', 0)
+        .transition().delay(500).duration(400)
+        .attr('opacity', 0.85);
+    });
+
+    // Click handler - drill into category
+    groups.filter(function(d) { return d.data.count > 0; })
+      .style('cursor', 'pointer')
+      .on('click', function(event, d) {
+        mapa.level = 1;
+        mapa.selectedCat = d.data.id;
+        updateBreadcrumb();
+        renderLevel1(d.data.id);
+      });
+
+    // Tooltip on hover
+    groups.on('mouseenter', function(event, d) {
+      if (d.data.count === 0) return;
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('stroke-width', 4)
+        .attr('opacity', 1);
+    })
+    .on('mouseleave', function(event, d) {
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('stroke-width', 2.5)
+        .attr('opacity', 0.9);
+    });
+  }
+
+  // =============================================
+  // LEVEL 1: Subcategory Bubbles (D3 Pack)
+  // =============================================
+  function renderLevel1(catId) {
+    var svg = d3.select('#mapa-svg');
+    svg.selectAll('*').remove();
+    byId('mapa-svg').style.display = 'block';
+    byId('mapaCards').style.display = 'none';
+
+    var container = byId('mapaArea');
+    var width = container.clientWidth;
+    var height = 560;
+    var catColor = CAT_COLORS[catId] || '#718096';
+    var catName = catMap[catId] ? catMap[catId].nombre : catId;
+
+    svg.attr('viewBox', '0 0 ' + width + ' ' + height);
+
+    var counts = getLinCountsBySubcat(catId);
+    var subs = subcatsByCat[catId] || [];
+
+    var children = subs.map(function(s) {
+      return {
+        id: s.subcat_id,
+        name: s.nombre,
+        desc: s.descripcion,
+        value: Math.max(counts[s.subcat_id] || 0, 1),
+        count: counts[s.subcat_id] || 0,
+        color: catColor
+      };
+    });
+
+    // If no subcategories, show message
+    if (children.length === 0) {
+      svg.append('text')
+        .attr('x', width / 2).attr('y', height / 2)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#718096').attr('font-size', '16px')
+        .text('Sin subcategorias para ' + catName);
+      return;
+    }
+
+    var root = d3.hierarchy({ children: children })
+      .sum(function(d) { return d.value; })
+      .sort(function(a, b) { return b.value - a.value; });
+
+    var pack = d3.pack()
+      .size([width - 40, height - 40])
+      .padding(14);
+
+    pack(root);
+
+    // Background with category color
+    var g = svg.append('g')
+      .attr('transform', 'translate(20,20)')
+      .attr('class', 'level-enter');
+
+    // Title of parent category
+    svg.append('text')
+      .attr('x', 20).attr('y', 28)
+      .attr('font-size', '13px')
+      .attr('font-weight', '600')
+      .attr('fill', catColor)
+      .attr('font-family', "'Inter', sans-serif")
+      .text(catName)
+      .attr('opacity', 0)
+      .transition().duration(400)
+      .attr('opacity', 1);
+
+    var groups = g.selectAll('.bubble-group')
+      .data(root.children)
+      .join('g')
+      .attr('class', function(d) {
+        return 'bubble-group' + (d.data.count === 0 ? ' disabled' : '');
+      })
+      .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+
+    // Circles with lighter shade of category color
+    groups.append('circle')
+      .attr('r', 0)
+      .attr('fill', function(d) {
+        // Slightly vary the color per subcategory
+        var base = d3.color(catColor);
+        var idx = subs.indexOf(subs.find(function(s) { return s.subcat_id === d.data.id; }));
+        return base.brighter(idx * 0.15).toString();
+      })
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2.5)
+      .attr('opacity', 0.88)
+      .transition()
+      .duration(500)
+      .ease(d3.easeCubicOut)
+      .attr('r', function(d) { return d.r; });
+
+    // Labels
+    groups.each(function(d) {
+      var group = d3.select(this);
+      var name = d.data.name;
+      var r = d.r;
+      var fontSize = Math.max(10, Math.min(r / 4, 15));
+      var words = name.split(' ');
+      var lines = [];
+      var currentLine = '';
+      var maxChars = Math.max(6, Math.floor(r / (fontSize * 0.35)));
+
+      words.forEach(function(word) {
+        if ((currentLine + ' ' + word).trim().length <= maxChars) {
+          currentLine = (currentLine + ' ' + word).trim();
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+      if (lines.length > 3) lines = lines.slice(0, 3);
+
+      var totalH = lines.length * fontSize * 1.2 + fontSize;
+      var startY = -totalH / 2 + fontSize * 0.4;
+
+      lines.forEach(function(line, i) {
+        group.append('text')
+          .attr('class', 'bubble-label')
+          .attr('text-anchor', 'middle')
+          .attr('y', startY + i * fontSize * 1.2)
+          .attr('font-size', fontSize + 'px')
+          .text(line)
+          .attr('opacity', 0)
+          .transition().delay(250 + i * 50).duration(350)
+          .attr('opacity', 1);
+      });
+
+      group.append('text')
+        .attr('class', 'bubble-count')
+        .attr('text-anchor', 'middle')
+        .attr('y', startY + lines.length * fontSize * 1.2 + 4)
+        .attr('font-size', Math.max(9, fontSize - 2) + 'px')
+        .text(d.data.count + ' lin.')
+        .attr('opacity', 0)
+        .transition().delay(450).duration(350)
+        .attr('opacity', 0.85);
+    });
+
+    // Click handler - drill into subcategory
+    groups.filter(function(d) { return d.data.count > 0; })
+      .style('cursor', 'pointer')
+      .on('click', function(event, d) {
+        mapa.level = 2;
+        mapa.selectedSubcat = d.data.id;
+        updateBreadcrumb();
+        renderLevel2(d.data.id);
+      });
+
+    // Hover
+    groups.on('mouseenter', function(event, d) {
+      if (d.data.count === 0) return;
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('stroke-width', 4).attr('opacity', 1);
+    })
+    .on('mouseleave', function(event, d) {
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('stroke-width', 2.5).attr('opacity', 0.88);
+    });
+  }
+
+  // =============================================
+  // LEVEL 2: Lineamiento Cards
+  // =============================================
+  function renderLevel2(subcatId) {
+    byId('mapa-svg').style.display = 'none';
+    var cardsEl = byId('mapaCards');
+    cardsEl.style.display = 'grid';
+    // Re-trigger animation
+    cardsEl.classList.remove('level-enter');
+    void cardsEl.offsetWidth; // force reflow
+    cardsEl.classList.add('level-enter');
+
+    var lins = getLinsForSubcat(subcatId);
+
+    // Sort: critico first, then alto, medio, bajo
+    var rOrder = { critico: 0, alto: 1, medio: 2, bajo: 3 };
+    lins.sort(function(a, b) {
+      var ra = rOrder[a.riesgo_incumplimiento] !== undefined ? rOrder[a.riesgo_incumplimiento] : 9;
+      var rb = rOrder[b.riesgo_incumplimiento] !== undefined ? rOrder[b.riesgo_incumplimiento] : 9;
+      return ra - rb;
+    });
+
+    if (lins.length === 0) {
+      cardsEl.innerHTML = '<p style="padding:24px;color:#718096;font-size:14px;">No hay lineamientos con los filtros actuales.</p>';
+      return;
+    }
+
+    cardsEl.innerHTML = lins.map(function(l) {
+      var riskClass = l.riesgo_incumplimiento ? 'risk-' + l.riesgo_incumplimiento : '';
+      var obligClass = l.obligatoriedad === 'obligatorio' ? 'badge-oblig' :
+                       l.obligatoriedad === 'condicional' ? 'badge-cond' : 'badge-recom';
+      var docName = docMap[l.doc_id] ? truncate(docMap[l.doc_id].nombre, 35) : l.doc_id;
+      var actorName = actorMap[l.actor_responsable] ? truncate(actorMap[l.actor_responsable].nombre, 30) : (l.actor_responsable || '');
+
+      return '<div class="mapa-lin-card" data-linid="' + escHtml(l.lin_id) + '">' +
+        '<div class="mlc-id">' + escHtml(l.lin_id) + '</div>' +
+        '<div class="mlc-text">' + escHtml(l.texto_lineamiento || '') + '</div>' +
+        '<div class="mlc-badges">' +
+          (l.etapa_pae ? '<span class="badge badge-etapa">' + escHtml(l.etapa_pae) + '</span>' : '') +
+          (l.riesgo_incumplimiento ? '<span class="badge ' + riskClass + '">' + escHtml(l.riesgo_incumplimiento) + '</span>' : '') +
+          '<span class="badge ' + obligClass + '">' + escHtml(l.obligatoriedad || '') + '</span>' +
+          (l.actor_responsable ? '<span class="badge badge-tipo">' + escHtml(l.actor_responsable) + '</span>' : '') +
+        '</div>' +
+        '<div class="mlc-doc">' + escHtml(docName) + '</div>' +
+      '</div>';
+    }).join('');
+
+    // Bind click on cards
+    cardsEl.querySelectorAll('.mapa-lin-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var linId = card.dataset.linid;
+        // Deselect previous
+        cardsEl.querySelectorAll('.mapa-lin-card.selected').forEach(function(c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        mapa.selectedLin = linId;
+        renderLevel3(linId);
+      });
+    });
+  }
+
+  // =============================================
+  // LEVEL 3: Detail Panel
+  // =============================================
+  function renderLevel3(linId) {
+    var lin = D.LINEAMIENTOS.find(function(l) { return l.lin_id === linId; });
+    if (!lin) return;
+
+    var panel = byId('mapaDetalle');
+    var header = byId('detalleHeader');
+    var body = byId('detalleBody');
+
+    // Open panel
+    panel.classList.add('open');
+    byId('mapaArea').classList.add('with-detalle');
+
+    // --- Header ---
+    var riskClass = lin.riesgo_incumplimiento ? 'risk-' + lin.riesgo_incumplimiento : '';
+    var obligClass = lin.obligatoriedad === 'obligatorio' ? 'badge-oblig' :
+                     lin.obligatoriedad === 'condicional' ? 'badge-cond' : 'badge-recom';
+
+    header.innerHTML =
+      '<div class="dh-id">' + escHtml(lin.lin_id) + '</div>' +
+      '<div class="dh-badges">' +
+        (lin.etapa_pae ? '<span class="badge badge-etapa">' + escHtml(lin.etapa_pae) + '</span>' : '') +
+        (lin.riesgo_incumplimiento ? '<span class="badge ' + riskClass + '">' + escHtml(lin.riesgo_incumplimiento) + '</span>' : '') +
+        '<span class="badge ' + obligClass + '">' + escHtml(lin.obligatoriedad || '') + '</span>' +
+        (lin.tipo_regla ? '<span class="badge badge-jer">' + escHtml(lin.tipo_regla.replace(/_/g, ' ')) + '</span>' : '') +
+      '</div>';
+
+    // --- Body ---
+    var html = '';
+
+    // Full text
+    html += '<h4>Texto del lineamiento</h4>';
+    html += '<p class="det-text">' + escHtml(lin.texto_lineamiento || '') + '</p>';
+
+    // Metadata
+    html += '<h4>Informacion</h4>';
+    var docName = docMap[lin.doc_id] ? docMap[lin.doc_id].nombre : lin.doc_id;
+    var actorName = actorMap[lin.actor_responsable] ? actorMap[lin.actor_responsable].nombre : (lin.actor_responsable || 'N/A');
+    var actorVerName = actorMap[lin.actor_verificador] ? actorMap[lin.actor_verificador].nombre : (lin.actor_verificador || 'N/A');
+    var subcatName = subcatMap[lin.subcat_id] ? subcatMap[lin.subcat_id].nombre : (lin.subcat_id || 'N/A');
+
+    html += '<div class="det-meta">' +
+      '<strong>Documento:</strong> ' + escHtml(docName) + '<br>' +
+      '<strong>Seccion fuente:</strong> ' + escHtml(lin.seccion_fuente || 'N/A') + '<br>' +
+      '<strong>Subcategoria:</strong> ' + escHtml(subcatName) + '<br>' +
+      '<strong>Actor responsable:</strong> ' + escHtml(actorName) + '<br>' +
+      '<strong>Actor verificador:</strong> ' + escHtml(actorVerName) + '<br>' +
+      (lin.plazo ? '<strong>Plazo:</strong> ' + escHtml(lin.plazo) + '<br>' : '') +
+      (lin.periodicidad ? '<strong>Periodicidad:</strong> ' + escHtml(lin.periodicidad) + '<br>' : '') +
+      (lin.condicion_activacion ? '<strong>Condicion:</strong> ' + escHtml(lin.condicion_activacion) + '<br>' : '') +
+      (lin.consecuencia_incumplimiento ? '<strong>Consecuencia:</strong> ' + escHtml(lin.consecuencia_incumplimiento) + '<br>' : '') +
+      (lin.notas ? '<strong>Notas:</strong> ' + escHtml(lin.notas) + '<br>' : '') +
+    '</div>';
+
+    // Verificadores
+    var vers = verByLin[lin.lin_id] || [];
+    if (vers.length > 0) {
+      html += '<h4>Verificadores (' + vers.length + ')</h4>';
+      vers.forEach(function(v) {
+        html += '<div class="det-ver-item">' +
+          '<strong>' + escHtml(v.ver_id) + '</strong><br>' +
+          escHtml(v.descripcion || '') + '<br>' +
+          '<span style="color:#718096;">' +
+            '<em>Tipo:</em> ' + escHtml(v.tipo_verificador || '') +
+            ' &middot; <em>Instrumento:</em> ' + escHtml(truncate(v.instrumento || '', 60)) +
+            ' &middot; <em>Frecuencia:</em> ' + escHtml(v.frecuencia || '') +
+          '</span>' +
+          (v.criterio_cumple ? '<br><span style="color:#2f855a;font-size:11px;"><em>Criterio:</em> ' + escHtml(truncate(v.criterio_cumple, 120)) + '</span>' : '') +
+        '</div>';
+      });
+    }
+
+    // Conexiones
+    var conns = connByLin[lin.lin_id] || [];
+    if (conns.length > 0) {
+      html += '<h4>Conexiones (' + conns.length + ')</h4>';
+      conns.forEach(function(c) {
+        var otherLin = c.lin_id_origen === lin.lin_id ? c.lin_id_destino : c.lin_id_origen;
+        var direction = c.lin_id_origen === lin.lin_id ? '&rarr;' : '&larr;';
+        var isClickable = otherLin && otherLin.indexOf('*') === -1;
+
+        html += '<div class="det-con-item' + (isClickable ? '' : ' disabled') + '"' +
+          (isClickable ? ' data-target-lin="' + escHtml(otherLin) + '"' : '') + '>' +
+          '<span class="det-con-tipo ' + escHtml(c.tipo_conexion || '') + '">' +
+            escHtml((c.tipo_conexion || '').replace(/_/g, ' ')) +
+          '</span>' +
+          '<span>' + direction + ' ' + escHtml(otherLin || '') + '</span>' +
+        '</div>';
+      });
+    }
+
+    // Indicadores (via subcat)
+    var inds = indBySubcat[lin.subcat_id] || [];
+    if (inds.length > 0) {
+      html += '<h4>Indicadores relacionados (' + inds.length + ')</h4>';
+      inds.forEach(function(ind) {
+        html += '<div class="det-ind-item">' +
+          '<strong>' + escHtml(ind.nombre || '') + '</strong><br>' +
+          '<span style="color:#718096;">' +
+            '<em>Formula:</em> ' + escHtml(truncate(ind.formula || '', 80)) +
+            ' &middot; <em>Meta:</em> ' + escHtml(ind.meta || '') +
+            ' &middot; <em>Periodicidad:</em> ' + escHtml(ind.periodicidad || '') +
+          '</span>' +
+        '</div>';
+      });
+    }
+
+    body.innerHTML = html;
+
+    // Bind click on connection items to navigate to that lineamiento
+    body.querySelectorAll('.det-con-item[data-target-lin]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var targetLin = el.dataset.targetLin;
+        // Find the target lineamiento
+        var targetData = D.LINEAMIENTOS.find(function(l) { return l.lin_id === targetLin; });
+        if (targetData) {
+          // If target is in a different subcategory, navigate there
+          if (targetData.subcat_id !== mapa.selectedSubcat) {
+            var sc = subcatMap[targetData.subcat_id];
+            if (sc) {
+              mapa.selectedCat = sc.cat_id;
+              mapa.selectedSubcat = targetData.subcat_id;
+              mapa.level = 2;
+              updateBreadcrumb();
+              renderLevel2(targetData.subcat_id);
+            }
+          }
+          // Select the card
+          var cardEl = byId('mapaCards').querySelector('[data-linid="' + targetLin + '"]');
+          if (cardEl) {
+            byId('mapaCards').querySelectorAll('.mapa-lin-card.selected').forEach(function(c) { c.classList.remove('selected'); });
+            cardEl.classList.add('selected');
+            cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          mapa.selectedLin = targetLin;
+          renderLevel3(targetLin);
+        }
+      });
+    });
+
+    // Scroll panel to top
+    panel.scrollTop = 0;
+  }
+
+  // =============================================
+  // INIT MAPA
+  // =============================================
+  function initMapa() {
+    // Populate filter dropdowns
+    var docs = []; var docSeen = {};
+    var etapas = []; var etSeen = {};
+    var actors = []; var acSeen = {};
+    var riesgos = []; var riSeen = {};
+
+    D.LINEAMIENTOS.forEach(function(l) {
+      if (l.doc_id && !docSeen[l.doc_id]) { docSeen[l.doc_id] = true; docs.push(l.doc_id); }
+      if (l.etapa_pae && !etSeen[l.etapa_pae]) { etSeen[l.etapa_pae] = true; etapas.push(l.etapa_pae); }
+      if (l.actor_responsable && !acSeen[l.actor_responsable]) { acSeen[l.actor_responsable] = true; actors.push(l.actor_responsable); }
+      if (l.riesgo_incumplimiento && !riSeen[l.riesgo_incumplimiento]) {
+        // Only valid risk levels
+        if (['critico','alto','medio','bajo'].indexOf(l.riesgo_incumplimiento) !== -1) {
+          riSeen[l.riesgo_incumplimiento] = true;
+          riesgos.push(l.riesgo_incumplimiento);
+        }
+      }
+    });
+
+    docs.sort();
+    etapas.sort();
+    actors.sort();
+    var riesgoOrder = ['critico','alto','medio','bajo'];
+    riesgos.sort(function(a, b) { return riesgoOrder.indexOf(a) - riesgoOrder.indexOf(b); });
+
+    var mfDoc = byId('mfDoc');
+    docs.forEach(function(id) {
+      var name = docMap[id] ? docMap[id].nombre : id;
+      var opt = document.createElement('option');
+      opt.value = id; opt.textContent = name;
+      mfDoc.appendChild(opt);
+    });
+
+    var mfEtapa = byId('mfEtapa');
+    etapas.forEach(function(e) {
+      var opt = document.createElement('option');
+      opt.value = e; opt.textContent = e.charAt(0).toUpperCase() + e.slice(1);
+      mfEtapa.appendChild(opt);
+    });
+
+    var mfActor = byId('mfActor');
+    actors.forEach(function(a) {
+      var name = actorMap[a] ? actorMap[a].nombre : a;
+      var opt = document.createElement('option');
+      opt.value = a; opt.textContent = truncate(name, 40);
+      mfActor.appendChild(opt);
+    });
+
+    var mfRiesgo = byId('mfRiesgo');
+    riesgos.forEach(function(r) {
+      var opt = document.createElement('option');
+      opt.value = r; opt.textContent = r.charAt(0).toUpperCase() + r.slice(1);
+      mfRiesgo.appendChild(opt);
+    });
+
+    // Filter change handler
+    function applyMapaFilters() {
+      var fDoc = byId('mfDoc').value;
+      var fEtapa = byId('mfEtapa').value;
+      var fActor = byId('mfActor').value;
+      var fRiesgo = byId('mfRiesgo').value;
+
+      mapa.filteredLins = D.LINEAMIENTOS.filter(function(l) {
+        if (fDoc && l.doc_id !== fDoc) return false;
+        if (fEtapa && l.etapa_pae !== fEtapa) return false;
+        if (fActor && l.actor_responsable !== fActor) return false;
+        if (fRiesgo && l.riesgo_incumplimiento !== fRiesgo) return false;
+        return true;
+      });
+
+      byId('mfCount').textContent = 'Mostrando ' + mapa.filteredLins.length + ' de ' + D.LINEAMIENTOS.length + ' lineamientos';
+
+      // Re-render current level
+      if (mapa.level === 0) renderLevel0();
+      else if (mapa.level === 1) renderLevel1(mapa.selectedCat);
+      else if (mapa.level === 2) renderLevel2(mapa.selectedSubcat);
+    }
+
+    byId('mfDoc').addEventListener('change', applyMapaFilters);
+    byId('mfEtapa').addEventListener('change', applyMapaFilters);
+    byId('mfActor').addEventListener('change', applyMapaFilters);
+    byId('mfRiesgo').addEventListener('change', applyMapaFilters);
+
+    byId('mfClear').addEventListener('click', function() {
+      byId('mfDoc').value = '';
+      byId('mfEtapa').value = '';
+      byId('mfActor').value = '';
+      byId('mfRiesgo').value = '';
+      applyMapaFilters();
+    });
+
+    // Close detail panel
+    byId('detalleClose').addEventListener('click', closeDetalle);
+
+    // Initial render
+    renderLevel0();
+  }
 
   // =============================================
   // SECTION 1: RESUMEN GENERAL
@@ -1964,6 +2720,7 @@ body {
   }
 
   // ===== INIT ALL =====
+  initMapa();
   initResumen();
   initDocumentos();
   initCategorias();
