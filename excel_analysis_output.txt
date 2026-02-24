@@ -1,0 +1,812 @@
+================================================================================
+EXCEL FILE STRUCTURE ANALYSIS
+File: /home/user/LinPae/BancoLineamientos (2).xlsx
+================================================================================
+
+================================================================================
+SHEET NAMES (11 total):
+================================================================================
+  1. 'DOCUMENTOS'
+  2. 'CATEGORIAS'
+  3. 'SUBCATEGORIAS'
+  4. 'ACTORES'
+  5. 'LINEAMIENTOS'
+  6. 'VERIFICADORES'
+  7. 'CONEXIONES'
+  8. 'INDICADORES'
+  9. 'CONCEPTOS'
+  10. 'CAPACITACIONES'
+  11. 'APRENDIZAJES'
+
+================================================================================
+SHEET: 'DOCUMENTOS'
+  Dimensions: A1:G13
+  Max row: 13, Max col: 7
+================================================================================
+
+  COLUMN HEADERS (7 columns):
+    Col 1: doc_id
+    Col 2: nombre
+    Col 3: tipo_documento
+    Col 4: jerarquia_normativa
+    Col 5: fecha_expedicion
+    Col 6: descripcion
+    Col 7: rol_en_sistema
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    doc_id: D1852
+    nombre: Decreto 1852 de 2015
+    tipo_documento: decreto
+    jerarquia_normativa: reglamentario
+    descripcion: Decreto reglamentario del PAE
+    rol_en_sistema: Fundamento normativo del programa
+
+  --- Row 3 ---
+    doc_id: D998
+    nombre: Decreto 998 de 2025
+    tipo_documento: decreto
+    jerarquia_normativa: reglamentario
+    descripcion: Decreto que modifica aspectos del PAE
+    rol_en_sistema: Actualización normativa
+
+  --- Row 4 ---
+    doc_id: GG
+    nombre: Guía General PAE
+    tipo_documento: guia_general
+    jerarquia_normativa: tecnico
+    descripcion: Ruta para la implementación del PAE en sus distintas etapas
+    rol_en_sistema: Documento marco que articula todos los anexos
+
+  --- Row 5 ---
+    doc_id: A1
+    nombre: Anexo 1: Diagnóstico del PAE
+    tipo_documento: anexo_tecnico
+    jerarquia_normativa: tecnico
+    descripcion: Diagnóstico situacional del PAE
+    rol_en_sistema: Define metodología de diagnóstico territorial
+
+  --- Row 6 ---
+    doc_id: A2
+    nombre: Anexo 2: Estructuración y Contratación
+    tipo_documento: anexo_tecnico
+    jerarquia_normativa: tecnico
+    descripcion: Estructuración, contratación y ejecución del PAE
+    rol_en_sistema: Define procesos contractuales y equipo PAE
+
+================================================================================
+SHEET: 'CATEGORIAS'
+  Dimensions: A1:C11
+  Max row: 11, Max col: 3
+================================================================================
+
+  COLUMN HEADERS (3 columns):
+    Col 1: cat_id
+    Col 2: nombre
+    Col 3: descripcion
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    cat_id: NOR
+    nombre: Marco Normativo
+    descripcion: Principios fundacionales, definiciones generales, competencias y funciones de actores del sistema. Base legal del PAE.
+
+  --- Row 3 ---
+    cat_id: DIA
+    nombre: Territorial / Diagnóstico
+    descripcion: Caracterización del territorio, condiciones operativas, balance de vigencia anterior. Input del ciclo de planeación.
+
+  --- Row 4 ---
+    cat_id: CON
+    nombre: Contractual
+    descripcion: Estructuración, selección, ejecución y liquidación de contratos. Equipo PAE. Inspección y vigilancia delegada.
+
+  --- Row 5 ---
+    cat_id: ALI
+    nombre: Técnico-Alimentario
+    descripcion: Estándares nutricionales, minutas patrón, ciclos de menús, planeación alimentaria, educación alimentaria. Lo que se sirve y cómo.
+
+  --- Row 6 ---
+    cat_id: CPL
+    nombre: Compras Públicas Locales
+    descripcion: Proveeduría de alimentos, articulación con sector agrario, zonas geográficas de compra, porcentajes obligatorios de compra local.
+
+================================================================================
+SHEET: 'SUBCATEGORIAS'
+  Dimensions: A1:D44
+  Max row: 44, Max col: 4
+================================================================================
+
+  COLUMN HEADERS (4 columns):
+    Col 1: subcat_id
+    Col 2: cat_id
+    Col 3: nombre
+    Col 4: descripcion
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    subcat_id: NOR-DEF
+    cat_id: NOR
+    nombre: Definiciones y conceptos
+
+  --- Row 3 ---
+    subcat_id: NOR-PRI
+    cat_id: NOR
+    nombre: Principios fundacionales
+
+  --- Row 4 ---
+    subcat_id: NOR-COM
+    cat_id: NOR
+    nombre: Competencias y funciones de actores
+
+  --- Row 5 ---
+    subcat_id: DIA-DAC
+    cat_id: DIA
+    nombre: DACO (Diagnóstico de Condiciones Operativas)
+
+  --- Row 6 ---
+    subcat_id: DIA-CON
+    cat_id: DIA
+    nombre: Contexto territorial
+
+================================================================================
+SHEET: 'ACTORES'
+  Dimensions: A1:D17
+  Max row: 17, Max col: 4
+================================================================================
+
+  COLUMN HEADERS (4 columns):
+    Col 1: actor_id
+    Col 2: nombre
+    Col 3: tipo_actor
+    Col 4: descripcion
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    actor_id: UAPA
+    nombre: Unidad Administrativa Especial de Alimentación Escolar
+    tipo_actor: gobierno_nacional
+    descripcion: Entidad nacional rectora del PAE
+
+  --- Row 3 ---
+    actor_id: ETC
+    nombre: Entidad Territorial Certificada
+    tipo_actor: gobierno_territorial
+    descripcion: Responsable de la planeación, contratación, ejecución y seguimiento del PAE en su jurisdicción
+
+  --- Row 4 ---
+    actor_id: ETNOC
+    nombre: Entidad Territorial No Certificada
+    tipo_actor: gobierno_territorial
+    descripcion: Municipio no certificado que articula con el departamento
+
+  --- Row 5 ---
+    actor_id: OPER
+    nombre: Operador del PAE
+    tipo_actor: operador
+    descripcion: Persona natural o jurídica encargada de ejecutar el suministro de complementos alimentarios
+
+  --- Row 6 ---
+    actor_id: INTER
+    nombre: Interventoría
+    tipo_actor: control
+    descripcion: Entidad contratada para vigilar la ejecución contractual
+
+================================================================================
+SHEET: 'LINEAMIENTOS'
+  Dimensions: A1:T396
+  Max row: 396, Max col: 20
+================================================================================
+
+  COLUMN HEADERS (20 columns):
+    Col 1: lin_id
+    Col 2: texto_lineamiento
+    Col 3: tipo_regla
+    Col 4: subcat_id
+    Col 5: doc_id
+    Col 6: seccion_fuente
+    Col 7: obligatoriedad
+    Col 8: etapa_pae
+    Col 9: condicion_activacion
+    Col 10: actor_responsable
+    Col 11: actor_verificador
+    Col 12: tiene_umbral
+    Col 13: valor_umbral
+    Col 14: unidad_umbral
+    Col 15: operador_umbral
+    Col 16: plazo
+    Col 17: periodicidad
+    Col 18: riesgo_incumplimiento
+    Col 19: consecuencia_incumplimiento
+    Col 20: notas
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    lin_id: D998-NOR-COM-001
+    texto_lineamiento: Se delega en el representante legal de la Unidad Administrativa Especial de Alimentación Escolar - Alimentos para Aprender (UAPA) la función de inspec...
+    tipo_regla: medida_especifica
+    subcat_id: NOR-COM
+    doc_id: D998
+    seccion_fuente: Artículo 1 (modifica art. 2.3.3.1.8.1 del Decreto 1075 de 2015)
+    obligatoriedad: obligatorio
+    etapa_pae: transversal
+    actor_responsable: UAPA
+    actor_verificador: ORGCONT
+    tiene_umbral: False
+    riesgo_incumplimiento: critico
+    consecuencia_incumplimiento: Vacío institucional en la inspección y vigilancia de recursos PAE; posible desvío o uso ineficiente de recursos públicos.
+    notas: Modifica la delegación previa al MEN. Los gobernadores y alcaldes mantienen funciones de I&V en su jurisdicción según Ley 115/1994.
+
+  --- Row 3 ---
+    lin_id: D998-NOR-COM-002
+    texto_lineamiento: Los gobernadores y alcaldes ejercerán, en su respectiva jurisdicción, funciones de inspección y vigilancia del servicio educativo, incluido el PAE, de...
+    tipo_regla: referente
+    subcat_id: NOR-COM
+    doc_id: D998
+    seccion_fuente: Artículo 1 y Artículo 2 (modifica arts. 2.3.3.1.8.1 y 2.3.7.1.1 del Decreto 1075 de 2015)
+    obligatoriedad: obligatorio
+    etapa_pae: transversal
+    actor_responsable: ETC
+    actor_verificador: UAPA
+    tiene_umbral: False
+    riesgo_incumplimiento: alto
+    consecuencia_incumplimiento: Falta de control territorial sobre el uso de recursos y la calidad del servicio PAE.
+    notas: Reitera competencia territorial preexistente. La UAPA asume I&V nacional; las ETC mantienen I&V local.
+
+  --- Row 4 ---
+    lin_id: D998-NOR-COM-003
+    texto_lineamiento: Las funciones de inspección y vigilancia del servicio público educativo delegadas al MEN, y las de los recursos del PAE delegadas a la UAPA, se ejerce...
+    tipo_regla: referente
+    subcat_id: NOR-COM
+    doc_id: D998
+    seccion_fuente: Artículo 2 (modifica art. 2.3.7.1.1 del Decreto 1075 de 2015)
+    obligatoriedad: obligatorio
+    etapa_pae: transversal
+    actor_responsable: UAPA
+    actor_verificador: ORGCONT
+    tiene_umbral: False
+    riesgo_incumplimiento: alto
+    consecuencia_incumplimiento: Ejercicio irregular de funciones de I&V por fuera del marco normativo vigente.
+    notas: Establece el marco normativo aplicable al ejercicio de I&V por parte de ambas entidades.
+
+  --- Row 5 ---
+    lin_id: D998-NOR-COM-004
+    texto_lineamiento: El objeto de la inspección y vigilancia del servicio público educativo incluye, además de los fines educativos generales, garantizar la calidad y univ...
+    tipo_regla: referente
+    subcat_id: NOR-COM
+    doc_id: D998
+    seccion_fuente: Artículo 3 (modifica art. 2.3.7.1.3 del Decreto 1075 de 2015)
+    obligatoriedad: obligatorio
+    etapa_pae: transversal
+    actor_responsable: UAPA
+    actor_verificador: ORGCONT
+    tiene_umbral: False
+    riesgo_incumplimiento: critico
+    consecuencia_incumplimiento: Desvinculación de la alimentación escolar del marco de derechos educativos; debilitamiento de la exigibilidad del PAE.
+    notas: Incorpora explícitamente la alimentación escolar como objeto de I&V. Antes no estaba mencionada en el art. 2.3.7.1.3.
+
+  --- Row 6 ---
+    lin_id: D998-NOR-COM-005
+    texto_lineamiento: La Nación, a través del Ministerio de Educación Nacional, junto con las entidades territoriales certificadas en educación, elaborarán anualmente plane...
+    tipo_regla: medida_especifica
+    subcat_id: NOR-COM
+    doc_id: D998
+    seccion_fuente: Artículo 4 (modifica art. 2.3.7.1.5 del Decreto 1075 de 2015)
+    obligatoriedad: obligatorio
+    etapa_pae: planeacion
+    actor_responsable: ETC
+    actor_verificador: UAPA
+    tiene_umbral: False
+    plazo: anual
+    periodicidad: alto
+    riesgo_incumplimiento: Ausencia de planificación en I&V; acciones reactivas en lugar de preventivas.
+    consecuencia_incumplimiento: Obligación preexistente reiterada con la adición de la participación obligatoria de la UAPA.
+
+================================================================================
+SHEET: 'VERIFICADORES'
+  Dimensions: A1:H145
+  Max row: 145, Max col: 8
+================================================================================
+
+  COLUMN HEADERS (8 columns):
+    Col 1: ver_id
+    Col 2: lin_id
+    Col 3: descripcion
+    Col 4: tipo_verificador
+    Col 5: instrumento
+    Col 6: frecuencia
+    Col 7: fuente_dato
+    Col 8: criterio_cumple
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    ver_id: V-D998-NOR-COM-001-01
+    lin_id: D998-NOR-COM-001
+    descripcion: Verificar que la UAPA ejerce efectivamente las funciones de inspección y vigilancia de los recursos PAE asignados por el Gobierno Nacional.
+    tipo_verificador: documental
+    instrumento: Actos administrativos de delegación; informes de gestión UAPA
+    frecuencia: anual
+    fuente_dato: Página web UAPA; informes de gestión; actos administrativos publicados
+    criterio_cumple: Existencia de actos administrativos, resoluciones o circulares emitidos por la UAPA en ejercicio de funciones de I&V del PAE.
+
+  --- Row 3 ---
+    ver_id: V-D998-NOR-COM-005-01
+    lin_id: D998-NOR-COM-005
+    descripcion: Verificar que las ETC elaboran anualmente planes operativos de I&V que incluyen componente PAE y que hacen parte del Plan Anual de Desarrollo Educativ...
+    tipo_verificador: documental
+    instrumento: Plan Anual de Desarrollo Educativo de la ETC; Plan Operativo de I&V
+    frecuencia: anual
+    fuente_dato: Secretarías de Educación de las ETC
+    criterio_cumple: Plan operativo de I&V aprobado, que incluya sección específica de alimentación escolar, como parte del Plan Anual de Desarrollo Educativo.
+
+  --- Row 4 ---
+    ver_id: V-D998-NOR-COM-006-01
+    lin_id: D998-NOR-COM-006
+    descripcion: Verificar la participación efectiva de la UAPA en la elaboración de los planes operativos de I&V en los contenidos de alimentación escolar.
+    tipo_verificador: documental
+    instrumento: Actas de reunión; evidencia de aportes técnicos de la UAPA; versiones del plan con contribuciones UAPA
+    frecuencia: anual
+    fuente_dato: UAPA; Secretarías de Educación de las ETC
+    criterio_cumple: Evidencia documental de participación de la UAPA (actas, correos, documentos de trabajo) en la formulación del componente PAE del plan operativo.
+
+  --- Row 5 ---
+    ver_id: V-D998-NOR-COM-007-01
+    lin_id: D998-NOR-COM-007
+    descripcion: Verificar que los planes operativos de I&V contienen los 5 elementos mínimos: principios, estrategias, criterios, financiación y cronogramas.
+    tipo_verificador: documental
+    instrumento: Lista de chequeo de contenidos mínimos del plan operativo
+    frecuencia: anual
+    fuente_dato: Secretarías de Educación de las ETC
+    criterio_cumple: El plan operativo contiene secciones explícitas para cada uno de los 5 componentes: principios, estrategias, criterios, financiación y cronogramas.
+
+  --- Row 6 ---
+    ver_id: V-D998-CON-IYV-001-01
+    lin_id: D998-CON-IYV-001
+    descripcion: Verificar que la UAPA emite lineamientos y directrices para orientar el ejercicio de I&V del PAE por parte de las ETC.
+    tipo_verificador: documental
+    instrumento: Resoluciones, circulares, guías técnicas emitidas por la UAPA
+    frecuencia: anual
+    fuente_dato: Normograma UAPA; página web; Sistema Único de Consulta Pública
+    criterio_cumple: Existencia de al menos un documento de lineamientos o directrices emitido por la UAPA para orientar la I&V del PAE en las ETC.
+
+================================================================================
+SHEET: 'CONEXIONES'
+  Dimensions: A1:E126
+  Max row: 126, Max col: 5
+================================================================================
+
+  COLUMN HEADERS (5 columns):
+    Col 1: con_id
+    Col 2: lin_id_origen
+    Col 3: lin_id_destino
+    Col 4: tipo_conexion
+    Col 5: descripcion
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    con_id: CON-D998-001
+    lin_id_origen: D998-NOR-COM-001
+    lin_id_destino: D1852-NOR-COM-*
+    tipo_conexion: complementa
+    descripcion: El D998 modifica la delegación de I&V establecida originalmente en el marco del D1852 (Decreto 1075 de 2015). La UAPA asume funciones que antes ejercí...
+
+  --- Row 3 ---
+    con_id: CON-D998-002
+    lin_id_origen: D998-NOR-COM-001
+    lin_id_destino: GG-NOR-COM-*
+    tipo_conexion: complementa
+    descripcion: La delegación de I&V a la UAPA complementa las competencias y funciones definidas en la Guía General del PAE, dándole base normativa a la función de s...
+
+  --- Row 4 ---
+    con_id: CON-D998-003
+    lin_id_origen: D998-CON-IYV-001
+    lin_id_destino: A2-CON-IYV-*
+    tipo_conexion: alimenta
+    descripcion: Los lineamientos de I&V que emite la UAPA (función del D998) son los que regulan las actividades de inspección y vigilancia detalladas en el Anexo 2 d...
+
+  --- Row 5 ---
+    con_id: CON-D998-004
+    lin_id_origen: D998-CON-IYV-003
+    lin_id_destino: A8-EVA-IND-*
+    tipo_conexion: alimenta
+    descripcion: La información de I&V que la UAPA solicita a las ETC alimenta los indicadores de evaluación definidos en el Anexo 8.
+
+  --- Row 6 ---
+    con_id: CON-D998-005
+    lin_id_origen: D998-NOR-COM-005
+    lin_id_destino: A1-DIA-DAC-*
+    tipo_conexion: requiere_insumo
+    descripcion: Los planes operativos de I&V requieren como insumo el diagnóstico de condiciones operativas (DACO) que se elabora según el Anexo 1.
+
+================================================================================
+SHEET: 'INDICADORES'
+  Dimensions: A1:K44
+  Max row: 44, Max col: 11
+================================================================================
+
+  COLUMN HEADERS (11 columns):
+    Col 1: ind_id
+    Col 2: nombre
+    Col 3: formula
+    Col 4: tipo_indicador
+    Col 5: doc_id
+    Col 6: subcat_id
+    Col 7: etapa_pae
+    Col 8: periodicidad
+    Col 9: meta
+    Col 10: fuente_dato
+    Col 11: responsable_medicion
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    ind_id: IND-A2-CON-EST-01
+    nombre: Elaboración del diagnóstico anual del PAE
+    formula: Diagnóstico realizado dentro del plazo establecido
+    tipo_indicador: gestion
+    doc_id: A2
+    subcat_id: CON-EST
+    etapa_pae: planeacion
+    periodicidad: anual
+    meta: 100%
+    fuente_dato: Documento de diagnóstico y sus anexos
+    responsable_medicion: EQUPAE
+
+  --- Row 3 ---
+    ind_id: IND-A2-CON-EST-02
+    nombre: Porcentaje de población beneficiaria definida conforme a criterios de priorización
+    formula: (Número de estudiantes priorizados según criterios / Total de estudiantes que cumplen criterios) × 100
+    tipo_indicador: gestion
+    doc_id: A2
+    subcat_id: CON-EST
+    etapa_pae: planeacion
+    periodicidad: anual
+    meta: 100%
+    fuente_dato: SIMAT / SIPAE / Actas CTPS
+    responsable_medicion: EQUPAE
+
+  --- Row 4 ---
+    ind_id: IND-A2-CON-EST-03
+    nombre: Porcentaje de implementación del modelo, modalidad y complemento alimentario del PAE
+    formula: (Sedes que implementan el modelo, modalidad y complemento definidos / Sedes beneficiarias del PAE) × 100
+    tipo_indicador: gestion
+    doc_id: A2
+    subcat_id: CON-EST
+    etapa_pae: planeacion
+    periodicidad: anual
+    meta: 100%
+    fuente_dato: DACO / SIPAE / Actas CTPS
+    responsable_medicion: EQUPAE
+
+  --- Row 5 ---
+    ind_id: IND-A2-CON-EST-04
+    nombre: Inclusión de los procesos del PAE en el Plan Anual de Adquisiciones
+    formula: (Procesos del PAE incluidos en el PAA / Procesos del PAE que deben incluirse en el PAA) × 100
+    tipo_indicador: gestion
+    doc_id: A2
+    subcat_id: CON-EST
+    etapa_pae: planeacion
+    periodicidad: anual
+    meta: 100%
+    fuente_dato: Plan Anual de Adquisiciones
+    responsable_medicion: ETC
+
+  --- Row 6 ---
+    ind_id: IND-A2-CON-EJE-01
+    nombre: Garantía del PAE durante el cien por ciento del calendario escolar
+    formula: (Días con suministro conforme a lineamientos / Días calendario) × 100
+    tipo_indicador: resultado
+    doc_id: A2
+    subcat_id: CON-EJE
+    etapa_pae: operacion
+    periodicidad: mensual
+    meta: 100%
+    fuente_dato: Informes de ejecución / SIGEPAE
+    responsable_medicion: EQUPAE
+
+================================================================================
+SHEET: 'CONCEPTOS'
+  Dimensions: A1:F91
+  Max row: 91, Max col: 6
+================================================================================
+
+  COLUMN HEADERS (6 columns):
+    Col 1: concepto_id
+    Col 2: termino
+    Col 3: definicion
+    Col 4: doc_id
+    Col 5: norma_origen
+    Col 6: subcategorias_relacionadas
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    concepto_id: CONC-001
+    termino: Accesibilidad
+    definicion: Supone que se garantice el acceso físico y económico a los alimentos. La accesibilidad económica significa que los costos financieros asociados con la...
+    doc_id: GG
+    norma_origen: Comité de Derechos Económicos, 1999; CISAN, 2022
+    subcategorias_relacionadas: NOR-DEF
+
+  --- Row 3 ---
+    concepto_id: CONC-002
+    termino: Alimentación Saludable
+    definicion: Alimentación que satisface las necesidades de energía y nutrientes en todas las etapas de la vida, siendo completa, equilibrada, suficiente, adecuada,...
+    doc_id: GG
+    norma_origen: Ley 2120 de 2021
+    subcategorias_relacionadas: ALI-NUT, NOR-DEF
+
+  --- Row 4 ---
+    concepto_id: CONC-003
+    termino: Alimentación sostenible
+    definicion: Dietas que generan un impacto ambiental reducido y contribuyen a la seguridad alimentaria y nutricional, protegen la biodiversidad, son culturalmente ...
+    doc_id: GG
+    norma_origen: FAO y Bioversity International, 2010
+    subcategorias_relacionadas: TRA-AMB, NOR-DEF
+
+  --- Row 5 ---
+    concepto_id: CONC-004
+    termino: Alimento adulterado
+    definicion: Aquel al que se ha sustraído parte de sus elementos constituyentes, adicionado sustancias no autorizadas, sometido a tratamientos que disimulen sus co...
+    doc_id: GG
+    norma_origen: Resolución 2674 de 2013
+    subcategorias_relacionadas: CAL-BPM
+
+  --- Row 6 ---
+    concepto_id: CONC-005
+    termino: Alimento alterado
+    definicion: Alimento que sufre modificación o degradación parcial o total de sus constituyentes por agentes físicos, químicos o biológicos. Incluye alimentos fuer...
+    doc_id: GG
+    norma_origen: Resolución 2674 de 2013
+    subcategorias_relacionadas: CAL-BPM
+
+================================================================================
+SHEET: 'CAPACITACIONES'
+  Dimensions: A1:G10
+  Max row: 10, Max col: 7
+================================================================================
+
+  COLUMN HEADERS (7 columns):
+    Col 1: CAPACITACIONES — Gestión del Conocimiento PAE
+    Col 2: (None)
+    Col 3: (None)
+    Col 4: (None)
+    Col 5: (None)
+    Col 6: (None)
+    Col 7: (None)
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    CAPACITACIONES — Gestión del Conocimiento PAE: Registra cada capacitación recibida. Cada fila es un evento formativo.
+
+  --- Row 3 ---
+    CAPACITACIONES — Gestión del Conocimiento PAE: ID Capacitación
+    (None): Título de la capacitación
+    (None): Fecha
+    (None): Formador / Entidad
+    (None): Temas principales
+    (None): Subcategorías PAE
+(ej. FIN-REP, GOB-CAE)
+    (None): Notas generales
+
+  --- Row 4 ---
+    CAPACITACIONES — Gestión del Conocimiento PAE: CAP-001
+    (None): Escuela PAE — Reporte de la Categoría UAPA-PAE en el CHIP: flujo de información, formularios y tiempos de presentación
+    (None): (ver registro de asistencia)
+    (None): Pilar González Ramírez · Diana Yislen Pinzón Pinzón · Deisy Cárdenas — UAPA / Subdirección General / Área Financiera
+    (None): Flujo de información CHIP · Normatividad (Res. 332/2021) · 5 formularios de la categoría · Tiempos oportuno y extemporáneo · Reglas de diligenciamient...
+    (None): FIN-REP · FIN-BOL · FIN-EJE · FIN-PLA · CON-EJE
+    (None): Contexto: se publicó informe de la Contraloría sobre irregularidades en recursos PAE. Jornada dirigida a 97 ETCs + municipios no certificados.
+
+  --- Row 5 ---
+    CAPACITACIONES — Gestión del Conocimiento PAE: CAP-002
+    (None): Sesión interna UAPA — Gestión y calidad del dato CHIP: flujo desde Contaduría, lectura de consolidados, limitaciones del sistema y protocolos de corre...
+    (None): (ver registro de sesión)
+    (None): Pilar González Ramírez (Subdirección General UAPA) · Diana Pinzón · Deisy Cárdenas · Julián (profesional UAPA)
+    (None): Flujo real de descarga del CHIP (archivo plano TXT → transformación → Excel legible) · Calidad del dato y errores frecuentes · Ruta de corrección cent...
+    (None): FIN-REP · FIN-EJE · FIN-BOL · CON-EJE
+    (None): Sesión interna del equipo UAPA. El contenido refleja el estado real de la gestión del dato en la entidad, incluyendo procesos en construcción. Varios ...
+
+  --- Row 6 ---
+    CAPACITACIONES — Gestión del Conocimiento PAE: CAP-003
+    (None): Escuela PAE — Planeación financiera: fuentes de financiación, cuentas maestras, bolsa común, análisis económico del sector y estudio de costos
+    (None): (ver registro de asistencia)
+    (None): William German Forero Hernández (formador principal) · Diana Yislen Pinzón Pinzón · Amauri Manuel García Burgos · Diego Camilo Méndez Quintero · Catal...
+    (None): Fuentes de financiación PAE (PGN, SGP doceavas) · Cuentas maestras · Bolsa común · Análisis económico del sector (oferta, demanda, cadena de suministr...
+    (None): FIN-PLA · CPL-OBL · CPL-ZON · CPL-PRO · ALI-DIF · CON-EST · TRA-ETN
+    (None): Sesión de ~3 horas. Solo se cuenta con transcripción de los primeros 4 min (fuentes financiación) y los últimos ~12 min (análisis económico del sector...
+
+================================================================================
+SHEET: 'APRENDIZAJES'
+  Dimensions: A1:J69
+  Max row: 69, Max col: 10
+================================================================================
+
+  COLUMN HEADERS (10 columns):
+    Col 1: APRENDIZAJES — Gestión del Conocimiento PAE
+    Col 2: (None)
+    Col 3: (None)
+    Col 4: (None)
+    Col 5: (None)
+    Col 6: (None)
+    Col 7: (None)
+    Col 8: (None)
+    Col 9: (None)
+    Col 10: (None)
+
+  FIRST 5 DATA ROWS:
+
+  --- Row 2 ---
+    APRENDIZAJES — Gestión del Conocimiento PAE: Cada fila es un aprendizaje específico (idea clave o recomendación práctica) vinculado a un lineamiento del banco.
+
+  --- Row 3 ---
+    APRENDIZAJES — Gestión del Conocimiento PAE: ID Aprendizaje
+    (None): ID Capacitación
+(FK → CAPACITACIONES)
+    (None): Lineamiento
+(FK → LINEAMIENTOS)
+    (None): Tipo
+(idea_clave / recomendacion_practica)
+    (None): Texto del aprendizaje
+    (None): Contexto / ejemplo
+dado por el formador
+    (None): ¿Relevante para
+inspección?
+    (None): Urgencia
+(alto/medio/bajo)
+    (None): Acciones sugeridas
+para UAPA
+    (None): Notas
+
+  --- Row 4 ---
+    APRENDIZAJES — Gestión del Conocimiento PAE: APR-001
+    (None): CAP-001
+    (None): A6-FIN-REP-004 / D1852-FIN-REP-002
+    (None): idea_clave
+    (None): El reporte CHIP de la categoría UAPA-PAE sigue un flujo secuencial: instalación del aplicativo CHIP Local → actualización de formularios antes de cada...
+    (None): La formadora lo describió como una cadena; si falla algún eslabón (ej. formularios desactualizados), el reporte puede quedar inválido.
+    (None): sí
+    (None): alto
+    (None): Verificar en inspecciones que la ETC tenga el aplicativo instalado y actualizado antes del inicio de cada período de reporte.
+
+  --- Row 5 ---
+    APRENDIZAJES — Gestión del Conocimiento PAE: APR-002
+    (None): CAP-001
+    (None): A6-FIN-REP-004
+    (None): idea_clave
+    (None): La Resolución 332 de 2021 es la norma que faculta a la UAPA para recibir y hacer seguimiento a la información del PAE en la categoría UAPA-PAE del CHI...
+    (None): sí
+    (None): medio
+    (None): Tener esta resolución como referente normativo en los instrumentos de inspección financiera.
+
+  --- Row 6 ---
+    APRENDIZAJES — Gestión del Conocimiento PAE: APR-003
+    (None): CAP-001
+    (None): A6-FIN-REP-004
+    (None): idea_clave
+    (None): La categoría UAPA-PAE comprende exactamente 5 formularios: (1) Datos Generales, (2) Financiación y Bolsa Común, (3) Contratación, (4) Prestación del S...
+    (None): La formadora aclaró específicamente que el de Prestación del Servicio no lo diligencia siempre la ETC departamental si no es quien opera.
+    (None): sí
+    (None): alto
+    (None): En inspecciones, verificar que los formularios presentados sean los que corresponden al esquema de ejecución real de cada entidad.
+
+================================================================================
+SEARCH FOR 'GESTION DEL CONOCIMIENTO' REFERENCES
+================================================================================
+
+  MATCH in sheet 'LINEAMIENTOS', cell S13 (row 13, col 19):
+    Value: Desconocimiento normativo por parte de las ETC; aplicación heterogénea o incompleta de la regulación PAE.
+
+  MATCH in sheet 'LINEAMIENTOS', cell T39 (row 39, col 20):
+    Value: Actores sin conocimiento suficiente para cumplir sus roles
+
+  MATCH in sheet 'LINEAMIENTOS', cell B72 (row 72, col 2):
+    Value: El diagnóstico debe incluir la descripción de la composición de la población beneficiaria, indicando: número total de estudiantes matriculados, número total de población beneficiaria del PAE, distribu...
+
+  MATCH in sheet 'LINEAMIENTOS', cell S72 (row 72, col 19):
+    Value: Planeación sin conocimiento de la población objetivo; riesgo de brechas de cobertura y falta de enfoque diferencial.
+
+  MATCH in sheet 'LINEAMIENTOS', cell S73 (row 73, col 19):
+    Value: Desconocimiento de la distribución operativa del PAE; imposibilidad de evaluar pertinencia de modelos y modalidades.
+
+  MATCH in sheet 'LINEAMIENTOS', cell B84 (row 84, col 2):
+    Value: El diagnóstico debe incorporar información sobre la operación del Programa por parte de organizaciones de base y asociaciones de padres de familia, identificando aquellas que participan actualmente en...
+
+  MATCH in sheet 'LINEAMIENTOS', cell T116 (row 116, col 20):
+    Value: El reporte se entrega al Consejo de Política Social para conocimiento y entrega a operadores.
+
+  MATCH in sheet 'LINEAMIENTOS', cell B139 (row 139, col 2):
+    Value: El Enfoque de Derechos Humanos orienta el PAE al reconocimiento del derecho humano a la alimentación adecuada, el derecho a la educación, el derecho a un ambiente sano y el derecho a la paz, garantiza...
+
+  MATCH in sheet 'LINEAMIENTOS', cell B241 (row 241, col 2):
+    Value: Previo al inicio de la prestación del servicio, el operador deberá adelantar el proceso de alistamiento dentro del plazo definido por la ETC, incluyendo: reconocimiento de sedes, verificación de condi...
+
+  MATCH in sheet 'LINEAMIENTOS', cell B278 (row 278, col 2):
+    Value: El personal manipulador de alimentos debe contar con certificación médica que conste la aptitud para la manipulación de alimentos. El operador debe garantizar un reconocimiento médico al personal mani...
+
+  MATCH in sheet 'LINEAMIENTOS', cell S321 (row 321, col 19):
+    Value: Desconocimiento de condiciones técnicas del territorio que afecte la operación
+
+  MATCH in sheet 'LINEAMIENTOS', cell S323 (row 323, col 19):
+    Value: Desconocimiento de la oferta del mercado; riesgo de concentración o selección inadecuada de operadores
+
+  MATCH in sheet 'LINEAMIENTOS', cell S324 (row 324, col 19):
+    Value: Costos mal estimados por desconocimiento de la cadena de suministros
+
+  MATCH in sheet 'LINEAMIENTOS', cell S343 (row 343, col 19):
+    Value: Desconocimiento de fuentes disponibles; posible desfinanciamiento del programa
+
+  MATCH in sheet 'VERIFICADORES', cell E22 (row 22, col 5):
+    Value: Informe de alistamiento / reconocimiento de sedes
+
+  MATCH in sheet 'VERIFICADORES', cell H22 (row 22, col 8):
+    Value: Informe que evidencie reconocimiento de sedes, verificación de infraestructura, capacidad de almacenamiento y protocolos diseñados
+
+  MATCH in sheet 'CAPACITACIONES', cell A1 (row 1, col 1):
+    Value: CAPACITACIONES — Gestión del Conocimiento PAE
+
+  MATCH in sheet 'APRENDIZAJES', cell A1 (row 1, col 1):
+    Value: APRENDIZAJES — Gestión del Conocimiento PAE
+
+================================================================================
+LINEAMIENTOS DATA STRUCTURE ANALYSIS
+================================================================================
+
+  Sheet 'LINEAMIENTOS', Column 2 header: 'texto_lineamiento'
+    Unique values (393 total, showing up to 20):
+      - A partir de la entrada en vigencia de la Resolución 0003/2026, las niñas y niños del segundo ciclo de educación inicial con jornadas de 8 horas diarias deberán ser atendidos conforme a las condiciones
+      - A partir de los análisis realizados en el diagnóstico, la ETC debe formular propuestas orientadas a fortalecer aquellos aspectos donde se identificaron brechas u oportunidades de mejora para la operac
+      - Ante la identificación de alteraciones graves o sospecha de afectaciones en calidad o inocuidad de alimentos del PAE (alteración de rotulado, contaminación química/física/biológica, alimentos no aptos
+      - Ante la identificación de dos o más casos de beneficiarios con síntomas gastrointestinales (náuseas, vómito, diarrea, dolor de estómago, dolor de cabeza, rash, prurito o erupción cutánea) posiblemente
+      - Cada sesión del CTPS debe dejar acta formal con las decisiones y compromisos adoptados.
+      - Como cierre de la evaluación ex post, la ETC debe definir un plan de mejora oficial con acciones, responsables y cronograma. Este plan debe ser objeto de seguimiento en la fase ex ante de la siguiente
+      - Concepto: Las ETA se definen como el síndrome originado por la ingestión de alimentos o agua que contengan agentes etiológicos que afecten la salud del consumidor, a nivel individual o colectivo. Pued
+      - Corresponde a la entidad territorial verificar que las obligaciones de los operadores (lineamientos, estándares, condiciones) sean debidamente incorporadas al contrato.
+      - Cualquier cambio en la destinación de los recursos del PGN asignados al PAE deberá ser solicitada previamente por la ETC y autorizada por la UApA.
+      - Cualquier modificación al cronograma del POA deberá ser informada a la UApA y autorizada mediante acta bilateral suscrita entre la ETC y la UApA, con justificación técnica sustentada. El incumplimient
+      - Cuando el PAE se financie total o parcialmente con recursos del Sistema General de Regalías (SGR), la ETC deberá formular y viabilizar el proyecto conforme al Acuerdo 015 de 2025 de la Comisión Rector
+      - Cuando el establecimiento no se encuentre conectado a una red de acueducto o no cuente con suministro directo de agua potable, se deberá especificar y detallar el método de potabilización del agua, ta
+      - Cuando la oferta local sea insuficiente, la entidad territorial deberá informar a la Mesa Técnica Nacional de Compras Públicas dentro de los cinco días hábiles siguientes a la comunicación del operado
+      - Cuando la operación del PAE se descentralice, el operador debe entregar un informe de ejecución de los recursos para el pago, para que la ETC proporcione el aval correspondiente a su desembolso. Contr
+      - Cuando la prestación del servicio de alimentación escolar sea realizada directamente por las entidades territoriales, como mínimo el 80% de los recursos de la asignación especial del SGP para Alimenta
+      - Cuando se adelanten varios procesos contractuales para la operación del PAE, los cronogramas deberán estar coordinados entre sí, sin que existan periodos sin atención que afecten la continuidad del se
+      - De acuerdo con la Ley 2167 de 2021, se debe garantizar la prestación del servicio de alimentación escolar de manera oportuna y de calidad durante el 100% del calendario académico, asegurando la dispon
+      - De manera excepcional, el MEN (ahora UAPA) podrá ejecutar directamente los recursos del PGN para el PAE cuando: (1) se presenten hechos constitutivos de calamidad pública, desastre, emergencia grave, 
+      - Deben implementarse acciones pedagógicas para promover la alimentación saludable en las sedes educativas, incluyendo el Plan Pedagógico para la Promoción de la Alimentación Saludable y la Cultura Alim
+      - Deberá incluirse en los contratos la obligación de los operadores de asistir a las Mesas Territoriales y a las ruedas de negocios.
+
+================================================================================
+RELATED STRUCTURAL COLUMNS (politica, eje, estrategia, accion, objetivo)
+================================================================================
+
+  Sheet 'INDICADORES', Column 4: 'tipo_indicador'
+    Non-empty values: 43
+    Sample values (up to 10):
+      - gestion
+      - resultado
+
+  Sheet 'INDICADORES', Column 9: 'meta'
+    Non-empty values: 41
+    Sample values (up to 10):
+      - 0 días de retraso
+      - 0%
+      - 1 documento
+      - 1 documento de cierre + 4 reportes CHIP
+      - 1 informe
+      - 100%
+      - 4 informes por vigencia
+      - 6 dimensiones
+      - Totalidad de ETNoC de la jurisdicción
+      - ≤ 0 días de retraso
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
