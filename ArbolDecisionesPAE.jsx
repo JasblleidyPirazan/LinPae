@@ -1,0 +1,7574 @@
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+
+// =====================================================================
+// DATA PLACEHOLDER - Will be replaced by build script with actual data
+// =====================================================================
+const DATA = {
+  "lineamientos": [
+    {
+      "lin_id": "D998-NOR-COM-001",
+      "texto_lineamiento": "Se delega en el representante legal de la Unidad Administrativa Especial de Alimentación Escolar - Alimentos para Aprender (UAPA) la función de inspección y vigilancia de los recursos asignados por el Gobierno Nacional al Programa de Alimentación Escolar (PAE), función anteriormente delegada en el Ministerio de Educación Nacional.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D998-NOR-COM-002",
+      "texto_lineamiento": "Los gobernadores y alcaldes ejercerán, en su respectiva jurisdicción, funciones de inspección y vigilancia del servicio educativo, incluido el PAE, de acuerdo con las competencias otorgadas por las Leyes 715 de 2001 y 115 de 1994 y el reglamento expedido para tal efecto.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D998-NOR-COM-003",
+      "texto_lineamiento": "Las funciones de inspección y vigilancia del servicio público educativo delegadas al MEN, y las de los recursos del PAE delegadas a la UAPA, se ejercerán atendiendo la ley, las disposiciones del Título 7 del Decreto 1075 de 2015 y las demás normas reglamentarias expedidas para tal efecto.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D998-NOR-COM-004",
+      "texto_lineamiento": "El objeto de la inspección y vigilancia del servicio público educativo incluye, además de los fines educativos generales, garantizar la calidad y universalidad de la alimentación escolar como componente del derecho a la educación.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D998-NOR-COM-005",
+      "texto_lineamiento": "La Nación, a través del Ministerio de Educación Nacional, junto con las entidades territoriales certificadas en educación, elaborarán anualmente planes operativos de inspección y vigilancia que harán parte del Plan Anual de Desarrollo Educativo de la respectiva entidad territorial.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "Ausencia de planificación en I&V; acciones reactivas en lugar de preventivas."
+    },
+    {
+      "lin_id": "D998-NOR-COM-006",
+      "texto_lineamiento": "La UAPA deberá participar en la elaboración de los planes operativos anuales de inspección y vigilancia en todos aquellos contenidos relacionados con la alimentación escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "Planes operativos de I&V sin componente de alimentación escolar; desarticulación institucional."
+    },
+    {
+      "lin_id": "D998-NOR-COM-007",
+      "texto_lineamiento": "Los planes operativos de inspección y vigilancia deben contener los principios, las estrategias, los criterios, la financiación y los cronogramas generales que orientarán el desarrollo de las operaciones de I&V.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "Planes operativos incompletos o sin estructura mínima requerida."
+    },
+    {
+      "lin_id": "D998-CON-IYV-001",
+      "texto_lineamiento": "La UAPA, en materia específica de alimentación escolar financiada con recursos asignados por el Gobierno Nacional, tiene la función de establecer lineamientos y directrices generales que orienten el ejercicio de las competencias de las entidades territoriales sobre inspección y vigilancia del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D998-CON-IYV-002",
+      "texto_lineamiento": "La UAPA tiene la función de prestar asistencia técnica a los departamentos y distritos en el desarrollo de las operaciones y actividades propias del ejercicio de la inspección y vigilancia del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D998-CON-IYV-003",
+      "texto_lineamiento": "La UAPA tiene la función de solicitar a los departamentos y distritos la información requerida sobre resultados de la inspección y vigilancia del PAE, con el fin de verificar el cumplimiento de las políticas, planes y programas nacionales en materia de alimentación escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D998-CON-IYV-004",
+      "texto_lineamiento": "La UAPA tiene la función de señalar criterios para la efectiva coordinación del proceso de evaluación que se debe cumplir como parte del ejercicio de la inspección y vigilancia del PAE, articulado con el Sistema Nacional de Evaluación de la Educación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D998-CON-IYV-005",
+      "texto_lineamiento": "La UAPA tiene la función de divulgar las leyes, normas reglamentarias y demás actos administrativos pertinentes para el ejercicio de la inspección y vigilancia del PAE por parte de las entidades territoriales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D998-CON-IYV-006",
+      "texto_lineamiento": "La UAPA tiene la función de ejercer la inspección, vigilancia y control sobre las autoridades educativas del nivel departamental y distrital en lo relacionado específicamente con el Programa de Alimentación Escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D998-NOR-COM-008",
+      "texto_lineamiento": "La función de investigación previa excepcional de casos de deficiencias en I&V por parte de departamentos o distritos (literal f del art. 2.3.7.2.2) NO es delegada a la UAPA y permanece en cabeza del MEN.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D998-NOR-COM-009",
+      "texto_lineamiento": "La función de promover planes de formación de posgrado y de formación permanente de los cuerpos técnicos de supervisores (literal h del art. 2.3.7.2.2) NO es delegada a la UAPA y permanece en cabeza del MEN.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "D998-NOR-DEF-001",
+      "texto_lineamiento": "El Programa de Alimentación Escolar (PAE) es la estrategia estatal que promueve el acceso con permanencia de los niños, niñas, adolescentes y jóvenes en el sistema educativo oficial, a través del suministro de un complemento alimentario durante la jornada escolar, para mantener los niveles de atención, impactar de forma positiva los procesos de aprendizaje, el desarrollo cognitivo, disminuir el ausentismo y la deserción y fomentar estilos de vida saludables.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "D998-NOR-COM-010",
+      "texto_lineamiento": "La UAPA, como entidad adscrita al MEN con autonomía administrativa, personería jurídica y patrimonio independiente, tiene como objeto fijar y desarrollar la Política en materia de alimentación escolar, con objetivos específicos de: (1) fortalecer esquemas de financiación, (2) promover transparencia en contratación, (3) ampliar cobertura con criterios de focalización, (4) garantizar calidad e inocuidad, y (5) proponer modelos de operación para fortalecer la territorialidad.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D998-NOR-PRI-001",
+      "texto_lineamiento": "El PAE es un elemento que concreta el derecho humano y constitucional a la educación (art. 67 C.P.) y por ende hace parte de los aspectos que imponen su inspección y vigilancia como componente del servicio público educativo.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "D998",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "GG-NOR-PRI-001",
+      "texto_lineamiento": "El PAE se consolida como estrategia fundamental de política pública para la garantía del derecho humano a la alimentación adecuada y del derecho a la educación, promoviendo el acceso con permanencia de NNAJ en el sistema educativo oficial.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-NOR-PRI-002",
+      "texto_lineamiento": "La implementación del PAE debe ser eficiente, continua, inocua, transparente, pertinente y con enfoque diferencial, teniendo en cuenta las particularidades operativas de cada territorio.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-NOR-PRI-003",
+      "texto_lineamiento": "El PAE, como servicio del sector educativo público, de manera progresiva con perspectiva de 2028, debe brindarse a la totalidad de estudiantes matriculados en instituciones educativas oficiales que opten voluntariamente por acceder al servicio (principio de universalidad).",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-DIA-DAC-001",
+      "texto_lineamiento": "El diagnóstico anual del PAE constituye el primer paso de la etapa de planeación y deberá ser elaborado por la ETC. En el caso de los departamentos, este proceso deberá realizarse en articulación con las ETNoC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-DIA-DAC-002",
+      "texto_lineamiento": "El diagnóstico anual del PAE comprende tres componentes principales: contexto territorial, principales aspectos de la operación de la vigencia anterior, y orientaciones para la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-CON-EST-001",
+      "texto_lineamiento": "La entidad deberá realizar un cronograma donde consolide todas las actividades correspondientes a las etapas de planeación, seguimiento y operación del PAE, incluyendo procesos de selección, espacios de socialización y participación ciudadana, mesas técnicas e hitos administrativos y operativos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-CON-EST-002",
+      "texto_lineamiento": "El proceso de priorización de la población beneficiaria es responsabilidad de la ETC, basándose en los criterios establecidos en la resolución. En el caso de los departamentos, debe realizarse en articulación con las ETNoC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-ALI-DIF-001",
+      "texto_lineamiento": "Para sedes educativas en zonas rurales de difícil acceso que no cumplan criterios de modelos diferenciales indígenas o NARP, se implementará un modelo de atención con enfoque territorial que garantice el suministro de complemento alimentario tipo almuerzo, mediante modalidades de preparada en sitio o caliente transportada.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "GG",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Sede educativa ubicada en zona rural de difícil acceso AND no aplica modelo diferencial indígena o NARP",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-ALI-CIC-001",
+      "texto_lineamiento": "La planeación alimentaria debe identificar las minutas patrón del Anexo 3 para cada modalidad de atención, tipo de complemento alimentario, grado y nivel educativo; reconocer la oferta alimentaria local considerando épocas de cosecha, vocación agroalimentaria y pequeños productores de la ACFEC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-CIC",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-ALI-CIC-002",
+      "texto_lineamiento": "El profesional en Nutrición y Dietética diseña los ciclos de menús considerando minutas patrón, grupos de alimentos, frecuencias establecidas y cumplimiento del aporte nutricional. Los ciclos deben incluir análisis nutricional, listas de intercambios, guías de preparación y estandarización de recetas y porciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-CIC",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "EQUPAE",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-ALI-EAN-001",
+      "texto_lineamiento": "Deben implementarse acciones pedagógicas para promover la alimentación saludable en las sedes educativas, incluyendo el Plan Pedagógico para la Promoción de la Alimentación Saludable y la Cultura Alimentaria en el PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-EAN",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CPL-PRO-001",
+      "texto_lineamiento": "El Plan de Proveeduría deberá formularse de manera articulada con una estrategia de compras públicas que garantice la pertinencia territorial y disponibilidad de los alimentos, integrando la oferta productiva del territorio, la vocación y uso del suelo, y las necesidades operativas del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-PRO",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-TRA-AMB-001",
+      "texto_lineamiento": "La planeación de la gestión y el manejo ambiental del PAE se desarrolla bajo criterios de sostenibilidad ambiental, mitigación de riesgos ambientales, prevención de impactos negativos y cumplimiento de la normatividad ambiental vigente, orientada por los programas de la ESAPAE y la Estrategia de Economía Circular.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-TRA-AMB-002",
+      "texto_lineamiento": "La ETC debe elaborar un Plan de Gestión Ambiental con fines estratégicos y de desempeño ambiental anual, con indicadores de sostenibilidad ambiental de nivel institucional.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-TRA-AMB-003",
+      "texto_lineamiento": "El operador debe elaborar un Plan de Manejo Ambiental con identificación de riesgos ambientales y definición de medidas operativas enfocadas en reducir, prevenir y compensar impactos negativos potenciales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CAL-PLA-001",
+      "texto_lineamiento": "La planeación de condiciones de calidad e inocuidad comprende la definición de requisitos técnicos y estándares operativos que deben ser implementados por las ETC y exigidos al operador para garantizar que los alimentos y procesos cumplan condiciones de calidad e inocuidad, previniendo riesgos a la salud de los beneficiarios.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-CON-EQU-001",
+      "texto_lineamiento": "La ETC debe planear la conformación del Equipo PAE, definiendo: número de integrantes, perfiles, roles, modalidad de vinculación, mecanismos de selección, plazos de contratación y costos asociados, asegurando procesos de inducción y capacitación continua.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-FIN-PLA-001",
+      "texto_lineamiento": "La planeación financiera territorial debe estar orientada a identificar todas las fuentes de financiación y llevar a cabo actividades de gestión financiera por parte de las ETC, y para los departamentos en articulación con las ETNoC, para fortalecer el Programa y lograr la universalidad de la cobertura.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-GOB-CTP-001",
+      "texto_lineamiento": "En la etapa de planeación deben quedar vinculadas al POA del PAE las estrategias orientadas a garantizar la conformación y el funcionamiento de las instancias de participación ciudadana, así como los mecanismos de control social.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-GOB-CTP-002",
+      "texto_lineamiento": "Las Entidades Territoriales deben elaborar un plan de capacitación dirigido a los actores del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-CON-IYV-001",
+      "texto_lineamiento": "En cumplimiento del artículo 2.3.7.1.5 del Decreto 1075 de 2015, modificado por el Decreto 998 de 2025, el Plan Anual de Desarrollo Educativo debe integrar los planes operativos de inspección y vigilancia, incorporando acciones relacionadas con la alimentación escolar, definiendo principios, estrategias, criterios, fuentes de financiación y cronograma.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-CON-EST-003",
+      "texto_lineamiento": "El POA del PAE debe estructurarse de manera integral y contextualizada para organizar las acciones técnicas, logísticas, administrativas y financieras que garanticen una prestación continua, eficiente, inocua y culturalmente pertinente del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-GOB-CTP-003",
+      "texto_lineamiento": "El CTPS es la instancia técnica, intersectorial y participativa responsable de revisar, validar y dar seguimiento a la planeación y operación del PAE. Debe sesionar al menos tres (3) veces al año, incluida una sesión en agosto para aprobar el POA.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "CTPS",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-GOB-CTP-004",
+      "texto_lineamiento": "El POA debe ser formalizado por la ETC mediante acto administrativo y remitido a la UApA en agosto, tras su aprobación por el CTPS.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-GOB-CTP-005",
+      "texto_lineamiento": "Cada sesión del CTPS debe dejar acta formal con las decisiones y compromisos adoptados.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "CTPS",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "En cada sesión"
+    },
+    {
+      "lin_id": "GG-CON-EST-004",
+      "texto_lineamiento": "La contratación del PAE debe realizarse mediante mecanismos de selección competitiva que garanticen pluralidad, transparencia y selección objetiva. La contratación directa solo procede en los casos previstos en la ley.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EST-005",
+      "texto_lineamiento": "La adjudicación, perfeccionamiento y alistamiento de la operación deben finalizar antes del inicio del calendario escolar, para asegurar la prestación oportuna del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EST-006",
+      "texto_lineamiento": "El proceso contractual debe soportarse en estudio del sector, estudios previos completos, pliegos claros, y minutas contractuales que incorporen calidad, inocuidad, formalización laboral, gestión ambiental y participación, con publicación oportuna en SECOP.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-TRA-FOR-001",
+      "texto_lineamiento": "Se recomienda a las ETC y operadores priorizar la vinculación laboral formal de personas manipuladoras de alimentos que acrediten experiencia mínima de tres años, continuos o discontinuos, especialmente en la misma sede educativa, conforme al artículo 69 de la Ley 2466 de 2025.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "GG",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EQU-002",
+      "texto_lineamiento": "La ETC debe realizar las acciones y procesos necesarios para la conformación del equipo PAE y su vinculación laboral a partir de las modalidades de contratación establecidas en el ordenamiento vigente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EJE-001",
+      "texto_lineamiento": "Se debe registrar la estrategia de acceso y permanencia en el SIMAT con el número de cupos asignados, diligenciando todos los campos solicitados: jerarquía, calendario escolar, año, tipo de estrategia, fecha inicio, fecha fin y periodicidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EJE-002",
+      "texto_lineamiento": "En el alistamiento previo al inicio del servicio, el operador debe reconocer las sedes educativas, verificar infraestructura y condiciones físicas, revisar capacidad de almacenamiento y distribución, y diseñar planes y protocolos de calidad e inocuidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EJE-003",
+      "texto_lineamiento": "La ETC es responsable de implementar integralmente el POA del PAE, garantizando cumplimiento del cronograma, inicio oportuno del servicio, continuidad durante toda la vigencia, gestión de recursos, articulación de actores, participación ciudadana, ejecución de compras locales y seguimiento técnico, administrativo y contractual.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-FIN-EJE-001",
+      "texto_lineamiento": "La ETC debe validar, certificar y tramitar los pagos del suministro de complementos alimentarios conforme a procedimientos definidos, incluyendo radicación, soportes, tiempos de pago, descuentos e informes del operador y de la supervisión.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-LIQ-001",
+      "texto_lineamiento": "La liquidación contractual consiste en revisar el cumplimiento de las obligaciones, verificar pagos y saldos, y expedir la paz y salvo. Según la Ley 1150 de 2007, puede realizarse por mutuo acuerdo, de manera unilateral o vía judicial.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-LIQ",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EJE-004",
+      "texto_lineamiento": "La ETC, mediante supervisión o interventoría, vigila el cumplimiento de las obligaciones contractuales y puede realizar modificaciones, adiciones, prórrogas, suspensiones, terminaciones o sanciones según corresponda durante toda la ejecución.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-CON-EJE-005",
+      "texto_lineamiento": "Las ETC deberán salvaguardar, organizar y disponer la documentación y soportes que evidencien el cumplimiento de las diferentes etapas del Programa, conforme a la normatividad vigente y los lineamientos de la UApA.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-TRA-FOR-002",
+      "texto_lineamiento": "El operador debe cumplir la formalización laboral del personal manipulador de alimentos, conforme al artículo 69 de la Ley 2466 de 2025.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-EVA-EXP-001",
+      "texto_lineamiento": "La evaluación corresponde a la medición del cumplimiento de los objetivos, resultados e impactos del PAE, a través de la recolección sistemática, análisis y uso de información oficial, visitas de campo, instrumentos de evaluación y acciones de control.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-EVA-IND-001",
+      "texto_lineamiento": "La evaluación valora el cumplimiento de metas mediante instrumentos que verifican: cobertura, atención diferencial, democratización, control social, formalización del talento humano, ejecución financiera, oportunidad contractual y garantía del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-IND",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": ""
+    },
+    {
+      "lin_id": "GG-NOR-COM-001",
+      "texto_lineamiento": "La determinación de las zonas rurales de difícil acceso corresponde al gobernador o alcalde de cada ETC, quien deberá efectuarla anualmente mediante acto administrativo, de manera simultánea a la expedición del acto que fija el calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-NOR-COM-002",
+      "texto_lineamiento": "Una zona rural es de difícil acceso cuando se configure al menos una de estas situaciones: (1) necesidad de dos o más medios de transporte habituales al perímetro urbano, (2) inexistencia de vías para tránsito motorizado la mayor parte del año lectivo, (3) servicio público de transporte con una única frecuencia diaria de ida o regreso.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica para la determinación de zonas rurales de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "GG-NOR-COM-002",
+      "texto_lineamiento": "Una zona rural es de difícil acceso cuando se configure al menos una de estas situaciones: (1) necesidad de dos o más medios de transporte habituales al perímetro urbano, (2) inexistencia de vías para tránsito motorizado la mayor parte del año lectivo, (3) servicio público de transporte con una única frecuencia diaria de ida o regreso.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "GG",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica para la determinación de zonas rurales de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "anual"
+    },
+    {
+      "lin_id": "A1-DIA-CON-001",
+      "texto_lineamiento": "El diagnóstico anual del PAE constituye el primer paso de la etapa de planeación y deberá ser elaborado por la Entidad Territorial Certificada (ETC) en articulación con las Entidades Territoriales No Certificadas (EtnoC) cuando se trate de Departamentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-CON-002",
+      "texto_lineamiento": "El diagnóstico del PAE se construye con información consolidada del segundo semestre de la vigencia anterior y de la presente vigencia con corte a junio, integrando la caracterización territorial y el balance de la operación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-CON-003",
+      "texto_lineamiento": "El diagnóstico debe incluir orientaciones para la siguiente vigencia, entendidas como recomendaciones y acciones derivadas del análisis, las cuales deberán incorporarse en el proceso de planeación definiendo responsables, recursos, metas verificables, cronogramas e indicadores de seguimiento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-CON-004",
+      "texto_lineamiento": "El diagnóstico del PAE debe incluir una descripción del componente ambiental del territorio, considerando variables como clima, condiciones agroecológicas y riesgos naturales que puedan incidir en la logística de la operación y la sostenibilidad de la producción local.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A1-DIA-DAC-001",
+      "texto_lineamiento": "La ETC debe realizar un Diagnóstico situacional integral de las Condiciones Operativas (DACO) que describa las áreas de las sedes educativas donde se prestará el servicio de alimentación escolar, detallando condiciones de infraestructura, ubicación, dotación y menaje disponible, acceso y calidad de servicios públicos, así como el concepto sanitario emitido por la autoridad competente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-DAC-002",
+      "texto_lineamiento": "Para las ETC departamentales, la información del DACO debe discriminarse por cada uno de los municipios no certificados.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "A1",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "tipo_ETC = departamental",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-DAC-003",
+      "texto_lineamiento": "El DACO deberá ser reportado en los sistemas de información que dispone la UApA, siguiendo la guía de gestión de la información ubicada en la caja de herramientas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-CON-005",
+      "texto_lineamiento": "El diagnóstico debe identificar la vocación productiva del territorio mediante la evaluación de las dinámicas agrícolas y pecuarias locales, la disponibilidad de productos propios de la región y el potencial de integración de pequeños productores y productores de la Agricultura Campesina, Familiar y Comunitaria (ACFC) en los esquemas de abastecimiento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A1-DIA-CON-006",
+      "texto_lineamiento": "El análisis de vocación productiva del territorio debe considerar los mapas de la zonificación de aptitud productiva diseñados por la Unidad de Planificación Rural Agropecuaria (UPRA), así como lo establecido en la normatividad de compras locales vigente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-001",
+      "texto_lineamiento": "El diagnóstico debe incluir la descripción de la composición de la población beneficiaria, indicando: número total de estudiantes matriculados, número total de población beneficiaria del PAE, distribución por ubicación rural o urbana, y reconocimiento de quienes requieren abordaje diferencial (comunidades étnicas, víctimas del conflicto armado, personas en condición de discapacidad).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-002",
+      "texto_lineamiento": "El diagnóstico debe indicar por sede educativa: el modelo de atención (convencional, pueblos indígenas, comunidades NARP, zonas rurales de difícil acceso), la modalidad de atención (Preparada en sitio, Caliente transportada, Industrializada, Canasta PAE en Casa, Bono Alimentario) y el tipo de complemento alimentario (almuerzo o jornada mañana/tarde).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-003",
+      "texto_lineamiento": "El diagnóstico debe incluir un análisis comparativo entre vigencias que permita evidenciar la caracterización de la población atendida, la pertinencia del modelo y modalidad de atención, el comportamiento de la tasa de deserción escolar, los avances y retos en el desmonte progresivo de la modalidad industrializada, y las necesidades de ajustes en infraestructura y dotación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-004",
+      "texto_lineamiento": "El diagnóstico debe presentar información sobre el inicio oportuno y la continuidad del Programa por modelo de atención, identificando los periodos de suministro de raciones en comparación con el calendario académico, e indicando si se presentaron interrupciones en la prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-005",
+      "texto_lineamiento": "En caso de haberse suscrito varios contratos durante la vigencia, la información del diagnóstico deberá permitir establecer si se presentaron interrupciones en la prestación del servicio de alimentación escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "número_contratos_vigencia > 1",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-006",
+      "texto_lineamiento": "El diagnóstico debe incluir información financiera indicando los recursos asignados, el uso de dichos recursos y el valor ejecutado a la fecha, discriminado por fuentes de financiación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-007",
+      "texto_lineamiento": "Para las Entidades Territoriales Departamentales, el diagnóstico financiero deberá además precisar el esquema de bolsa común implementado.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "tipo_ETC = departamental",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-008",
+      "texto_lineamiento": "El diagnóstico debe incluir un análisis del incremento en los recursos propios y asignados al PAE respecto a la vigencia anterior, la proporción de las fuentes complementarias (regalías, vigencias futuras, cooperación) y los retos financieros para la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-009",
+      "texto_lineamiento": "El diagnóstico debe describir el desempeño de la operación del Programa por parte de los operadores y la supervisión/interventoría, incluyendo: generalidades del contrato, personal contratado (incluidas manipuladoras de alimentos con cantidad, tipo de contratación y forma de pago), causas de cambios en modalidades, alertas o brotes de ETA con sus causas, y hallazgos/observaciones/requerimientos/sanciones de la supervisión o interventoría.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-010",
+      "texto_lineamiento": "El diagnóstico debe medir el desempeño de la operación por parte de la ETC, relacionando: cargo, perfil y contrato del Equipo PAE, articulación institucional, capacidad de reacción ante hallazgos, evaluación del ciclo de menús, gestión ambiental, experiencias exitosas, obstáculos presentados y retos para la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-011",
+      "texto_lineamiento": "El diagnóstico debe incluir información sobre el cumplimiento de la normatividad de compras públicas locales: resultados de indicadores de seguimiento del Anexo 4, listado de pequeños productores y productores ACFC, alimentos adquiridos y cantidades, valor total de compras locales públicas de alimentos, valor total de compra de alimentos a la fecha, dificultades de implementación, grado de articulación con secretarías de agricultura, y resultados de participación en mesas técnicas nacionales de CPL.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-012",
+      "texto_lineamiento": "El diagnóstico debe desagregar la información de participación ciudadana: quejas, reclamos, sugerencias o felicitaciones obtenidos en rendición de cuentas, informes bimensuales de los CAE, mesas públicas y acompañamiento de veedurías ciudadanas, identificando temas recurrentes, acciones adelantadas y oportunidades de mejora.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-013",
+      "texto_lineamiento": "El diagnóstico debe incorporar información sobre la operación del Programa por parte de organizaciones de base y asociaciones de padres de familia, identificando aquellas que participan actualmente en la ejecución del PAE y las interesadas en vincularse, así como las acciones de la ETC para su reconocimiento, fortalecimiento y articulación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-014",
+      "texto_lineamiento": "El diagnóstico debe incluir los informes bimensuales de los Comités de Alimentación Escolar (CAE) como fuente de información sobre la participación ciudadana y el control social del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A1-DIA-CON-007",
+      "texto_lineamiento": "A partir de los análisis realizados en el diagnóstico, la ETC debe formular propuestas orientadas a fortalecer aquellos aspectos donde se identificaron brechas u oportunidades de mejora para la operación del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-DAC-004",
+      "texto_lineamiento": "El documento del diagnóstico PAE debe incluir como anexo el Diagnóstico Situacional Integral de las Condiciones Operativas (DACO).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-DAC",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A1-DIA-BAL-015",
+      "texto_lineamiento": "El documento del diagnóstico PAE debe incluir como anexo: tablas de caracterización de la población beneficiaria, tablas de modelos/modalidades/tipo de complemento alimentario por sede educativa, listado de pequeños productores y productores ACFC del Programa, listado de organizaciones de base participantes e interesadas, y certificación de la autoridad territorial de salud sobre sedes con concepto higiénico sanitario favorable o favorable con requerimientos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-BAL",
+      "doc_id": "A1",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-NOR-PRI-001",
+      "texto_lineamiento": "El Decreto 1852 de 2015 tiene como objeto reglamentar las normas referentes al PAE (parágrafo 4° art. 136 Ley 1450/2011, numeral 20 art. 6° Ley 1551/2012, parágrafo 2° art. 2° Ley 715/2001 y arts. 16-19 Ley 1176/2007), adicionando el Título 10 a la Parte 3 del Libro 2 del Decreto 1075 de 2015.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-NOR-PRI-002",
+      "texto_lineamiento": "El Título 10 del Decreto 1075 de 2015 (adicionado por el Decreto 1852) aplica al sector educativo en los niveles y órdenes de la Administración Pública Nacional y Territorial, así como a todos los actores del Programa de Alimentación Escolar PAE.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) expedirá dentro de los lineamientos técnicos-administrativos los estándares y las condiciones mínimas para la prestación del servicio y la ejecución del PAE, los cuales serán de obligatorio cumplimiento y aplicación para las entidades territoriales, los actores y los operadores del programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-PLA-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) determinará los criterios para distribuir los recursos de la Nación y realizará las actividades institucionales necesarias para transferirlos a las entidades territoriales, con el fin de que estas implementen, financien y ejecuten el PAE de acuerdo con los lineamientos y las necesidades locales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-002",
+      "texto_lineamiento": "De manera excepcional, el MEN (ahora UAPA) podrá ejecutar directamente los recursos del PGN para el PAE cuando: (1) se presenten hechos constitutivos de calamidad pública, desastre, emergencia grave, fuerza mayor o caso fortuito que impidan temporalmente a las ETC la suscripción/ejecución de contratos, y por el tiempo que dure la imposibilidad; o (2) se presenten hechos sobrevinientes que generen grave perturbación del orden público que impidan temporalmente a las ETC contratar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica SOLO cuando: calamidad_publica OR desastre OR emergencia_grave OR fuerza_mayor OR caso_fortuito OR grave_perturbacion_orden_publico que impida temporalmente a ETC contratar",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-003",
+      "texto_lineamiento": "El MEN (ahora UAPA) coordinará las actividades con los actores del PAE para el cumplimiento de los lineamientos y objetivos del programa y brindará asesoría a las entidades territoriales sobre las acciones, actividades y proyectos que se implementen.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-004",
+      "texto_lineamiento": "El MEN (ahora UAPA) podrá ordenar acciones o medidas administrativas, técnicas y operativas que deben adoptar las entidades territoriales, los operadores, los rectores y en general los actores del sistema educativo, con el fin de garantizar la oportunidad, continuidad y adecuada ejecución del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-BOL-001",
+      "texto_lineamiento": "Los municipios, distritos y departamentos deben concurrir con recursos económicos y el cumplimiento de las obligaciones y funciones señaladas en la ley, el Decreto 1852 y los lineamientos del MEN. La UAPA hará articulación, ejecución y orientación por medio de los Lineamientos Técnicos-Administrativos y cofinanciará el Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CAL-BPM-001",
+      "texto_lineamiento": "Los comedores escolares son responsabilidad de las entidades territoriales. En el evento en que no cumplan con las condiciones adecuadas, las administraciones deberán realizar la adecuación y/o mejoramiento para garantizar las condiciones establecidas en los Lineamientos Técnicos-Administrativos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando comedores_escolares NO cumplen condiciones adecuadas",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-005",
+      "texto_lineamiento": "El MEN (ahora UAPA) determinará los criterios y la metodología para la distribución de recursos diferenciados, con el fin de realizar la priorización de entidades territoriales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-DIA-CON-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) indicará en los Lineamientos Técnicos-Administrativos los criterios que deben tener en cuenta los departamentos, distritos y municipios para la priorización de las Instituciones Educativas y focalización de los niños, niñas, adolescentes y jóvenes beneficiarios del PAE, teniendo en cuenta la información del SIMAT.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-EJE-001",
+      "texto_lineamiento": "Los recursos de cofinanciación que transfiera la UAPA para el PAE a las entidades territoriales deberán destinarse exclusivamente para: (1) compra de alimentos, (2) contratación de personal manipulador, (3) transporte de alimentos, (4) dotación de menaje/equipos/utensilios, (5) insumos de aseo, (6) combustible para preparación, (7) contratación de provisión del servicio, (8) construcción y mejoramiento de infraestructura, (9) supervisión, interventoría, monitoreo y control.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-EJE-002",
+      "texto_lineamiento": "Los recursos del PAE NO podrán destinarse para dotación de menaje/equipos/utensilios (numeral 4) ni para construcción/mejoramiento de infraestructura (numeral 8) si ello implica la disminución de las coberturas actuales o el detrimento en la calidad de la prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando destino_recursos = dotacion_equipos OR infraestructura",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-EJE-003",
+      "texto_lineamiento": "Los recursos asignados por la UAPA que queden sin ejecución al cierre de la vigencia podrán ser utilizados con la destinación que establezca la UAPA para la ejecución del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "Aplica cuando recursos_asignados quedan sin ejecución al cierre de vigencia",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-006",
+      "texto_lineamiento": "La adecuada y oportuna prestación de los servicios del PAE es corresponsabilidad de actores estatales (MEN/UAPA, municipios, distritos, departamentos, establecimientos y sedes educativas oficiales), los operadores, el personal manipulador de alimentos, rectores, docentes directivos, docentes, padres de familia, estudiantes, organismos de cooperación internacional, entidades no gubernamentales y sector privado.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-007",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe definir, proferir y actualizar los Lineamientos Técnicos-Administrativos del PAE, los estándares y las condiciones mínimas para la ejecución del Programa y la prestación del servicio, que serán de obligatorio cumplimiento para las ETC, operadores y actores del programa, independientemente de la fuente de recursos con la cual se financie.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-NOR-COM-008",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe prestar asistencia técnica a las entidades territoriales para la implementación y ejecución del PAE en sus jurisdicciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-FIN-BOL-002",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe distribuir y transferir a las entidades territoriales los recursos de cofinanciación del PGN al PAE, verificando que la ejecución de los recursos de las diferentes fuentes se ejecute de manera coordinada bajo el esquema de Bolsa Común.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-REP-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe definir e implementar un sistema de información, así como los instrumentos de planeación, seguimiento, monitoreo y control del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-GOB-VEE-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe promover la participación ciudadana y el control social acorde con los principios de la democracia participativa y la democratización de la gestión pública, de acuerdo con la normatividad vigente y los Lineamientos Técnicos-Administrativos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-VEE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-CON-IYV-001",
+      "texto_lineamiento": "El MEN (ahora UAPA) debe realizar visitas selectivas a las entidades territoriales, a los establecimientos educativos y a los operadores del programa, directamente o a través de la supervisión e interventoría, para verificar las condiciones de ejecución del programa y el cumplimiento de los lineamientos. Estas visitas podrán desarrollarse con la participación de órganos de control.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-FIN-PLA-002",
+      "texto_lineamiento": "Las entidades territoriales deben apropiar y reservar los recursos necesarios y suficientes para la financiación o cofinanciación del PAE en su jurisdicción, y adelantar los trámites para comprometer vigencias futuras cuando haya lugar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-001",
+      "texto_lineamiento": "Las entidades territoriales deben garantizar que en una institución educativa no existan dos operadores del servicio realizando actividades de manera simultánea en el mismo lugar de preparación o entrega de alimentos, y que un mismo beneficiario no sea receptor de dos raciones en el mismo tiempo de consumo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-002",
+      "texto_lineamiento": "Las entidades territoriales deben asegurar la dotación de equipos, utensilios y menaje necesarios para la operación del programa en las instituciones educativas priorizadas, de acuerdo con la modalidad que se esté suministrando.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-FIN-REP-002",
+      "texto_lineamiento": "Las entidades territoriales deben remitir oportunamente a la UAPA la información y documentos que establezca para el seguimiento y consolidación de cifras del programa, y realizar el reporte de los recursos en el CHIP (Sistema Consolidador de Hacienda e Información Pública).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-DIA-CON-002",
+      "texto_lineamiento": "Las entidades territoriales deben establecer y remitir a la UAPA antes del 31 de octubre de cada año la priorización de instituciones educativas del calendario escolar siguiente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "DIA-CON",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-REP-003",
+      "texto_lineamiento": "Las entidades territoriales deben registrar en el SIMAT (o sistema que determine la UAPA) la estrategia de Alimentación Escolar con el número de cupos y las Instituciones Educativas priorizadas, de acuerdo con la focalización determinada por la UAPA.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-FIN-REP-004",
+      "texto_lineamiento": "Las entidades territoriales deben consolidar la información del programa a través del SIMAT, generando el reporte de los NNA inscritos en el PAE, y remitir el reporte al Consejo de Política Social del respectivo municipio dentro de las dos semanas siguientes a la inscripción.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-GOB-VEE-002",
+      "texto_lineamiento": "Las entidades territoriales deben implementar y promover la participación ciudadana y el control social acorde con los principios de la democracia participativa y la democratización de la gestión pública.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-VEE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-003",
+      "texto_lineamiento": "Las entidades territoriales deben ejecutar directa o indirectamente el PAE con sujeción a los lineamientos, estándares y condiciones mínimas señaladas por la UAPA, incluyendo: (a) administrar y coordinar recursos bajo esquema de bolsa común, (b) adelantar procesos de contratación oportunos, (c) garantizar la prestación del servicio desde el primer día del calendario escolar y durante la vigencia, (d) designar supervisión e interventoría técnica.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CAL-BPM-002",
+      "texto_lineamiento": "Las entidades territoriales deben garantizar que los establecimientos educativos de su jurisdicción cuenten con la infraestructura adecuada para el almacenamiento, preparación, distribución y consumo de los complementos alimentarios, y suscribir planes de mejoramiento con los establecimientos que no cumplan estas condiciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-004",
+      "texto_lineamiento": "Los rectores de las IE priorizadas deben designar y gestionar espacios adecuados para la operación del programa en cada etapa, de acuerdo con la modalidad que se esté suministrando.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-005",
+      "texto_lineamiento": "Los rectores deben facilitar a los operadores del PAE el cumplimiento de las obligaciones contractuales que tengan relación con la institución educativa, conforme a los Lineamientos Técnicos-Administrativos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D1852-CON-IYV-002",
+      "texto_lineamiento": "Los rectores deben verificar y suscribir el documento que acredite el suministro de cada complemento alimentario, de manera que sean entregados adecuada y oportunamente por los operadores, y emitir mensualmente el certificado de complementos alimentarios entregados por el operador.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-FIN-REP-005",
+      "texto_lineamiento": "Los rectores deben registrar en el SIMAT (o sistema que determine la UAPA) los NNA focalizados de acuerdo con los Lineamientos Técnicos-Administrativos del programa, y actualizar oportunamente los cambios en la matrícula de cada IE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-GOB-RDC-001",
+      "texto_lineamiento": "Los rectores deben dar a conocer a la comunidad educativa el Programa de Alimentación Escolar y las condiciones en que se prestará en la institución educativa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-RDC",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D1852-CON-IYV-003",
+      "texto_lineamiento": "Las entidades territoriales liderarán con los rectores, coordinadores, directivos docentes, docentes, personal administrativo, veedurías ciudadanas y sociedad las siguientes acciones: (1) seguimiento, control y evaluación de la ejecución del PAE en cada establecimiento, (2) seguimiento al cumplimiento de condiciones de recepción, conservación, manejo y distribución de la alimentación escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-CAL-ALE-001",
+      "texto_lineamiento": "Las entidades territoriales y rectores deben verificar las condiciones de calidad de los alimentos, la fecha de vencimiento, empaque de la ración alimentaria, condiciones higiénicas del personal de transporte y cumplimiento del menú, y reportar inmediatamente al ordenador del gasto, supervisor o interventor y a las autoridades competentes cualquier irregularidad que afecte la prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-006",
+      "texto_lineamiento": "Los operadores deben cumplir oportunamente los lineamientos técnicos-administrativos, condiciones de operación y estándares mínimos del Programa fijados por la UAPA.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CAL-BPM-003",
+      "texto_lineamiento": "Los operadores deben garantizar permanentemente la cantidad, calidad, inocuidad y oportunidad en la entrega de los alimentos a los estudiantes beneficiarios del programa, en las condiciones del contrato, las señaladas por la UAPA y las autoridades competentes.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-007",
+      "texto_lineamiento": "Los operadores deben planear, organizar y ejecutar el suministro diario de los complementos alimentarios, y garantizar que el personal que lleva a cabo las actividades en las diferentes etapas del proceso tenga la idoneidad y experiencia suficiente para el cumplimiento de sus funciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-EQU-001",
+      "texto_lineamiento": "Los operadores deben dar cumplimiento al plan de capacitaciones y realizar la entrega de la dotación al personal manipulador de alimentos que emplee para la operación del programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "D1852-CON-EJE-008",
+      "texto_lineamiento": "Corresponde a la entidad territorial verificar que las obligaciones de los operadores (lineamientos, estándares, condiciones) sean debidamente incorporadas al contrato.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-IYV-004",
+      "texto_lineamiento": "El MEN (ahora UAPA) implementará un conjunto de acciones articuladas para el seguimiento y monitoreo del programa que incluya aspectos administrativos, técnicos, financieros y operativos, propendiendo por la adecuada ejecución del mismo y de los recursos, para lo cual debe revisar y actualizar el SIMAT a los requerimientos del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-CON-IYV-005",
+      "texto_lineamiento": "Las entidades contratantes deben realizar el seguimiento y control de la ejecución del PAE en su jurisdicción, designar supervisión, contratar interventoría idónea, cumplir obligaciones legales, adoptar acciones como contratante y ordenador del gasto, y generar espacios de control social con participación de la comunidad y veedurías ciudadanas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "D1852-GOB-VEE-003",
+      "texto_lineamiento": "Los actores del programa y la comunidad deben ejercer el derecho a la participación ciudadana y control social, verificar constantemente la ejecución del PAE en su territorio e IE, y la forma como el operador cumple sus obligaciones, e informar o denunciar ante la ETC y órganos de control las irregularidades o anomalías detectadas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-VEE",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "FAM",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "D1852-GOB-RDC-002",
+      "texto_lineamiento": "Los operadores deberán publicar en las instituciones educativas, en lugares de acceso al público y en sus páginas web las condiciones del contrato, sus obligaciones y los menús diarios de cada IE en la que presten el servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-RDC",
+      "doc_id": "D1852",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-PRI-001",
+      "texto_lineamiento": "El objeto del PAE es establecer los Lineamientos Técnicos-Administrativos, los Estándares y las Condiciones Mínimas que deben cumplir todos los actores para la operación del Programa de Alimentación Escolar.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-NOR-PRI-002",
+      "texto_lineamiento": "El objetivo general del PAE es contribuir al acceso con permanencia escolar y al bienestar de NNAJ registrados en el sistema educativo oficial desde el segundo ciclo de la educación inicial hasta la educación básica y media, mediante un complemento alimentario adecuado, seguro, pertinente y culturalmente apropiado durante el calendario académico, que promueva el consumo de alimentos de alto valor nutricional producidos localmente y el fomento de hábitos alimentarios saludables.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-NOR-PRI-003",
+      "texto_lineamiento": "El PAE se orienta por los siguientes enfoques que guían todas las etapas del programa: Enfoque de Derechos Humanos, Enfoque de género, Enfoque de cuidado, Enfoque territorial, Enfoque pedagógico y Enfoques diferenciales (interseccionalidad). Estos enfoques son de aplicación obligatoria en todas las etapas.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-PRI-004",
+      "texto_lineamiento": "El Enfoque de Derechos Humanos orienta el PAE al reconocimiento del derecho humano a la alimentación adecuada, el derecho a la educación, el derecho a un ambiente sano y el derecho a la paz, garantizando la soberanía alimentaria, la sostenibilidad ambiental y la promoción de ambientes escolares protectores e inclusivos.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-PRI",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-DEF-001",
+      "texto_lineamiento": "Los beneficiarios del PAE son la población de Niñas, Niños, Adolescentes y Jóvenes (NNAJ) matriculada en el sistema educativo oficial desde el segundo ciclo de la educación inicial hasta la educación básica y media.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-NOR-DEF-002",
+      "texto_lineamiento": "La familia o personas cuidadoras del estudiante beneficiario podrán voluntariamente manifestar el desistimiento a ser atendidos en el PAE, el cual deberá presentarse por escrito ante la institución educativa en el formato definido por la UApA. La familia o persona cuidadora podrá solicitar la vinculación de nuevo al Programa cuando lo considere.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando la familia o persona cuidadora manifiesta voluntad de desistimiento.",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "R0003-CON-EST-001",
+      "texto_lineamiento": "El ejercicio técnico para determinar la población a priorizar y el número de complementos alimentarios asignados a cada sede educativa debe adelantarse por la Secretaría de Educación o la Secretaría responsable del PAE en la ETC, haciendo uso de los sistemas de información oficiales y, cuando aplique, en concertación con las ETnoC. El resultado debe ser aprobado por el CTPS.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-CON-EST-002",
+      "texto_lineamiento": "La atención progresiva del PAE debe seguir en estricto orden los siguientes criterios: 1) 100% de niñas y niños de segundo ciclo de educación inicial (preescolar: prejardín, jardín, transición); 2) 100% de NNAJ en jornada única; 3) 100% de NNAJ en sedes con población mayoritariamente indígena, NARP, víctima del conflicto armado o en condición de discapacidad (más del 50% de matrícula); 4) NNAJ en sedes rurales, iniciando por unidocente, luego básica, priorizando difícil acceso; 5) NNAJ en sedes urbanas desde básica primaria.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-CON-EST-003",
+      "texto_lineamiento": "Los rectores y los CAE, teniendo en cuenta los cupos asignados, el comportamiento del suministro y los desistimientos, deberán proponer ajustes a la priorización de beneficiarios considerando criterios de vulnerabilidad socioeconómica (SISBÉN, migrantes, especial protección), debidamente justificados y evidenciados en el SIMAT.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-CON-EST-004",
+      "texto_lineamiento": "La población en programas de adultos y jóvenes en extraedad con atención semipresencial no podrá priorizarse dentro del PAE hasta tanto no se cumpla con la universalidad en educación regular, y su atención no podrá desfinanciar el Programa ni afectar la operación durante la totalidad del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando se considere incluir población de programas de adultos/extraedad semipresencial.",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-NUT-001",
+      "texto_lineamiento": "El complemento alimentario del PAE corresponde a alimentos altamente nutritivos, preferiblemente producidos localmente, suministrados durante la jornada escolar del calendario académico. El complemento alimentario jornada mañana/tarde (JM/JT) aporta el 20% de las RIEN, y el complemento alimentario tipo almuerzo aporta el 30% de las RIEN.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-NUT",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-ALI-NUT-002",
+      "texto_lineamiento": "En jornada única y en zonas rurales de difícil acceso, independientemente del tipo de jornada, el complemento alimentario deberá corresponder al tipo almuerzo (30% RIEN).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-NUT",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "jornada = jornada_unica OR zona = rural_dificil_acceso",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-ALI-DIF-001",
+      "texto_lineamiento": "Las niñas y niños del segundo ciclo de educación inicial (preescolar: prejardín, jardín, transición) con jornadas de 6 horas diarias deberán recibir complementos correspondientes al 50% del aporte nutricional. Aquellos con jornadas de 8 horas diarias deberán recibir complementos correspondientes al 70% del aporte nutricional.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "nivel_escolar = segundo_ciclo_educacion_inicial AND (jornada = 6h OR jornada = 8h)",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-ALI-NUT-003",
+      "texto_lineamiento": "La entidad territorial no podrá entregar más de un complemento alimentario por beneficiario, salvo lo dispuesto para el segundo ciclo de educación inicial (parágrafo 2), sin que previamente tenga garantizada la cobertura universal y continua durante la totalidad del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-NUT",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-NUT-004",
+      "texto_lineamiento": "La entidad territorial no podrá aumentar el aporte nutricional de los complementos alimentarios, salvo en los casos expresamente previstos en la resolución, sin que previamente tenga garantizada la cobertura universal y la continuidad durante la totalidad del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-NUT",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-DIF-002",
+      "texto_lineamiento": "Para población beneficiaria en Estrategia de Residencias Escolares, las Entidades Territoriales deberán garantizar el aporte nutricional del 100% de las RIEN por nivel y grado educativo. Con cargo a recursos de la Nación asignados por la UApA, podrá financiarse hasta el 50% del requerimiento diario de ingesta.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "estrategia = residencias_escolares",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-TRA-ETN-001",
+      "texto_lineamiento": "El modelo PAE para pueblos indígenas se implementa en establecimientos educativos con población mayoritariamente indígena o ubicados en territorio indígena, en el marco del SEIP y las particularidades culturales de cada pueblo, de conformidad con la Resolución 18858 de 2018, garantizando respeto por autonomía, cosmovisión y diversidad cultural.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-ETN",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "sede_educativa = poblacion_mayoritariamente_indigena OR ubicacion = territorio_indigena",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-TRA-ETN-002",
+      "texto_lineamiento": "El modelo PAE para comunidades NARP se implementa en sedes educativas ubicadas en territorios habitados por comunidades NARP, o en sedes donde la matrícula NARP supere el 50%, o que cuenten con PEC, de conformidad con la Resolución 051 de 2025, garantizando respeto por identidad, tradiciones y diversidad cultural.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-ETN",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "sede_en_territorio_NARP OR matricula_NARP > 50% OR sede_con_PEC",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-ALI-DIF-003",
+      "texto_lineamiento": "El modelo PAE para sedes en zonas rurales de difícil acceso garantiza complemento alimentario tipo almuerzo reconociendo particularidades territoriales, culturales y alimentarias, conforme al artículo 2.4.4.1.2 del Decreto 1075 de 2015. Solo aplica en sedes que no cumplan criterios de modelos indígena o NARP.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "zona = rural_dificil_acceso AND NOT (modelo_indigena OR modelo_NARP)",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-DEF-003",
+      "texto_lineamiento": "Las modalidades de atención del PAE son: 1) Preparada en sitio: almacenamiento, preparación y consumo en la sede educativa; 2) Caliente transportada: preparación en centro de producción y transporte a la sede; 3) Industrializada: complemento listo para consumo sin transformación; 4) Canasta PAE en Casa: conjunto de alimentos para preparación en el hogar; 5) Bono Alimentario: cupón canjeable por alimentos.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-CON-EJE-001",
+      "texto_lineamiento": "Las modalidades Preparada en Sitio o Caliente Transportada deben ser preferentes. Las ETC que presten atención con modalidad Industrializada deben realizar gestiones para el desmonte progresivo hasta máximo el año 2030, informando anualmente a la UApA sobre gestiones y avances.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "modalidad_actual = industrializada",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-DIF-004",
+      "texto_lineamiento": "Para niñas y niños del segundo ciclo de educación inicial con jornadas de 6 u 8 horas diarias, y para población en sedes en zonas rurales de difícil acceso, las únicas modalidades permitidas son preparada en sitio y caliente transportada.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "(nivel = segundo_ciclo_educacion_inicial AND jornada >= 6h) OR zona = rural_dificil_acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-CON-EJE-002",
+      "texto_lineamiento": "La ETC deberá establecer desde la etapa de planeación las situaciones excepcionales de prestación del servicio para que el complemento pueda consumirse fuera de la sede educativa (salidas pedagógicas, actividades culturales, paros), permitiendo atender transitoriamente con otra modalidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "R0003-ALI-EME-001",
+      "texto_lineamiento": "Durante las semanas de receso estudiantil definidas en el calendario académico, se garantizará la continuidad del PAE en las ETC priorizadas anualmente por la UApA, mediante modalidad Canasta PAE en Casa. El complemento deberá aportar como mínimo el 25% de las RIEN.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-EME",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "periodo = receso_estudiantil AND ETC = priorizada_por_UApA",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-EME-002",
+      "texto_lineamiento": "La distribución de la Canasta PAE en Casa se realizará al inicio de cada receso estudiantil, sin sobrepasar la primera semana del periodo de disfrute, a cargo del operador. El seguimiento corresponde a las ETC, y en departamentos, deben coordinar con municipios no certificados.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-EME",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "periodo = receso_estudiantil",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-EME-003",
+      "texto_lineamiento": "La modalidad Canasta PAE en Casa y Bono Alimentario podrá aplicarse en casos de imprevistos o emergencias declaradas que afecten la prestación del servicio educativo por más de 10 días del calendario académico. Cuando la afectación sea menor a 10 días, se autorizará la modalidad industrializada.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-EME",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "emergencia_declarada AND suspensión_servicio > 10 días",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-DEF-004",
+      "texto_lineamiento": "El PAE se estructura en tres etapas: 1) Planeación: formulación del POA, CTPS, estructuración y contratación; 2) Operación y seguimiento: ejecución conforme a estándares, verificación del POA; 3) Evaluación: medición de objetivos, resultados e impactos, generación de alertas y recomendaciones.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-CON-SEL-001",
+      "texto_lineamiento": "La ETC definirá la modalidad de contratación para seleccionar al operador conforme al ordenamiento jurídico vigente, garantizando que los operadores cuenten con capacitación para la adecuada operación del PAE. Se podrá contratar a través de Fondos de Servicios Educativos, AMPF, JAC (Decreto 4791/2008, Ley 2167/2021, Decreto 846/2023) o Asociaciones Público-Populares (APPo, Art. 100 Ley 2294/2023, Decreto 874/2024).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-TRA-FOR-001",
+      "texto_lineamiento": "Las ETC y operadores del PAE deberán garantizar la vinculación de manipuladoras y manipuladores de alimentos idóneos y suficientes, con condiciones laborales conformes al artículo 69 de la Ley 2466 de 2025. Deberán priorizar manipuladores con experiencia mínima de 3 años continuos o discontinuos, especialmente cuando el servicio haya sido prestado en la misma sede.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-TRA-FOR-002",
+      "texto_lineamiento": "Se prohíbe considerar como voluntarios a las personas que se desempeñen como personal manipulador de alimentos y/o dinamizadores auxiliares en la operación del PAE. Se prohíbe la suscripción de convenios de voluntariado o cualquier forma de contratación que vulnere derechos laborales y de seguridad social.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-GOB-CTP-001",
+      "texto_lineamiento": "El CTPS es la instancia de planeación y seguimiento del PAE, encargada de revisar el estado de la operación, aprobar la propuesta de atención de la siguiente vigencia conforme al POA, y realizar seguimiento. Debe sesionar como mínimo 3 veces al año.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-GOB-CAE-001",
+      "texto_lineamiento": "El CAE es un espacio de participación ciudadana para vigilancia del PAE que debe crearse en cada institución educativa para vigencia de funcionamiento anual. Debe sesionar de manera bimestral, sin perjuicio de reuniones extraordinarias.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CAE",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-GOB-DIN-001",
+      "texto_lineamiento": "El Comité Dinamizador PAE es un espacio de participación conformado por actores comunitarios que, de acuerdo con las estructuras de gobierno propio de cada pueblo indígena, realiza seguimiento, monitoreo y control al PAE en establecimientos educativos con población mayoritariamente indígena o en territorio indígena.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-DIN",
+      "doc_id": "R0003",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "sede_educativa = poblacion_mayoritariamente_indigena OR ubicacion = territorio_indigena",
+      "actor_responsable": "ORGBC",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-GOB-MES-001",
+      "texto_lineamiento": "Las Mesas Públicas son espacios de participación ciudadana convocados, liderados y desarrollados por la ETC para socialización, seguimiento y control social del PAE. Se realizarán como mínimo 2 veces durante la vigencia del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-MES",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-CAL-BPM-001",
+      "texto_lineamiento": "Las ETC, operadores y demás actores deberán garantizar que el personal manipulador de alimentos conozca el funcionamiento del PAE y deben desarrollar procesos de capacitación permanente en alimentación saludable y sostenible, calidad e inocuidad, BPM y manipulación de alimentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-NOR-DEF-005",
+      "texto_lineamiento": "El personal manipulador de alimentos y/o dinamizadores auxiliares de alimentos son aquellos que intervienen directa, permanente u ocasionalmente en actividades de fabricación, recepción, almacenamiento, preparación y servido de complementos alimentarios. Preferentemente deben ser padres, madres de familia, tutores o acudientes de estudiantes matriculados en la sede educativa.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "R0003",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "R0003-NOR-COM-001",
+      "texto_lineamiento": "Los procesos contractuales iniciados antes de la entrada en vigencia de la Resolución 0003/2026 continuarán su trámite con observancia a la norma vigente a la fecha de inicio. Los contratos en ejecución mantendrán condiciones pactadas salvo ajustes acordados por las partes por razones de mejora del servicio, seguridad alimentaria o sanitaria.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "proceso_contractual_iniciado_antes_vigencia_R0003",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "R0003-ALI-DIF-005",
+      "texto_lineamiento": "A partir de la entrada en vigencia de la Resolución 0003/2026, las niñas y niños del segundo ciclo de educación inicial con jornadas de 8 horas diarias deberán ser atendidos conforme a las condiciones de esta resolución, sin perjuicio de los procesos contractuales iniciados anteriormente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "ALI-DIF",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "nivel = segundo_ciclo_educacion_inicial AND jornada = 8h",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "R0003-NOR-COM-002",
+      "texto_lineamiento": "La Resolución 0003 de 2026 rige desde su publicación y deroga la Resolución 335 de 2021 y sus anexos técnicos, la Resolución 421 de 2023, la Resolución 374 de 2024, la Resolución 404 de 2024 y todas las disposiciones contrarias.",
+      "tipo_regla": "referente",
+      "subcat_id": "NOR-COM",
+      "doc_id": "R0003",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-001",
+      "texto_lineamiento": "La Entidad Territorial Certificada (ETC), en articulación con las Entidades Territoriales No Certificadas (ETNoC) cuando aplique, deberá organizar, definir y disponer las acciones necesarias para garantizar una operación eficiente, continua, inocua, transparente, pertinente y con enfoque diferencial del PAE durante la vigencia correspondiente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-002",
+      "texto_lineamiento": "La ETC deberá formalizar el Plan Operativo Anual del PAE mediante acto administrativo y remitirlo a la UApA a más tardar en el mes de agosto, por el medio que esta indique.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-003",
+      "texto_lineamiento": "El proceso de selección, adjudicación, firma del contrato y alistamiento operativo deberán permitir el inicio del servicio desde el primer día del calendario escolar, sin interrupciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-004",
+      "texto_lineamiento": "El proceso de priorización de la población beneficiaria se realiza con base en los criterios establecidos en la Resolución vigente, haciendo uso de los sistemas de información oficiales y, cuando aplique, en concertación con las ETNoC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-005",
+      "texto_lineamiento": "El ejercicio técnico para determinar la población a priorizar y el número de complementos alimentarios asignados a cada sede educativa debe adelantarse por la Secretaría de Educación o la Secretaría responsable de la operación del PAE en articulación con el sector educación en las ETC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-006",
+      "texto_lineamiento": "La ETC deberá determinar los modelos de atención requeridos conforme a las diferencias poblacionales, étnicas y contexto territorial, definiendo si la atención corresponde al PAE convencional, al PAE para pueblos indígenas (Resolución 18858 de 2018), al PAE para comunidades NARP (Resolución 051 de 2025), o al modelo para sedes educativas ubicadas en zonas rurales de difícil acceso.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-007",
+      "texto_lineamiento": "La modalidad Preparada en Sitio será preferente cuando la infraestructura y las condiciones sanitarias lo permitan.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando la infraestructura y condiciones sanitarias lo permitan",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-008",
+      "texto_lineamiento": "Para sedes educativas ubicadas en zonas rurales de difícil acceso, la Entidad Territorial deberá adelantar como mínimo: (1) Identificar las sedes en zonas rurales de difícil acceso, (2) Definir la modalidad de atención, (3) Diseñar el Plan de Gestión de Riesgos, (4) Diseñar el Plan Alimentario Rural, (5) Diseñar el Plan de Proveeduría de Alimentos, (6) Implementar estrategia de socialización y apropiación del modelo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando existan sedes educativas en zonas rurales de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EQU-001",
+      "texto_lineamiento": "La ETC deberá planear y garantizar la conformación del equipo PAE, definiendo la cantidad de personas, los perfiles y roles, el modelo de vinculación, los mecanismos de convocatoria y selección, los plazos de contratación, los honorarios o costos asociados, y las funciones específicas de cada integrante.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EQU-002",
+      "texto_lineamiento": "La ETC deberá prever procesos de inducción y capacitación inicial y continua del equipo PAE, de acuerdo con las necesidades del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EQU-003",
+      "texto_lineamiento": "Para la conformación del Equipo PAE se sugieren los siguientes roles: Coordinación/Dirección del Programa, Calidad Inocuidad y Alimentación Saludable, Análisis y Gestión de la Información, Gestión Administrativa y Financiera/Contabilidad, y Participación Ciudadana.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "A2-CON-EQU-004",
+      "texto_lineamiento": "Para definir el número de profesionales del equipo PAE se deben considerar: (a) Categoría del municipio o departamento, (b) Cobertura del Programa, (c) Ejecución centralizada o descentralizada, (d) Esquema de seguimiento de la operación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EQU-005",
+      "texto_lineamiento": "La ETC deberá garantizar la continuidad y permanencia del Equipo PAE durante las etapas de planeación, operación y seguimiento, y evaluación del Programa, evitando interrupciones que afecten la prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-IYV-001",
+      "texto_lineamiento": "La ETC debe formular el Plan Anual de Desarrollo Educativo que incluya lo concerniente al servicio educativo con programas, proyectos, metas e indicadores en cobertura, calidad y eficiencia, así como la programación plurianual de inversiones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-IYV-002",
+      "texto_lineamiento": "El Plan Anual de Desarrollo Educativo debe integrar los planes operativos de inspección y vigilancia, incluyendo la alimentación escolar, conteniendo como mínimo: principios, estrategias, criterios, fuentes de financiación y cronograma general.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-009",
+      "texto_lineamiento": "El Plan Operativo Anual del PAE debe contener como mínimo 15 componentes: (a) Diagnóstico, (b) Cronograma, (c) Priorización de beneficiarios, (d) Modelos y modalidades de atención, (e) Planeación alimentaria, (f) Plan de proveeduría, (g) Gestión ambiental, (h) Calidad e inocuidad, (i) Equipo PAE, (j) Planeación financiera, (k) Instancias de participación, (l) Plan de desarrollo educativo con I&V, (m) Matriz de responsabilidades, (n) Indicadores de seguimiento y control, (o) Articulación institucional y normativa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-010",
+      "texto_lineamiento": "El Plan Operativo será presentado al Comité Territorial de Planeación y Seguimiento (CTPS) para su validación y, una vez aprobado, la ETC deberá formalizarlo mediante acto administrativo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-001",
+      "texto_lineamiento": "El Comité Territorial de Planeación y Seguimiento (CTPS) es una instancia técnica, intersectorial y participativa encargada de revisar, validar y aprobar los elementos estratégicos de la planeación del PAE, así como de realizar el seguimiento a su implementación y proponer acciones de mejora.",
+      "tipo_regla": "concepto",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-002",
+      "texto_lineamiento": "La ETC creará el CTPS mediante acto administrativo por única vez o cuando la actualización de la normatividad así lo amerite, definiendo como mínimo: integrantes, funciones, periodicidad de las sesiones, responsables de la secretaría técnica y mecanismos de toma de decisiones. Las decisiones se adoptarán por mayoría simple.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-003",
+      "texto_lineamiento": "El CTPS estará integrado por: Gobernador(a) o Alcalde(sa) o delegado (quien lo preside), Secretario(a) de Educación, Secretario(a) de Salud, Secretario(a) de Agricultura, Secretario(a) de Desarrollo Económico, Líder PAE, Líder cobertura, Líder contratación, Delegado(a) municipios no certificados (cuando ETC sea departamental), Delegado UApA (previa convocatoria), y Delegados de Contraloría, Procuraduría, Personería y veedurías ciudadanas (con voz pero sin voto).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-004",
+      "texto_lineamiento": "En departamentos con operación descentralizada, la ETC deberá garantizar la participación de la totalidad de las ETNoC en el CTPS, a través del representante legal o su delegado.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "Aplica cuando la ETC sea departamental con operación descentralizada",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-005",
+      "texto_lineamiento": "Ninguna persona que haga parte del CTPS podrá mantener vínculos contractuales directos o indirectos con los operadores del PAE, con las interventorías, ni ejercer funciones de supervisión del Programa. Tampoco podrá tener parentesco hasta el cuarto grado de consanguinidad, segundo de afinidad o primero civil con representantes legales o miembros de entidades operadoras o interventoras del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-006",
+      "texto_lineamiento": "El CTPS sesionará al menos tres veces al año. Una sesión deberá ser en agosto para la aprobación del POA. Cada sesión deberá contar con lista de asistencia y acta formal con decisiones, compromisos y responsables.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-007",
+      "texto_lineamiento": "El CTPS tiene como funciones: (1) Revisar, aprobar y dar seguimiento al POA, (2) Definir responsable de estrategia SIMAT, (3) Hacer seguimiento a operación de todos los modelos, (4) Análisis y seguimiento a cobertura, (5) Seguimiento a ejecución de recursos y supervisión/interventoría, (6) Revisar y aprobar plan de contingencia en emergencias, (7) Formular y evaluar acciones de mejora, (8) Las demás para fortalecimiento del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "CTPS",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-GOB-CTP-008",
+      "texto_lineamiento": "Las decisiones del CTPS que modifiquen la modalidad de atención o el tipo de complemento alimentario deberán ser reportadas a la UApA en los canales dispuestos para tal fin.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "GOB-CTP",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-011",
+      "texto_lineamiento": "La decisión de contratar deberá estar soportada en: POA revisado y aprobado por el CTPS y formalizado mediante acto administrativo; disponibilidad presupuestal verificada; estudios previos y documentos de soporte; objetivos, metas, estrategias de contratación, perfil del operador, requisitos habilitantes y criterios de evaluación definidos; y análisis de riesgos con plan de manejo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-012",
+      "texto_lineamiento": "La prestación del servicio de alimentación escolar deberá contratarse, por regla general, mediante licitación pública, conforme a la Ley 80 de 1993 y la Ley 1150 de 2007. Modalidades diferentes solo proceden cuando se configure causal legal justificada en los estudios previos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-013",
+      "texto_lineamiento": "La ETC deberá elaborar y publicar el Plan Anual de Adquisiciones en el SECOP y definir el cronograma contractual de manera que el proceso culmine antes del inicio del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-014",
+      "texto_lineamiento": "Cuando se adelanten varios procesos contractuales para la operación del PAE, los cronogramas deberán estar coordinados entre sí, sin que existan periodos sin atención que afecten la continuidad del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-015",
+      "texto_lineamiento": "En los procesos adelantados a través de bolsa de productos, la Entidad Territorial deberá evaluar los costos asociados a la plataforma y al valor de las comisiones, así como los efectos sobre la competencia, la pluralidad de oferentes y el acceso al mercado.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando se use bolsa de productos",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-016",
+      "texto_lineamiento": "Cuando el PAE se financie total o parcialmente con recursos del Sistema General de Regalías (SGR), la ETC deberá formular y viabilizar el proyecto conforme al Acuerdo 015 de 2025 de la Comisión Rectora, asegurando el cumplimiento de requisitos sectoriales antes del proceso de selección.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando PAE se financie con recursos SGR",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-SEL-001",
+      "texto_lineamiento": "La contratación directa del PAE solo procede en los casos expresamente autorizados: contratos interadministrativos, convenios para bolsas comunes, convenio solidario, inexistencia de pluralidad de oferentes, y urgencia manifiesta.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-SEL-002",
+      "texto_lineamiento": "Se invita a las ETC a identificar casos para celebrar contratos de contratación directa con: (1) Cabildos/Organizaciones Indígenas (Res. 18858/2018), (2) Consejos Comunitarios de comunidades negras (Res. 051/2025, Ley 2160/2021), (3) Organizaciones de base afrocolombianas con 10+ años de registro, (4) Fondos de Servicios Educativos (≤20 SMLMV, zona rural, Ley 2167/2021), (5) Convenios solidarios con organismos de acción comunal (≤menor cuantía, Ley 2166/2021), (6) Asociaciones Público-Populares (≤mínima cuantía, Ley 2294/2023).",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "A2-CON-SEL-003",
+      "texto_lineamiento": "Los procesos de contratación deberán adelantarse, por regla general, mediante mecanismos de selección competitiva que permitan participación plural de oferentes, garantizando transparencia, libre concurrencia, economía y selección objetiva.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-SEL-004",
+      "texto_lineamiento": "En la determinación de requisitos habilitantes, se debe garantizar que las exigencias puedan ser cumplidas por un número plural de oferentes en el mercado, observando el principio de proporcionalidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-SEL-005",
+      "texto_lineamiento": "Es obligatorio incluir condiciones habilitantes diferenciales para emprendimientos y empresas de mujeres, y MiPymes, conforme al Decreto 1860 de 2021, en procesos de licitación pública, selección abreviada de menor cuantía y concurso de méritos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-SEL-006",
+      "texto_lineamiento": "Es obligatorio otorgar un puntaje adicional de hasta el 0.25% del valor total de los puntos establecidos en los pliegos de condiciones para emprendimientos y empresas de mujeres.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-017",
+      "texto_lineamiento": "Las entidades territoriales no podrán celebrar contratos o convenios interadministrativos para la ejecución de recursos públicos dentro de los cuatro meses previos a la fecha de las elecciones para Congreso de la República, conforme al artículo 38 de la Ley 996 de 2005.",
+      "tipo_regla": "referente",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica en vigencias con elecciones al Congreso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-018",
+      "texto_lineamiento": "Ninguna entidad pública podrá celebrar contratos directos dentro de los cuatro meses anteriores a la elección presidencial y hasta la finalización de la segunda vuelta, conforme al artículo 33 de la Ley 996 de 2005. Las prórrogas y adiciones a contratos en ejecución no están afectadas.",
+      "tipo_regla": "referente",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica en vigencias con elección presidencial",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-019",
+      "texto_lineamiento": "La estructuración y el proceso contractual pueden tomar entre 2 y 4 meses dependiendo de la modalidad: Estudios previos y pliegos (30-45 días), Publicación SECOP y ajustes (15-20 días), Evaluación y adjudicación (20-30 días), Firma y perfeccionamiento (5-10 días).",
+      "tipo_regla": "referente",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-020",
+      "texto_lineamiento": "NO es obligatorio contar con certificado de disponibilidad presupuestal (CDP) para realizar la publicación del proyecto de pliego de condiciones del proceso contractual, conforme a la Ley 1882 de 2018.",
+      "tipo_regla": "referente",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-021",
+      "texto_lineamiento": "Los estudios y documentos previos deberán contener como mínimo 13 componentes: (1) Justificación de conveniencia, (2) Descripción de la necesidad, (3) Objeto con especificaciones, (4) Modalidad de selección y justificación, (5) Valor estimado y justificación, (6) Análisis de riesgo, (7) Garantías, (8) Acuerdos comerciales, (9) Causas y alcance de sanciones, (10) Estudio de mercado y análisis del sector, (11) Requisitos habilitantes, (12) Criterios de selección de oferta más favorable, (13) Análisis de riesgos y estrategias de mitigación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EST-022",
+      "texto_lineamiento": "Los pliegos de condiciones deberán contener como mínimo 14 elementos: (1) Objeto contractual, (2) Modalidad de selección, (3) Valor y cronograma de pagos, (4) Condiciones de costo y calidad, (5) Reglas de presentación y evaluación de ofertas, (6) Criterios de selección y factores habilitantes/ponderables, (7) Causas de rechazo de ofertas, (8) Riesgos y asignación, (9) Garantías, (10) Acuerdos comerciales, (11) Minuta del contrato, (12) Términos de supervisión/interventoría, (13) Cronograma del proceso, (14) Plazo para adendas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EJE-001",
+      "texto_lineamiento": "Las minutas de los contratos de operación del PAE deben incluir obligación de cumplimiento de los lineamientos técnico-administrativos del programa, e incluir como mínimo 12 obligaciones específicas: (1) Especificaciones técnicas de complementos, (2) Condiciones de entrega y calidad, (3) Talento humano con formalización laboral de manipuladores, (4) Programa de capacitación, (5) Condiciones de calidad e inocuidad, (6) Estrategia de proveeduría y compra pública, (7) Gestión ambiental, (8) Supervisión/interventoría, (9) Reporte de información e indicadores, (10) Participación ciudadana, (11) Plan de contingencia, (12) Cláusulas sancionatorias.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-TRA-FOR-001",
+      "texto_lineamiento": "El contrato de operación deberá incorporar la formalización laboral del personal manipulador de alimentos conforme al artículo 69 de la Ley 2466 de 2025, y establecer la obligación de contratar dentro del personal manipulador de alimentos a los padres de familia usuarios en un porcentaje no menor al 20% de este grupo, conforme al artículo 4 de la Ley 2042 de 2020.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EJE-002",
+      "texto_lineamiento": "Se debe definir con claridad la ecuación económica del contrato: días de calendario escolar a atender, modalidad de atención, complementos alimentarios a contratar, y valor unitario de complemento alimentario.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-003",
+      "texto_lineamiento": "Se sugiere reconocer en el pago los complementos alimentarios efectivamente entregados y certificados por la supervisión o interventoría. Los desembolsos están sujetos a la disponibilidad del programa anual mensualizado de caja (PAC).",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "INTER",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EJE-004",
+      "texto_lineamiento": "Los formatos mínimos sugeridos para el trámite de pago del operador son: (1) Formato de entrega de complementos a titulares de derecho (control diario avalado por rector y operador), (2) Certificación mensual de entrega firmada por rectores, (3) Informe mensual de ejecución de recursos del operador, (4) Informe de ejecución del supervisor/interventoría.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "INTER",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-IYV-003",
+      "texto_lineamiento": "El interventor deberá rendir un informe semestral a la comunidad educativa y a la institución educativa beneficiaria sobre el funcionamiento, debilidades y fortalezas del PAE. Si el contrato es inferior a seis meses, este informe deberá ser trimestral conforme al artículo 1 de la Ley 2042 de 2020.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "INTER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-005",
+      "texto_lineamiento": "La entidad territorial deberá establecer en la minuta del contrato la aplicación de descuentos adicionales sobre la facturación mensual del operador por novedades que afecten la calidad: incumplimientos en gramaje, incumplimientos bromatológicos, fechas de vencimiento próximas/expiradas, contaminantes, resultados microbiológicos riesgosos, suministro incompleto o entregas no autorizadas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "INTER",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-006",
+      "texto_lineamiento": "La entidad territorial deberá establecer un procedimiento que garantice el debido proceso para la aplicación de descuentos adicionales, mediante el cual la supervisión o interventoría informe al operador los hechos y este pueda aceptar los descuentos o aportar pruebas para desvirtuarlos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CPL-OBL-001",
+      "texto_lineamiento": "Se deberá exigir al operador adquirir localmente alimentos comprados a pequeños productores agropecuarios locales y productores de la ACFC, un porcentaje mínimo del 30% del valor total de los recursos destinados a la compra de alimentos. Esta obligación deberá ser verificada mensualmente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-OBL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CPL-OBL-002",
+      "texto_lineamiento": "Cuando la oferta local sea insuficiente, la entidad territorial deberá informar a la Mesa Técnica Nacional de Compras Públicas dentro de los cinco días hábiles siguientes a la comunicación del operador, para que certifique la situación y entregue listado de productores no locales. La falta de oferta no exonera al operador.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-OBL",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando la oferta local sea insuficiente",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CPL-OBL-003",
+      "texto_lineamiento": "Se deberá establecer en los pliegos un puntaje mínimo del 10% de los puntos asignables a la calificación de las propuestas para proponentes que se obliguen a adquirir productos de pequeños productores locales en proporción mayor al mínimo exigido. Este criterio deberá usarse también como factor de desempate.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-OBL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CPL-OBL-004",
+      "texto_lineamiento": "Deberá incluirse en los contratos la obligación de los operadores de asistir a las Mesas Territoriales y a las ruedas de negocios.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-OBL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CPL-OBL-005",
+      "texto_lineamiento": "Se deberán diseñar e implementar mecanismos financieros y contractuales para que el pago de compra local sea recibido contra entrega del alimento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-OBL",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-EST-023",
+      "texto_lineamiento": "La ETC deberá publicar en la plataforma SECOP todos los documentos de la fase precontractual, contractual y postcontractual, incluidas intervenciones ciudadanas, informes del contratista, informes de interventoría e informes de supervisión para cada pago.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-024",
+      "texto_lineamiento": "La publicación de documentos en SECOP debe hacerse a más tardar dentro de los tres días siguientes a su expedición, conforme a las directrices de Colombia Compra Eficiente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A2-CON-SEL-007",
+      "texto_lineamiento": "Las organizaciones de base comunitaria y asociaciones de padres de familia que operen el PAE deberán cumplir mínimo con: (a) Capacidad administrativa demostrada, (b) Capacidad jurídica con documentación formal. Los organismos comunales requieren además: estatutos actualizados (Ley 2166/2021), acta de asamblea, RUC, RUB, RUT, documento de intención, y aprobación del plan de capacitación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando se vincule organizaciones de base comunitaria como operadores",
+      "actor_responsable": "ORGBC",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-SEL-008",
+      "texto_lineamiento": "Las Organizaciones de base comunitaria y asociaciones de padres de familia que presten el servicio deberán estar formalizadas y bancarizadas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando se vincule organizaciones de base comunitaria como operadores",
+      "actor_responsable": "ORGBC",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-SEL-009",
+      "texto_lineamiento": "Las organizaciones de base comunitaria operadoras deberán: garantizar que el personal manipulador sea de la comunidad; realizar capacitación permanente en alimentación saludable, calidad e inocuidad y BPM; garantizar el suministro de complementos alimentarios; y garantizar pertinencia, inocuidad y calidad de los alimentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-SEL",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando organizaciones de base operen el PAE",
+      "actor_responsable": "ORGBC",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-IYV-004",
+      "texto_lineamiento": "Las Entidades Territoriales deberán conformar un equipo de asistencia técnica para brindar acompañamiento integral a las organizaciones de base comunitaria encargadas de la operación del PAE, en etapas de planeación, operación, seguimiento y evaluación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-IYV",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "Aplica cuando organizaciones de base comunitaria operen el PAE",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EST-025",
+      "texto_lineamiento": "La Entidad Territorial deberá garantizar que las sedes educativas donde se prestará el servicio cuenten con condiciones adecuadas de infraestructura para la operación, incluyendo características locativas y dotación de equipos, utensilios y menaje necesarios para almacenamiento, preparación, distribución y consumo de los complementos alimentarios.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EQU-006",
+      "texto_lineamiento": "La vinculación del Equipo PAE deberá efectuarse de manera oportuna, garantizando que los roles y perfiles se encuentren activos desde la etapa de planeación y previo al inicio de la operación, y se mantengan durante toda la vigencia del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EQU",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-007",
+      "texto_lineamiento": "La Entidad Territorial debe registrar la estrategia de acceso y permanencia de Alimentación Escolar en el SIMAT, con el número de cupos asignados, diligenciando todos los campos: jerarquía, calendario escolar, año, tipo de estrategia, fecha inicio, fecha fin y periodicidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EJE-008",
+      "texto_lineamiento": "La asignación de la estrategia en SIMAT solo se puede hacer a estudiantes matriculados en el sistema oficial y debe realizarse antes de hacer entrega del complemento alimentario al beneficiario.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EJE-009",
+      "texto_lineamiento": "Previo al inicio de la prestación del servicio, el operador deberá adelantar el proceso de alistamiento dentro del plazo definido por la ETC, incluyendo: reconocimiento de sedes, verificación de condiciones físicas, constatación de infraestructura para modalidades de atención, verificación de capacidad de almacenamiento y distribución, e inventario e inspección del estado de equipos, utensilios y mobiliario.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-010",
+      "texto_lineamiento": "La dotación del personal del PAE deberá ser utilizada de manera obligatoria durante toda la jornada, incorporando de forma visible la identificación institucional territorial y nacional (logos y escudos), el nombre de la entidad y operador, y distinguiendo el rol funcional del personal en mayúscula sostenida.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "A2-CON-EJE-011",
+      "texto_lineamiento": "Para sedes rurales de difícil acceso, durante la operación la ETC deberá: (1) Verificar implementación del Plan de Gestión de Riesgos, (2) Establecer mecanismos de monitoreo, (3) Definir acciones de corto, mediano o largo plazo según factor de riesgo, (4) Definir formatos de seguimiento, (5) Promover control social y participación, (6) Autorizar cuando aplique transferencia a Fondos de Servicios Educativos (Ley 2167/2021).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando existan sedes en zonas rurales de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-012",
+      "texto_lineamiento": "La entidad territorial deberá establecer un procedimiento para la validación, certificación, facturación y pago de los complementos alimentarios efectivamente entregados, señalando como mínimo: fechas de radicación, periodo de facturación, contenido de facturas, descuentos aplicables, tiempo de pago, soportes documentales, fechas de suministro y número de complementos por modelo de atención.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "INTER",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-EJE-013",
+      "texto_lineamiento": "La ETC deberá ejecutar como mínimo 16 acciones para la implementación del POA: (a) Cumplir cronograma, (b) Garantizar inicio desde primer día escolar, (c) Asignar recursos, (d) Reportar ejecución financiera, (e) Articular actores, (f) Implementar compras locales, (g) Seguimiento y control, (h) Gestionar acciones correctivas y preventivas, (i) Elaborar matriz de seguimiento, (j) Implementar participación ciudadana, (k) Fortalecer articulación intersectorial, (l) Seguimiento a Bolsa Común (departamentos), (m) Democratización, (n) Gestionar riesgos, (o) Usar sistemas de información UApA, (p) Atender requerimientos de UApA y controles.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A2-CON-EJE-014",
+      "texto_lineamiento": "Cualquier modificación al cronograma del POA deberá ser informada a la UApA y autorizada mediante acta bilateral suscrita entre la ETC y la UApA, con justificación técnica sustentada. El incumplimiento podrá dar lugar a reportes ante órganos de control.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EJE",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-LIQ-001",
+      "texto_lineamiento": "La liquidación de los contratos del PAE se realizará por mutuo acuerdo dentro del término fijado en los pliegos o el que acuerden las partes. A falta de estipulación, se realizará dentro de los cuatro meses siguientes a la expiración del término de ejecución del contrato.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-LIQ",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A2-CON-LIQ-002",
+      "texto_lineamiento": "La liquidación del contrato no libera al contratista de responder por la calidad de los bienes o servicios prestados. Cuando con posterioridad se presenten hechos amparados en las garantías, la ETC deberá adelantar las acciones administrativas y judiciales correspondientes.",
+      "tipo_regla": "referente",
+      "subcat_id": "CON-LIQ",
+      "doc_id": "A2",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-001",
+      "texto_lineamiento": "Los alimentos y materias primas que integran los complementos alimentarios de las diferentes modalidades de atención del PAE deben cumplir con las condiciones de calidad e inocuidad que reduzcan riesgos biológicos, químicos y físicos, y logren el aporte de energía y nutrientes definidos por cada tipo de complemento, cumpliendo los parámetros de inocuidad del alimento y de su proceso de elaboración, hasta su consumo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-002",
+      "texto_lineamiento": "La entidad territorial debe asegurar las condiciones adecuadas de infraestructura del lugar donde se prestará el servicio de alimentación escolar, soportadas con los correspondientes planes de mantenimiento y su ejecución, incluyendo la dotación de equipos, utensilios y menaje necesarios para el almacenamiento, preparación, distribución y consumo de los complementos alimentarios.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-003",
+      "texto_lineamiento": "El operador del servicio deberá contar con el acta de inspección sanitaria expedida por la autoridad sanitaria competente de la Entidad Territorial en salud para los sitios de almacenamiento de alimentos, ensamble o producción que sean requeridos según el plan de acopio o distribución. El acta debe contener concepto sanitario favorable o favorable con observaciones, el cual deberá mantenerse durante todo el tiempo de ejecución del Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-004",
+      "texto_lineamiento": "La entidad territorial debe revisar las actas de inspección sanitaria emitidas por la autoridad sanitaria competente para comedores escolares, áreas de preparación de alimentos, lugares de almacenamiento y ensamble, identificando factores de riesgo e implementando acciones de mejora o correctivas en articulación con los actores responsables.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-001",
+      "texto_lineamiento": "La entidad territorial debe diseñar el plan de muestreo microbiológico y fisicoquímico para los grupos de alimentos seleccionados en las diferentes modalidades de atención y tipos de complemento alimentario. Su estructuración debe contemplar el procedimiento para toma y almacenamiento de contramuestras de alimentos acorde a las directrices del Invima.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-002",
+      "texto_lineamiento": "La entidad territorial debe verificar que el operador disponga de su propio plan de muestreo como parte de su sistema de aseguramiento de calidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-005",
+      "texto_lineamiento": "La entidad territorial debe garantizar las gestiones necesarias para realizar los análisis microbiológicos y fisicoquímicos que definan las características iniciales de las condiciones de calidad del agua utilizada para la operación del programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-006",
+      "texto_lineamiento": "La entidad territorial debe verificar el Índice de Riesgo de Calidad del Agua para Consumo Humano (IRCA) con el propósito de identificar riesgos asociados al consumo del agua e implementar acciones de prevención y mitigación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-007",
+      "texto_lineamiento": "La entidad territorial debe asegurar que la infraestructura destinada a la prestación del servicio de alimentación escolar cumpla lo establecido en la Resolución 2674 de 2013, o la norma que la modifique o sustituya. Igualmente debe garantizar la dotación de equipo, menaje y acceso a servicios públicos en las sedes educativas donde se implemente el Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-008",
+      "texto_lineamiento": "En la planeación, la entidad territorial debe incluir un Plan de Saneamiento que abarque programas de limpieza y desinfección, manejo de residuos, control de plagas y suministro de agua potable, asegurando la aplicación de Buenas Prácticas de Manufactura (BPM) en toda la cadena de operación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-RUR-001",
+      "texto_lineamiento": "En sedes educativas ubicadas en la ruralidad de difícil acceso, la entidad territorial debe realizar un Plan de Riesgo que permita evaluar las diferentes alternativas para garantizar la calidad e inocuidad en la prestación del servicio, sustentando y documentando con evidencias la alternativa acogida. Este plan debe estar enfocado en la mitigación de riesgos relacionados con infraestructura, acceso a servicios públicos, equipos y menaje.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-RUR",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando sede educativa = ubicada en zona rural de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-009",
+      "texto_lineamiento": "El operador debe diseñar el Plan de Saneamiento con los programas específicos para las sedes educativas priorizadas y para la bodega de almacenamiento, ensamble o planta de producción, conforme a la normatividad sanitaria vigente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-010",
+      "texto_lineamiento": "El operador debe presentar el documento de Plan de Saneamiento para revisión y aprobación por parte del Equipo PAE de la entidad territorial, la supervisión o la interventoría, dentro del plazo definido y previo al inicio de la operación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "EQUPAE",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-011",
+      "texto_lineamiento": "El operador debe elaborar previo al inicio de la operación el plan de rutas para la distribución y entrega de los alimentos e insumos de limpieza y desinfección en cada una de las sedes educativas. Cuando no se disponga de servicio de gas en red, el plan deberá incluir su suministro. El plan debe considerar las dinámicas de funcionamiento de cada sede educativa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "EQUPAE",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-001",
+      "texto_lineamiento": "El operador debe elaborar un plan de mantenimiento que contemple actividades preventivas, correctivas y la notificación de reposición de equipos utilizados en los servicios de alimentación y comedores en sedes educativas. El plan será revisado y aprobado por el Equipo PAE de la entidad territorial dentro del plazo establecido.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "EQUPAE",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-002",
+      "texto_lineamiento": "El operador debe estructurar y ejecutar un plan de capacitación y actualización permanente dirigido al personal manipulador de alimentos, incluyendo el de zonas rurales, que aborde como mínimo: BPM, procedimientos operativos, plan de saneamiento y demás temas de la normatividad sanitaria vigente. El plan debe incluir contenidos sobre alimentación saludable, estandarización de recetas y porciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "EQUPAE",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-012",
+      "texto_lineamiento": "El Plan de Saneamiento es responsabilidad del operador y debe incluir objetivos claramente definidos, procedimientos estandarizados, cronogramas de ejecución, registros de control, listas de chequeo y designación de responsables. Debe estar disponible para la autoridad sanitaria competente, organismos de control y la entidad territorial.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-013",
+      "texto_lineamiento": "El programa de limpieza y desinfección debe incluir los procedimientos aplicados en todas las áreas y superficies utilizadas para almacenamiento, recepción, preparación, distribución y consumo de alimentos, así como cuartos fríos, equipos y menaje. En cada procedimiento deberán especificarse los agentes y sustancias empleadas, sus cantidades, concentraciones y responsables de ejecución.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-014",
+      "texto_lineamiento": "El operador debe garantizar la disponibilidad permanente de implementos e insumos de aseo, así como la reposición oportuna de aquellos que se deterioren por su uso, de acuerdo con la modalidad de atención.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-015",
+      "texto_lineamiento": "El operador debe contar con un programa de manejo de residuos sólidos para las áreas bajo su control (bodegas, zonas de almacenamiento, transporte y preparación/distribución), que establezca procedimientos para la correcta recolección, clasificación, manejo, almacenamiento temporal y disposición de los residuos generados por su operación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-TRA-AMB-001",
+      "texto_lineamiento": "El residuo generado de los aceites usados no deberá verterse en las tuberías ni mezclarse con residuos orgánicos. Se debe disponer de recipientes identificados para su recolección y disponerlo en un área destinada para tal fin, conforme a la Resolución 316 de 2018.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-TRA-AMB-002",
+      "texto_lineamiento": "Las entidades territoriales deben dar cumplimiento a lo establecido en la Resolución 2184 de 2019 (Artículo 4) respecto al código de colores para la separación en la fuente de los residuos sólidos.",
+      "tipo_regla": "referente",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A5-TRA-AMB-003",
+      "texto_lineamiento": "Las entidades territoriales en articulación con las entidades competentes deben diseñar y ejecutar la ruta ambiental para el manejo integral de los residuos que se generen en el PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-AMB",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-016",
+      "texto_lineamiento": "Los operadores deben implementar acciones preventivas para el control de vectores, las cuales deberán realizarse previo al inicio del calendario académico y al finalizar cada receso escolar, incluyendo diagnóstico de la situación, actividades preventivas (barreras físicas y productos químicos autorizados), y seguimiento a la ejecución.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-017",
+      "texto_lineamiento": "La fumigación es una acción de control que solo podrá ser realizada por un proveedor externo certificado, bajo protocolos que garanticen su aplicación segura, evitando la contaminación de alimentos y superficies de contacto, y protegiendo la salud de la comunidad educativa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-018",
+      "texto_lineamiento": "Las entidades territoriales deben verificar periódicamente el Índice de Riesgo de Calidad de Agua para Consumo Humano (IRCA) y coordinar con el servicio de acueducto y las autoridades de salud para socializar las alertas y aplicar las recomendaciones que se generen, incluyendo métodos de potabilización.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-019",
+      "texto_lineamiento": "Los comedores escolares deben contar con un tanque de almacenamiento de agua potable con capacidad suficiente para atender como mínimo las necesidades correspondientes a un día de operación, construido y mantenido conforme a las normas sanitarias vigentes.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-PLA-020",
+      "texto_lineamiento": "Cuando el establecimiento no se encuentre conectado a una red de acueducto o no cuente con suministro directo de agua potable, se deberá especificar y detallar el método de potabilización del agua, tanto la de consumo directo o indirecto como la usada en limpieza y desinfección.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-PLA",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando establecimiento NO está conectado a red de acueducto O no tiene suministro directo de agua potable",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-003",
+      "texto_lineamiento": "El operador debe implementar en las sedes educativas priorizadas acciones que garanticen la aplicación de los lineamientos técnicos de la Resolución 2674 de 2013 y la normatividad sanitaria expedida por el Ministerio de Salud y Protección Social, para garantizar la inocuidad de los alimentos en cada etapa de ejecución del programa.",
+      "tipo_regla": "referente",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-004",
+      "texto_lineamiento": "El personal manipulador de alimentos debe contar con certificación médica que conste la aptitud para la manipulación de alimentos. El operador debe garantizar un reconocimiento médico al personal manipulador por lo menos una vez al año, y adicionalmente cada vez que se considere necesario por razones clínicas y epidemiológicas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-005",
+      "texto_lineamiento": "El plan de capacitación continua del personal manipulador de alimentos debe ser de por lo menos 10 horas anuales, sobre los asuntos de la Resolución 2674 de 2013. La capacitación podrá ser efectuada por la empresa, por personas naturales o jurídicas contratadas, o por las autoridades sanitarias, siempre demostrando idoneidad técnica y científica.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-006",
+      "texto_lineamiento": "Los documentos de soporte (certificados médicos, plan de capacitación, cronograma de capacitaciones, listados de asistencia) deben estar disponibles en las sedes educativas y en las áreas administrativas del operador, y permanecer a disposición de la interventoría o supervisión del PAE y de la autoridad sanitaria competente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "INTER",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-007",
+      "texto_lineamiento": "El mantenimiento correctivo de equipos deberá efectuarse en un plazo máximo de cinco (5) días hábiles posteriores al reporte realizado. Cuando no sea posible la reparación inmediata o se requiera retirar el equipo, el operador deberá garantizar la disponibilidad permanente de un equipo de características similares que supla su función, evitando la interrupción del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-008",
+      "texto_lineamiento": "El operador debe acreditar que cuenta con un laboratorio externo o empresa certificada para ejecutar la calibración de equipos de medición en masa (balanzas, básculas, grameras) y temperatura (termómetros, termocuplas). Debe garantizar que la frecuencia de verificación se realice acorde al manual del fabricante, horas de uso y antigüedad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-009",
+      "texto_lineamiento": "El operador debe garantizar un programa escrito de evaluación, aceptación y seguimiento a proveedores que contemple: especificaciones de calidad de materias primas, criterios de aceptación y rechazo, caracterización y rotación PEPS, cumplimiento de requisitos de rotulado y etiquetado (Resoluciones 5109 de 2005, 810 de 2021 y 2492 de 2022), y registros de control.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-010",
+      "texto_lineamiento": "La entidad territorial debe exigir al operador el obligatorio cumplimiento de la certificación de liberación de producto terminado para los alimentos que conforman el complemento alimentario jornada mañana/tarde en la modalidad industrializada.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando modalidad = industrializada AND tipo_complemento = jornada mañana/tarde",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-011",
+      "texto_lineamiento": "Las ETC deben diligenciar y reportar obligatoriamente la información de operadores y proveedores en el instrumento 'REPORTE DE PROVEEDORES EN LA OPERACIÓN DEL PAE' cada vez que se suscriba e inicie un contrato, se presente un cambio de proveedor o se actualice dicha información.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-012",
+      "texto_lineamiento": "El operador del PAE deberá contar con proveedores principales y alternos de los diferentes alimentos e insumos que conforman los complementos alimentarios, reduciendo el riesgo de interrupción del servicio por fluctuación de la producción agroalimentaria o escasez de materias primas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-013",
+      "texto_lineamiento": "Los productos cárnicos para el PAE deben provenir de establecimientos vigilados y controlados por la autoridad sanitaria competente (ETS o Invima), contar con rotulado conforme a la normatividad sanitaria vigente, y los que lo requieran deben tener registro, notificación o permiso sanitario vigente del Invima.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-014",
+      "texto_lineamiento": "La entidad territorial deberá aprobar previamente los proveedores de alimentos del PAE, mantener una base de datos actualizada y realizar verificaciones periódicas a través de la supervisión o interventoría.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-015",
+      "texto_lineamiento": "Los alimentos perecederos de alto riesgo (carnes, derivados cárnicos, lácteos, salsas, frutas, verduras y sus mezclas) deberán conservarse a temperaturas de refrigeración (0°C a 4°C +/- 2°C) o congelación (menor o igual a -18°C), según lo indicado por el fabricante o la naturaleza del alimento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-016",
+      "texto_lineamiento": "El operador debe implementar un sistema de trazabilidad que permita la identificación y rastreo de materias primas, productos en proceso, alimentos almacenados y distribución, garantizando la disponibilidad de información sobre lotes, proveedores, origen, fechas y condiciones de manejo a lo largo de toda la cadena productiva.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-017",
+      "texto_lineamiento": "En la modalidad industrializada, la distribución de los alimentos deberá realizarse a la mayor brevedad después del proceso de recepción en las sedes educativas. Cuando los complementos se entreguen excepcionalmente en lugar diferente a la sede, se deben garantizar condiciones de almacenamiento y conservación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando modalidad = industrializada",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-018",
+      "texto_lineamiento": "En las modalidades preparada en sitio y caliente transportada, los alimentos listos para ser servidos se entregarán a temperatura de refrigeración (4°C +/- 2°C) si las características lo requieren, o a temperatura superior o igual a 60°C para alimentos que requieran cocción. Se debe garantizar la temperatura interna de cocción mínima de 70°C.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando modalidad = preparada_en_sitio O caliente_transportada",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-019",
+      "texto_lineamiento": "No se permite el uso de empaques fabricados con icopor (poliestireno expandido - EPS) en la modalidad de caliente transportada.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando modalidad = caliente_transportada",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-020",
+      "texto_lineamiento": "La distribución de los complementos alimentarios a los beneficiarios debe realizarse una vez se reciban en la sede educativa y no debe superar 1 hora posterior a su llegada. El personal de distribución deberá contar con elementos de protección (cofia/gorro, tapabocas, delantal/bata) y cumplir prácticas de higiene.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando modalidad = caliente_transportada",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-021",
+      "texto_lineamiento": "Los vehículos transportadores de alimentos deben tener concepto sanitario vigente FAVORABLE expedido por la autoridad sanitaria competente. Deben ser de uso exclusivo para transporte de complementos alimentarios y materias primas. Se prohíbe transportar conjuntamente alimentos con sustancias peligrosas u otras que representen riesgo de contaminación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-022",
+      "texto_lineamiento": "Todos los alimentos suministrados en cualquier modalidad del PAE deberán contar con registro, permiso o notificación sanitaria emitida por el Invima, excepto: alimentos naturales no transformados (granos, frutas, hortalizas frescas, miel), productos de origen animal crudos refrigerados o congelados sin transformación, alimentos para uso exclusivo de la industria y sector gastronómico, y alimentos del Puerto Libre de San Andrés.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-BPM",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-003",
+      "texto_lineamiento": "La entidad territorial debe diseñar e implementar un plan de muestreo según modalidad de atención, tipo de complemento, personal manipulador, superficies y ambientes, para verificar condiciones de calidad e inocuidad. Este plan corresponde al proceso de verificación de la supervisión o interventoría del contrato.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-004",
+      "texto_lineamiento": "La entidad territorial deberá documentar y realizar seguimiento a los resultados no conformes del plan de muestreo, estableciendo acciones de mejora según el análisis de riesgos asociados al programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-005",
+      "texto_lineamiento": "Los análisis microbiológicos y fisicoquímicos específicos para alimentos de alto riesgo en salud pública deben realizarse con las siguientes frecuencias mínimas por vigencia: productos UHT (trimestral), derivados cárnicos (trimestral), quesos frescos (semestral), alimentos con maní para aflatoxinas (anual), huevo pasteurizado/polvo (trimestral), arepas con queso (trimestral).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-MUE-006",
+      "texto_lineamiento": "Es obligatorio guardar diariamente contramuestras de los alimentos entregados en el PAE según la modalidad de atención y tipo de complemento. Las contramuestras deben estar debidamente almacenadas según la naturaleza del producto (refrigeración, congelación o temperatura ambiente), por un mínimo de 72 horas, y rotuladas con fecha, hora de despacho, lote, modalidad, tipo de complemento y persona responsable.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-MUE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-RUR-002",
+      "texto_lineamiento": "Para sedes educativas en zonas rurales de difícil acceso, los operadores deberán dar cumplimiento a lo dispuesto en la Resolución 2674 de 2013 en lo correspondiente a 'Restaurantes y Establecimientos Gastronómicos' como referente sanitario aplicable a la manipulación, elaboración y servido de alimentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-RUR",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando sede educativa = zona rural de difícil acceso",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-RUR-003",
+      "texto_lineamiento": "El Plan de Gestión de Riesgos para sedes rurales de difícil acceso será diseñado por la Entidad Territorial y ejecutado por el operador, y deberá seguir 6 pasos: (1) Analizar resultados del DACO, (2) Establecer acciones de mitigación de corto, mediano y largo plazo, (3) Socializar con operador y rector, (4) Poner en marcha y monitorear, (5) Articular con Plan de Saneamiento, (6) Adoptar formatos e instructivos de seguimiento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-RUR",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Aplica cuando sede educativa = zona rural de difícil acceso",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A5-CAL-ALE-001",
+      "texto_lineamiento": "Concepto: Las ETA se definen como el síndrome originado por la ingestión de alimentos o agua que contengan agentes etiológicos que afecten la salud del consumidor, a nivel individual o colectivo. Pueden clasificarse en infecciones, intoxicaciones o infecciones mediadas por toxinas.",
+      "tipo_regla": "concepto",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-ALE-002",
+      "texto_lineamiento": "Ante la identificación de dos o más casos de beneficiarios con síntomas gastrointestinales (náuseas, vómito, diarrea, dolor de estómago, dolor de cabeza, rash, prurito o erupción cutánea) posiblemente relacionados con el consumo del complemento alimentario del PAE, en un lapso de 24 horas, se debe activar la ruta de notificación SGI.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando se identifican ≥ 2 casos de SGI en 24 horas asociados al complemento alimentario",
+      "actor_responsable": "RECT",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-ALE-003",
+      "texto_lineamiento": "La entidad territorial debe reportar a la UApA un informe de trazabilidad del evento de SGI/ETA dentro de las primeras 24 horas posteriores a la notificación de la sede educativa, enviando copia del formato de verificación de alerta temprana y copia del informe preliminar del evento realizado por la ETS.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica ante evento de SGI/ETA notificado",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-ALE-004",
+      "texto_lineamiento": "Ante la identificación de alteraciones graves o sospecha de afectaciones en calidad o inocuidad de alimentos del PAE (alteración de rotulado, contaminación química/física/biológica, alimentos no aptos, medidas sanitarias de seguridad), la Entidad Territorial deberá consolidar un informe ejecutivo dentro de un periodo no mayor de 48 horas posterior a la identificación del evento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica ante identificación de alteraciones graves en calidad/inocuidad",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-BPM-023",
+      "texto_lineamiento": "El operador debe contar con la contramuestra de los alimentos suministrados y custodiarla hasta que la autoridad sanitaria indique su disposición final en caso de evento de ETA. Debe brindar la contramuestra para análisis por la Secretaría de Salud y aportar información de trazabilidad de los alimentos involucrados.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-ALE",
+      "doc_id": "A5",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica ante evento de ETA",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A5-CAL-RUR-004",
+      "texto_lineamiento": "En zonas rurales de difícil acceso podrá utilizarse la estrategia de 'La Olla Comunitaria Rural' que permite la inclusión voluntaria de alimentos donados por padres y madres de familia para fortalecer el aporte nutricional. Los alimentos donados deberán ser adicionales a los contratados, corresponder a producción agroalimentaria propia de los donantes y cumplir con criterios de calidad e inocuidad del PAE.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CAL-RUR",
+      "doc_id": "A5",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Aplica cuando sede = zona rural de difícil acceso AND se implementa estrategia Olla Comunitaria Rural",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-001",
+      "texto_lineamiento": "La planeación financiera del PAE es el proceso mediante el cual se identifican, organizan, estiman y gestionan los recursos necesarios para garantizar la prestación eficiente y continua del servicio de alimentación escolar, tendiente a la universalidad.",
+      "tipo_regla": "concepto",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-002",
+      "texto_lineamiento": "Para la planeación financiera del PAE, la ETC debe contar con los siguientes insumos: análisis de sector, cobertura proyectada, estudios de costos, diagnóstico anual, necesidad de gestión de vigencias futuras y regalías, concertación con las ETNoC para la conformación de la Bolsa Común, y un cronograma de contratación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-003",
+      "texto_lineamiento": "La planeación financiera del PAE debe estar articulada con los instrumentos del ciclo de programación y ejecución de la inversión: Marco Fiscal de Mediano Plazo, Plan Indicativo, Plan Operativo Anual de Inversiones (POAI), Plan de Acción, Plan de Compras, Manual de Contratación, Banco de Proyectos (SUIFP Territorial) y Plan Anual de Adquisiciones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-004",
+      "texto_lineamiento": "Las Entidades Territoriales deben apropiar y reservar los recursos necesarios y suficientes para la financiación o cofinanciación del PAE en su jurisdicción, y adelantar los trámites para comprometer vigencias futuras cuando haya lugar.",
+      "tipo_regla": "referente",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-005",
+      "texto_lineamiento": "Las Entidades Territoriales deben garantizar la prestación del servicio de alimentación desde el primer día del calendario escolar y durante la respectiva vigencia.",
+      "tipo_regla": "referente",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-006",
+      "texto_lineamiento": "Para una correcta planeación financiera, la Entidad Territorial deberá contemplar como mínimo: diagnóstico financiero, estudio del sector, identificación de las fuentes de financiación, programación presupuestal, conformación de la bolsa común y uso de vigencias futuras.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-007",
+      "texto_lineamiento": "El diagnóstico financiero del PAE debe indicar los recursos asignados, el uso de dichos recursos y el valor ejecutado a la fecha, discriminado por fuentes de financiación. Las ETC departamentales deben además precisar el esquema de Bolsa Común implementado.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-008",
+      "texto_lineamiento": "El diagnóstico financiero debe incluir un análisis del incremento en los recursos propios y asignados al PAE respecto a la vigencia anterior, la proporción de las fuentes complementarias (regalías, vigencias futuras, cooperación) y los retos para la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-009",
+      "texto_lineamiento": "Cuando la operación del PAE se descentralice, el operador debe entregar un informe de ejecución de los recursos para el pago, para que la ETC proporcione el aval correspondiente a su desembolso. Contractualmente se deben pactar el uso de recursos no ejecutados y los rendimientos financieros de los aportes realizados por las ETC.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "modalidad = descentralizada",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-CON-EST-001",
+      "texto_lineamiento": "El estudio del sector para la contratación del PAE debe comprender el entorno competitivo, identificar riesgos, analizar la oferta y demanda, y establecer precios de referencia, conforme a la Ley 80 de 1993, el Decreto 1082 de 2015, la Ley 2046 de 2020 y la Guía para la elaboración de estudios del sector de Colombia Compra Eficiente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-CON-EST-002",
+      "texto_lineamiento": "El estudio del sector del PAE debe abordar tres áreas: Área 1 - Aspectos generales del mercado (contexto económico, técnico, regulatorio, ambiental, social y político); Área 2 - Estudio de la oferta (proveedores, dinámica de la operación, estudio de costos); Área 3 - Estudio de la demanda (análisis histórico de contrataciones).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-CON-EST-003",
+      "texto_lineamiento": "En el Área 1 del estudio de sector, la ETC debe analizar el contexto económico del PAE incluyendo: comportamiento histórico, actual y proyectado del servicio, variables como producción, ventas, consumo, precios, tasa de cambio, crecimiento, inversión, importaciones y exportaciones, así como indicadores como IPC, PIB, empleo, ingresos y tasas de interés.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-CON-EST-004",
+      "texto_lineamiento": "En el Área 1 del estudio de sector, la ETC debe analizar las condiciones técnicas del PAE: especificaciones de procesos de alistamiento, compra de insumos, almacenamiento, preparación, distribución y entrega, considerando modalidades de atención, tipos de complemento, población beneficiaria, planes de saneamiento, rutas, transporte, muestreo microbiológico, ciclos de menú y calidad de alimentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-CON-EST-005",
+      "texto_lineamiento": "En el Área 1, la ETC debe revisar la normatividad aplicable a la operación del PAE, incluyendo lineamientos técnico-administrativos, protocolos, resoluciones higiénico-sanitarias, y demás regulaciones que impactan la actividad de operadores, proveedores de alimentos e insumos, así como normas que regulan mercado, precios, aspectos tributarios, ambientales y otros.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-CON-EST-006",
+      "texto_lineamiento": "En el Área 2 (estudio de la oferta), la ETC debe identificar los posibles operadores del mercado y proveedores regionales, incluyendo proveedores de alimentos autóctonos y servicios informales (transporte fluvial, animal). Se debe caracterizar su tamaño empresarial, ubicación, precios de referencia y capacidad operativa, usando fuentes como SIREM, SECOP, Cámaras de Comercio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-CON-EST-007",
+      "texto_lineamiento": "En el Área 2, se deben identificar las fases de la cadena de suministros del PAE (alistamiento, abastecimiento, producción y distribución), detallando las actividades específicas, actores involucrados y costos asociados en cada fase.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-CON-EST-008",
+      "texto_lineamiento": "En el Área 3 (estudio de la demanda), la ETC debe realizar un análisis histórico de contrataciones previas del PAE, incluyendo: modalidad de atención, objeto contractual, cantidades contratadas, formas de pago, costos unitarios, presupuesto asignado y ejecutado, vigencias futuras, garantías, formas y tiempos de entrega.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-CON-EST-009",
+      "texto_lineamiento": "En la fase de análisis del mercado del estudio de sector, se debe evaluar la viabilidad de vincular pequeños productores locales y organizaciones de la agricultura campesina, familiar y comunitaria, conforme a la Ley 2046 de 2020 y el Decreto 248 de 2021, identificando productos susceptibles de compra local, capacidad de abastecimiento territorial, impactos logísticos, de calidad e inocuidad, y criterios de sostenibilidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "CPL-PRO",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-CON-EST-010",
+      "texto_lineamiento": "Se recomienda conformar un equipo interdisciplinario para la elaboración del estudio de sector, integrado por: profesional en nutrición o ingeniería de alimentos, profesional en economía o finanzas, profesional en contratación pública, y apoyo técnico en sistemas de información y análisis de datos.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "CON-EST",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-010",
+      "texto_lineamiento": "El estudio de costos tiene como finalidad estimar de manera técnica y objetiva el valor de referencia para la contratación del servicio de alimentación escolar, considerando las condiciones territoriales, operativas y normativas vigentes.",
+      "tipo_regla": "concepto",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-011",
+      "texto_lineamiento": "Se sugiere el método de costeo por absorción (costeo total) como referencia para la operación del PAE, dado que captura todos los costos asociados (fijos y variables, directos e indirectos) y permite estimar el costo total unitario de cada complemento alimentario. La ETC puede seleccionar otro método que atienda sus necesidades específicas.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-012",
+      "texto_lineamiento": "Independientemente del método de costeo seleccionado, el estudio de costos debe incluir: costos laborales para cumplir con la formalización laboral de las manipuladoras (art. 69 Ley 2466 de 2025), evaluación de modelos comunitarios de operación, e incorporación de compras públicas locales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-013",
+      "texto_lineamiento": "Se recomienda adoptar como referencia el sistema de costeo estándar (predeterminado) para el estudio de costos del PAE, dado que la mayoría de las ETC no ejecutan directamente la operación sino que la contratan con terceros, y este enfoque facilita una planeación más técnica, objetiva y alineada con los principios de eficiencia y transparencia.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-014",
+      "texto_lineamiento": "Los componentes del costo de la operación del PAE se clasifican en: Materiales Directos (alimentos y misceláneos), Mano de Obra Directa (personal manipulador de alimentos), y Costos Indirectos de Producción (transporte, servicios públicos, dotación, menaje, aseo, vigilancia, impuestos).",
+      "tipo_regla": "concepto",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-015",
+      "texto_lineamiento": "El estudio de costos del PAE debe realizarse en las siguientes etapas: a) Generalidades de la operación (contexto y variables), b) Estructura de costos (cadena de suministros por fases), c) Fuentes de información y recopilación de datos, d) Estimación de costos (cálculo de costo unitario por complemento y modalidad), e) Análisis del proceso (documento técnico con metodología y trazabilidad).",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-016",
+      "texto_lineamiento": "La estructura de costos del PAE se organiza en 6 fases de la cadena de suministros: alistamiento, abastecimiento, producción, distribución, gestión de residuos, y evaluación y mejora continua. Cada fase agrupa costos directos e indirectos específicos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-TRA-FOR-001",
+      "texto_lineamiento": "En la estructuración de los costos de mano de obra directa, deberá tenerse en cuenta lo dispuesto en el artículo 69 de la Ley 2466 de 2025, en relación con la formalización laboral progresiva de las personas manipuladoras de alimentos del PAE, la cual se desarrollará de manera gradual conforme a las metas definidas para las vigencias 2025 a 2028.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "TRA-FOR",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-017",
+      "texto_lineamiento": "La dotación del recurso humano del PAE deberá incorporar de forma visible y adecuada la identificación institucional correspondiente tanto al orden territorial como al orden nacional (logos y escudos de la administración), incluyendo el nombre de la entidad y operador, distinguiendo de manera clara el rol funcional del personal vinculado al Programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "OPER",
+      "actor_verificador": "ETC",
+      "riesgo_incumplimiento": "bajo"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-018",
+      "texto_lineamiento": "La estructura de costos que adopte la ETC deberá contemplar la totalidad de las modalidades de atención del PAE que puedan requerirse durante la ejecución contractual, incluyendo aquellas que deban implementarse de manera transitoria o excepcional ante situaciones de emergencia, contingencia o cambios en las condiciones de prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-019",
+      "texto_lineamiento": "Las fuentes de información para el estudio de costos deben ser oficiales, verificables y pertinentes. Se pueden usar: procesos de invitación a cotizar (formales, abiertos, plurales), consultas en portales oficiales web (SECOP, Agronet, SIPSA-DANE, SICE-TAC), y otras fuentes como bases de datos oficiales, comunicaciones institucionales, respuestas a derechos de petición.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-020",
+      "texto_lineamiento": "Para la valoración de precios de mercado en el estudio de costos, se recomienda el uso de herramientas estadísticas como media aritmética, mediana, media podada y regresiones, que permitan establecer un precio tendencia del mercado, mitigando el impacto de fluctuaciones extremas.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-021",
+      "texto_lineamiento": "Se debe elaborar un documento técnico que describa de manera detallada la metodología empleada para la estimación de costos del PAE, incluyendo: fuentes de información, metodología de recopilación y análisis, criterios técnicos para valoración, estructura de costos por modalidad, componente y fase, dificultades encontradas, soluciones implementadas y conclusiones.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-022",
+      "texto_lineamiento": "Se recomienda que las ETC realicen una comparación entre los resultados proyectados para la vigencia planeada y los obtenidos en la vigencia anterior, para interpretar la tendencia de precios y justificar incrementos inusitados.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-023",
+      "texto_lineamiento": "De acuerdo con la Ley 2167 de 2021, se debe garantizar la prestación del servicio de alimentación escolar de manera oportuna y de calidad durante el 100% del calendario académico, asegurando la disponibilidad de recursos por periodos iguales o superiores al calendario académico.",
+      "tipo_regla": "referente",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-024",
+      "texto_lineamiento": "Las fuentes de financiación del PAE son: recursos de inversión del PGN asignados por la UApA, recursos del SGP de asignación especial para alimentación escolar, recursos del SGP de otras participaciones (a criterio de las ETC), recursos del SGR (como proyectos de inversión), recursos propios de las ETC, y otras fuentes (sector privado, cooperación nacional e internacional, cajas de compensación).",
+      "tipo_regla": "concepto",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-025",
+      "texto_lineamiento": "La UApA asigna los recursos del PGN a las ETC mediante resolución de asignación durante el primer trimestre de cada vigencia. Para la planeación de la siguiente vigencia, la UApA comunicará un valor de referencia que permita desarrollar acciones orientadas a materializar la planeación efectiva.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-026",
+      "texto_lineamiento": "Los recursos del SGP de asignación especial para alimentación escolar se distribuyen por el DNP con base en criterios de equidad (95%) definida por matrícula, dispersión poblacional y NBI, y eficiencia (5%) entendida como incentivo a la reducción de deserción escolar. Se giran en doceavas mensuales (febrero a diciembre).",
+      "tipo_regla": "referente",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-027",
+      "texto_lineamiento": "Los proyectos del PAE financiados con recursos del SGR deben formularse como proyectos de inversión pública, definiendo fases y horizonte de ejecución, cumpliendo la metodología del DNP. El proyecto debe remitirse al MEN y a la UApA para concepto sectorial antes de su viabilización y aprobación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Cuando se financie PAE con recursos del SGR",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-001",
+      "texto_lineamiento": "Los recursos de inversión del PGN para el PAE pueden destinarse a: compra de alimentos, contratación de personal manipulador, transporte de alimentos, dotación de menaje/equipos/utensilios, insumos de aseo, combustible para preparación, provisión integral del servicio, construcción y mejoramiento de infraestructura, y supervisión/interventoría/monitoreo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-002",
+      "texto_lineamiento": "Los recursos del SGP de alimentación escolar pueden destinarse a: compra de alimentos, contratación de personal manipulador, transporte de alimentos, dotación de menaje/equipos/utensilios, insumos de aseo, combustible y provisión integral del servicio. No pueden usarse para infraestructura ni supervisión/interventoría.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-003",
+      "texto_lineamiento": "Cuando la prestación del servicio de alimentación escolar sea realizada directamente por las entidades territoriales, como mínimo el 80% de los recursos de la asignación especial del SGP para Alimentación Escolar serán destinados a la compra de alimentos. Los recursos restantes (hasta 20%) se pueden utilizar para los demás conceptos permitidos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "Cuando la ETC presta directamente el servicio (no contrata tercero)",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-004",
+      "texto_lineamiento": "Los recursos de inversión del PGN no podrán destinarse a dotación de menaje/equipos ni a construcción/mejoramiento de infraestructura si ello implica disminución de cobertura o detrimento en la calidad de la prestación del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-005",
+      "texto_lineamiento": "Cualquier cambio en la destinación de los recursos del PGN asignados al PAE deberá ser solicitada previamente por la ETC y autorizada por la UApA.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-028",
+      "texto_lineamiento": "Las Entidades Territoriales deberán priorizar el uso de los recursos para garantizar la cobertura universal y continua en la prestación del servicio durante la totalidad del calendario académico, antes de usarlos para la entrega de doble complemento o aumentar el aporte nutricional de los complementos alimentarios.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-006",
+      "texto_lineamiento": "Para iniciar la formulación del presupuesto del PAE, se deben aplicar los criterios establecidos en el artículo 8 de la Ley 819 de 2003, que exige que toda programación presupuestal se alinee con el Marco Fiscal de Mediano Plazo (MFMP), garantizando que las apropiaciones puedan ejecutarse plenamente durante la vigencia fiscal.",
+      "tipo_regla": "referente",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-007",
+      "texto_lineamiento": "Todos los recursos que cofinancian el PAE deben integrarse en la Cuenta Maestra de Alimentación Escolar según la normatividad vigente, con excepción de los recursos del SGR los cuales son presupuestados por las entidades sin situación de fondos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-029",
+      "texto_lineamiento": "Las vigencias futuras ordinarias para el PAE deben tener al menos el 15% de apropiación en el año vigente. Las excepcionales pueden solicitarse sin apropiación previa pero están restringidas en el último año de gobierno, salvo proyectos de cofinanciación con participación total o mayoritaria de la Nación declarados de importancia estratégica.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "condicional",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "Cuando la ETC requiera comprometer vigencias futuras",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-PLA-030",
+      "texto_lineamiento": "Para el PAE, se recomienda gestionar las vigencias futuras entre agosto y noviembre del año anterior a la ejecución, para permitir la estructuración del proceso contractual antes del inicio del año escolar.",
+      "tipo_regla": "recomendacion",
+      "subcat_id": "FIN-PLA",
+      "doc_id": "A6",
+      "obligatoriedad": "recomendado",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-BOL-001",
+      "texto_lineamiento": "La Bolsa Común es un esquema de ejecución unificada de recursos mediante el cual la Nación y las Entidades Territoriales invierten de manera coordinada sus recursos para alcanzar los objetivos del PAE, mediante una ejecución articulada y eficiente.",
+      "tipo_regla": "concepto",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-BOL-002",
+      "texto_lineamiento": "Para la conformación de la Bolsa Común, las ETC deben utilizar obligatoriamente uno de los siguientes mecanismos: a) Celebración de convenios interadministrativos entre ETC y ETNoC, con seguimiento hasta liquidación; o b) Acuerdos formales entre ETC y ETNoC que determinen las responsabilidades durante la ejecución.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "ETC departamental con ETNoC en su jurisdicción",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-BOL-003",
+      "texto_lineamiento": "La constitución formal de la bolsa común deberá materializarse dentro de los plazos que garanticen la ejecución oportuna del calendario académico del año siguiente, teniendo en cuenta las disposiciones de Ley de Garantías Electorales.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "ETC departamental con ETNoC en su jurisdicción",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-BOL-004",
+      "texto_lineamiento": "Para el alistamiento de la Bolsa Común, la ETC departamental deberá: a) Convocar a las ETNoC para socializar lineamientos, b) Socializar mecanismos de Bolsa Común con ventajas/desventajas, c) Establecer cronograma de mesas de trabajo, d) Identificar asignación SGP-AE y fuentes de financiación de cada ETNoC, e) Solicitar saldos no ejecutados y rendimientos, f) Suscribir convenio o acuerdo formal, g) Remitir copia a la UApA, h) Establecer acciones de seguimiento.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "ETC departamental con ETNoC en su jurisdicción",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-BOL-005",
+      "texto_lineamiento": "El mecanismo de Bolsa Común (convenio o acuerdo) debe contener obligatoriamente como mínimo 20 aspectos: fecha, objeto, representantes legales, identificación, IE a atender, población beneficiaria, plazo, días de atención, modelo y modalidad, tipo de complemento, valor unitario, valor total, ordenación de gasto, fuentes de financiación, manejo de rendimientos, garantía de inicio oportuno, garantía de equipo PAE, forma de transferencia de recursos, actividades a cargo de cada ET, y firmas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-BOL",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "ETC departamental con ETNoC en su jurisdicción",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-008",
+      "texto_lineamiento": "Durante la operación del PAE, la ejecución presupuestal consiste en recaudar los ingresos presupuestados y efectuar compromisos, obligaciones y pagos con cargo a las apropiaciones definidas, observando el Estatuto Orgánico del Presupuesto, el Estatuto General de Contratación, el Manual de Contratación de la entidad y las disposiciones legales vigentes.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-009",
+      "texto_lineamiento": "Los ingresos del PAE deben estar soportados en la normativa vigente, debidamente clasificados según el CCPET. Se debe cotejar ingresos frente a gastos para garantizar la financiación durante todo el calendario académico. Los saldos de vigencias anteriores deben incorporarse identificando fuente y destinación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-010",
+      "texto_lineamiento": "Los rendimientos financieros generados por las distintas fuentes de financiación del PAE deberán ser incorporados en el presupuesto de la entidad y reinvertidos en el mismo Programa, salvo en los casos excepcionales previstos en la normatividad vigente.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-011",
+      "texto_lineamiento": "Los recursos de inversión del PGN no ejecutados al cierre de cada vigencia y los rendimientos financieros transferidos por la UApA deberán ser reinvertidos, en la vigencia actual o vigencias posteriores, únicamente en el PAE, en los usos establecidos por la normatividad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-012",
+      "texto_lineamiento": "Los rendimientos financieros y saldos no ejecutados generados en la cuenta del SGP deben ser reinvertidos en el PAE, de acuerdo con los usos definidos por el artículo 18 de la Ley 1176 de 2007 y reglamentados por el Decreto 1852 de 2015. Los recursos que queden sin comprometer al cierre no podrán destinarse al aumento de cobertura, pues no se consideran recurrentes.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-013",
+      "texto_lineamiento": "La ETC deberá conciliar la información de los recursos del balance y rendimientos financieros con sus Secretarías de Hacienda al cierre de cada vigencia, e incorporarlos al presupuesto a más tardar el primer trimestre de cada año, y reportar la información en las herramientas y sistemas que la UApA disponga.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-014",
+      "texto_lineamiento": "Las Cuentas Maestras del PAE han sido aperturadas conforme a la Resolución Conjunta 2394 de 2023 y permiten la administración total y exclusiva de los recursos del PAE. Deben garantizar un manejo contable y presupuestal independiente para cada fuente de financiación. Las transacciones únicamente pueden efectuarse a favor de beneficiarios previamente registrados.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-EJE-015",
+      "texto_lineamiento": "Los rendimientos financieros generados en la cuenta maestra del PAE deberán ser objeto de prorrateo por parte de la ETC, con el fin de discriminar dichos rendimientos según la fuente de financiación que les dio origen.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-EJE",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "operacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-REP-001",
+      "texto_lineamiento": "Las ETC deberán remitir a la UApA, a más tardar el 30 de enero de la vigencia siguiente, el extracto bancario con corte al 31 de diciembre con el saldo de la cuenta maestra del PAE, junto con las conciliaciones contables al cierre, incluyendo: reservas presupuestales, pasivos exigibles, cuentas por pagar, retenciones y demás impuestos por cancelar, rendimientos financieros, saldo disponible sin comprometer, y demás obligaciones no canceladas.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-REP-002",
+      "texto_lineamiento": "Es responsabilidad de las Entidades Territoriales realizar un seguimiento financiero permanente al PAE, de manera transversal en cada etapa de operación, permitiendo identificar alertas tempranas, posibles suspensiones del servicio, inejecución de recursos, y factores que impacten el normal desarrollo del programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-REP-003",
+      "texto_lineamiento": "Las ETC deberán presentar el Plan Financiero Territorial (PFT) a la UApA en los tiempos establecidos en la Resolución 231 de 2025, y actualizarlo siempre que se presenten novedades en la ejecución del PAE o por solicitud de la UApA. El PFT incluye 15 grupos de variables: datos generales, matrícula, priorización, complementos alimentarios, calendario escolar, costos, receso estudiantil, residencias, costos asociados, costos de operación, cuenta maestra, demanda diaria, bolsa de fuentes, balance financiero y resumen.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-REP-004",
+      "texto_lineamiento": "Las ETC y ETNoC deben reportar trimestralmente la información en el sistema CHIP en la categoría UApA-PAE, de acuerdo con el cronograma de la Resolución 332 de 2021. La categoría comprende 5 formularios: Datos Generales, Financiación y Bolsa Común, Contratación, Prestación del Servicio, y Ejecución de Recursos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-REP-005",
+      "texto_lineamiento": "Las ETC departamentales, en el marco de sus competencias, realizarán el seguimiento, verificación y cumplimiento del reporte de información CHIP de cada uno de sus municipios no certificados en el período establecido.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "ETC departamental con ETNoC en su jurisdicción",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A6-FIN-REP-006",
+      "texto_lineamiento": "La UApA informará a los entes de control sobre las situaciones de incumplimiento o inconsistencia en los datos reportados por las Entidades Territoriales en el CHIP, para que adelanten las acciones de su competencia, sin importar la fuente de los recursos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "Cuando se identifique incumplimiento o inconsistencia en reportes CHIP",
+      "actor_responsable": "UAPA",
+      "actor_verificador": "ORGCONT",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A6-FIN-REP-007",
+      "texto_lineamiento": "La totalidad de la información de la ejecución del PAE debe cargarse en la plataforma SiPAE de forma constante, siendo un medio de reporte e información de uso obligatorio para las Entidades Territoriales, guardando los principios de calidad y oportunidad.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "FIN-REP",
+      "doc_id": "A6",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "seguimiento",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-001",
+      "texto_lineamiento": "La evaluación ex ante del PAE debe realizarse antes del inicio de la vigencia fiscal y del calendario escolar, entre los meses de julio a enero, con el propósito de verificar el alistamiento del Programa y asegurar que todos los componentes estén preparados para su implementación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "EQUPAE",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-002",
+      "texto_lineamiento": "En el paso 1 de la evaluación ex ante (Diagnóstico y priorización), la ETC debe consolidar la caracterización territorial y poblacional, priorizar sedes y grados según criterios normativos, y cargar la estrategia en SIMAT. El producto esperado es el Plan Operativo Anual (POA) aprobado.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-003",
+      "texto_lineamiento": "En el paso 2 de la evaluación ex ante (Modelos de atención y ciclo de menús), la ETC debe definir el modelo por sede (convencional o diferencial), validar los ciclos de menú, y concertar el Plan Alimentario Indígena Propio (PAIP) y con comunidades NARP cuando aplique. Se requiere que el 100% de las sedes cuente con modelo y ciclo de menú anual.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-004",
+      "texto_lineamiento": "En el paso 3 de la evaluación ex ante (Proveeduría y CPL), la ETC debe realizar el análisis de producción agroalimentaria, la demanda de alimentos por parte de la operación PAE, y la identificación de proveedores locales. La oferta local identificada debe ser viable para atender como mínimo el 30% de la demanda del programa.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-005",
+      "texto_lineamiento": "En el paso 4 de la evaluación ex ante (Estructuración contractual), la ETC debe estructurar el proceso contractual incluyendo modalidad, criterios diferenciales y formalización de manipuladores, y programar el cronograma de contratación. Se debe asegurar el inicio del servicio desde el primer día del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-006",
+      "texto_lineamiento": "En el paso 5 de la evaluación ex ante (Planeación financiera), la ETC debe radicar el Plan Financiero Territorial (PFT) y programar ingresos y gastos para todo el calendario escolar, sin retraso. El PFT debe ser validado para garantizar la continuidad del servicio.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-007",
+      "texto_lineamiento": "En el paso 6 de la evaluación ex ante (CTPS y socialización), el CTPS debe aprobar el POA y el cronograma del PAE, y preparar la primera Mesa Pública. Las aprobaciones deben realizarse en tiempo y forma.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "CTPS",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-001",
+      "texto_lineamiento": "La evaluación ex post del PAE se realiza entre los meses de diciembre y marzo, una vez finalizada la operación del programa. Su propósito es identificar resultados alcanzados, sistematizar aprendizajes y formular recomendaciones que alimenten la planeación del siguiente ciclo.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-002",
+      "texto_lineamiento": "En el cierre técnico de la evaluación ex post, la ETC debe consolidar indicadores de cobertura, continuidad, aceptabilidad y calidad, y producir un informe técnico anual que retroalimente el POA de la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-003",
+      "texto_lineamiento": "En el cierre financiero de la evaluación ex post, la ETC debe conciliar apropiación, compromisos, pagos, rendimientos y saldos, y registrar reservas. El producto es el informe financiero con conciliaciones, que permite ajustar metas y programación.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-004",
+      "texto_lineamiento": "En la evaluación ex post, la ETC debe analizar el desempeño por modelo de atención (indígena, NARP, rural de difícil acceso, convencional) y producir un anexo diferencial del informe para adecuar enfoques y minutas en la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-005",
+      "texto_lineamiento": "En la evaluación ex post, la ETC debe sistematizar las actuaciones del CTPS, realizar las Mesas Públicas y los CAE, y documentar las actuaciones contractuales. El producto es un informe de análisis de participación y transparencia para fortalecer mecanismos de control social.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-EVA-EXP-006",
+      "texto_lineamiento": "Como cierre de la evaluación ex post, la ETC debe definir un plan de mejora oficial con acciones, responsables y cronograma. Este plan debe ser objeto de seguimiento en la fase ex ante de la siguiente vigencia.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXP",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    },
+    {
+      "lin_id": "A8-NOR-DEF-001",
+      "texto_lineamiento": "La evaluación del PAE se define en dos momentos: la evaluación ex ante, que verifica condiciones de alistamiento, planeación y estructuración antes de la ejecución; y la evaluación ex post, que consolida resultados, identifica aprendizajes y formula recomendaciones una vez finalizada la vigencia.",
+      "tipo_regla": "concepto",
+      "subcat_id": "NOR-DEF",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-NOR-DEF-002",
+      "texto_lineamiento": "La metodología de evaluación del PAE aplica a la vigencia fiscal y académica en cada ETC y, cuando corresponda, en concurrencia con Entidades Territoriales no Certificadas (ETnoC). Cubre: universalización, atención diferencial, democratización, formalización de manipuladores, modelos de atención diferenciales, ejecución financiera, oportunidad en contratación, inicio oportuno del servicio y garantía del derecho humano a la alimentación.",
+      "tipo_regla": "referente",
+      "subcat_id": "EVA-IND",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "transversal",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-NOR-COM-001",
+      "texto_lineamiento": "Para la evaluación ex ante del PAE, los responsables (R) son el Equipo PAE, la ETC y la ETnoC. El CTPS aprueba y decide (A). Son consultados (C): Secretaría de Hacienda, Secretaría de Agricultura, oficinas Jurídica y de Planeación, e Instituciones Educativas. Son informados (I): UAPA y comunidad escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-NOR-COM-002",
+      "texto_lineamiento": "Para la evaluación ex post del PAE, los responsables (R) son la ETC y el Equipo PAE. El CTPS aprueba y decide (A). Son consultados (C): interventoría, operador, IE y CAE. Son informados (I): UAPA y comunidad escolar.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "NOR-COM",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "evaluacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "UAPA",
+      "riesgo_incumplimiento": "medio"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-008",
+      "texto_lineamiento": "La planeación del PAE (POA) debe garantizar el inicio del servicio desde el primer día del calendario académico.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-009",
+      "texto_lineamiento": "La proyección de cobertura del PAE debe permitir avanzar hacia la universalización (≥95% progresivo) y priorizar poblaciones según criterios normativos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "critico"
+    },
+    {
+      "lin_id": "A8-EVA-EXA-010",
+      "texto_lineamiento": "La estructuración contractual del PAE debe incluir cronograma, riesgos, criterios de Compras Públicas Locales (CPL) y minutas que exijan la formalización de manipuladores de alimentos.",
+      "tipo_regla": "medida_especifica",
+      "subcat_id": "EVA-EXA",
+      "doc_id": "A8",
+      "obligatoriedad": "obligatorio",
+      "etapa_pae": "planeacion",
+      "condicion_activacion": "",
+      "actor_responsable": "ETC",
+      "actor_verificador": "CTPS",
+      "riesgo_incumplimiento": "alto"
+    }
+  ],
+  "verificadores": [
+    {
+      "ver_id": "V-D998-NOR-COM-001-01",
+      "lin_id": "D998-NOR-COM-001",
+      "descripcion": "Verificar que la UAPA ejerce efectivamente las funciones de inspección y vigilancia de los recursos PAE asignados por el Gobierno Nacional.",
+      "tipo_verificador": "documental",
+      "instrumento": "Actos administrativos de delegación; informes de gestión UAPA",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de actos administrativos, resoluciones o circulares emitidos por la UAPA en ejercicio de funciones de I&V del PAE."
+    },
+    {
+      "ver_id": "V-D998-NOR-COM-005-01",
+      "lin_id": "D998-NOR-COM-005",
+      "descripcion": "Verificar que las ETC elaboran anualmente planes operativos de I&V que incluyen componente PAE y que hacen parte del Plan Anual de Desarrollo Educativo.",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan Anual de Desarrollo Educativo de la ETC; Plan Operativo de I&V",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan operativo de I&V aprobado, que incluya sección específica de alimentación escolar, como parte del Plan Anual de Desarrollo Educativo."
+    },
+    {
+      "ver_id": "V-D998-NOR-COM-006-01",
+      "lin_id": "D998-NOR-COM-006",
+      "descripcion": "Verificar la participación efectiva de la UAPA en la elaboración de los planes operativos de I&V en los contenidos de alimentación escolar.",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas de reunión; evidencia de aportes técnicos de la UAPA; versiones del plan con contribuciones UAPA",
+      "frecuencia": "anual",
+      "criterio_cumple": "Evidencia documental de participación de la UAPA (actas, correos, documentos de trabajo) en la formulación del componente PAE del plan operativo."
+    },
+    {
+      "ver_id": "V-D998-NOR-COM-007-01",
+      "lin_id": "D998-NOR-COM-007",
+      "descripcion": "Verificar que los planes operativos de I&V contienen los 5 elementos mínimos: principios, estrategias, criterios, financiación y cronogramas.",
+      "tipo_verificador": "documental",
+      "instrumento": "Lista de chequeo de contenidos mínimos del plan operativo",
+      "frecuencia": "anual",
+      "criterio_cumple": "El plan operativo contiene secciones explícitas para cada uno de los 5 componentes: principios, estrategias, criterios, financiación y cronogramas."
+    },
+    {
+      "ver_id": "V-D998-CON-IYV-001-01",
+      "lin_id": "D998-CON-IYV-001",
+      "descripcion": "Verificar que la UAPA emite lineamientos y directrices para orientar el ejercicio de I&V del PAE por parte de las ETC.",
+      "tipo_verificador": "documental",
+      "instrumento": "Resoluciones, circulares, guías técnicas emitidas por la UAPA",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de al menos un documento de lineamientos o directrices emitido por la UAPA para orientar la I&V del PAE en las ETC."
+    },
+    {
+      "ver_id": "V-D998-CON-IYV-002-01",
+      "lin_id": "D998-CON-IYV-002",
+      "descripcion": "Verificar que la UAPA presta asistencia técnica a departamentos y distritos en materia de I&V del PAE.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informes de asistencia técnica; actas de visita; registros de capacitación",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Registro de asistencia técnica prestada a al menos el 50% de las ETC durante la vigencia."
+    },
+    {
+      "ver_id": "V-D998-CON-IYV-003-01",
+      "lin_id": "D998-CON-IYV-003",
+      "descripcion": "Verificar que la UAPA solicita y recibe información sobre resultados de I&V del PAE a departamentos y distritos.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Sistema de información de la UAPA; oficios de requerimiento; reportes recibidos",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Evidencia de requerimientos de información emitidos por la UAPA y de reportes recibidos de las ETC."
+    },
+    {
+      "ver_id": "V-D998-CON-IYV-006-01",
+      "lin_id": "D998-CON-IYV-006",
+      "descripcion": "Verificar que la UAPA ejerce efectivamente inspección, vigilancia y control sobre autoridades educativas departamentales y distritales en materia PAE.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informes de I&V; hallazgos; planes de mejora; actas de seguimiento",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de informes de I&V con hallazgos, recomendaciones y planes de mejora dirigidos a autoridades territoriales."
+    },
+    {
+      "ver_id": "V-GG-DIA-DAC-001-01",
+      "lin_id": "GG-DIA-DAC-001",
+      "descripcion": "Existencia del documento de diagnóstico anual del PAE elaborado por la ETC",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento de diagnóstico anual",
+      "frecuencia": "anual",
+      "criterio_cumple": "Documento de diagnóstico existente con los 3 componentes requeridos, fechado en la vigencia correspondiente"
+    },
+    {
+      "ver_id": "V-GG-CON-EST-001-01",
+      "lin_id": "GG-CON-EST-001",
+      "descripcion": "Existencia de cronograma integral que consolide todas las actividades del PAE",
+      "tipo_verificador": "documental",
+      "instrumento": "Cronograma del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Cronograma existe y contiene: procesos de selección, socialización, mesas técnicas e hitos operativos"
+    },
+    {
+      "ver_id": "V-GG-CON-EST-002-01",
+      "lin_id": "GG-CON-EST-002",
+      "descripcion": "Documento de priorización de población beneficiaria con criterios aplicados",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta/documento de priorización",
+      "frecuencia": "anual",
+      "criterio_cumple": "Documento existe con criterios de la resolución aplicados y población priorizada identificada"
+    },
+    {
+      "ver_id": "V-GG-ALI-CIC-002-01",
+      "lin_id": "GG-ALI-CIC-002",
+      "descripcion": "Ciclos de menús diseñados por profesional en Nutrición y Dietética con análisis nutricional completo",
+      "tipo_verificador": "documental",
+      "instrumento": "Ciclos de menús con análisis nutricional",
+      "frecuencia": "anual",
+      "criterio_cumple": "Ciclos de menús firmados por nutricionista con tarjeta profesional, incluyen análisis nutricional, listas de intercambios, guías de preparación y estandarización"
+    },
+    {
+      "ver_id": "V-GG-CPL-PRO-001-01",
+      "lin_id": "GG-CPL-PRO-001",
+      "descripcion": "Plan de Proveeduría formulado e integrado al POA",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de Proveeduría",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan existente que integra oferta productiva territorial, vocación del suelo y necesidades operativas"
+    },
+    {
+      "ver_id": "V-GG-TRA-AMB-002-01",
+      "lin_id": "GG-TRA-AMB-002",
+      "descripcion": "Plan de Gestión Ambiental de la ETC con indicadores de sostenibilidad",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de Gestión Ambiental",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan existe con indicadores de sostenibilidad ambiental de nivel institucional"
+    },
+    {
+      "ver_id": "V-GG-TRA-AMB-003-01",
+      "lin_id": "GG-TRA-AMB-003",
+      "descripcion": "Plan de Manejo Ambiental del operador con riesgos y medidas operativas",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de Manejo Ambiental del operador",
+      "frecuencia": "En cada contrato",
+      "criterio_cumple": "Plan incluye identificación de riesgos ambientales y medidas de reducción, prevención y compensación"
+    },
+    {
+      "ver_id": "V-GG-CON-EQU-001-01",
+      "lin_id": "GG-CON-EQU-001",
+      "descripcion": "Documento de planeación del Equipo PAE con perfiles, roles y costos",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de conformación del Equipo PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Documento define: número de integrantes, perfiles, roles, modalidad de vinculación, plazos y costos"
+    },
+    {
+      "ver_id": "V-GG-GOB-CTP-003-01",
+      "lin_id": "GG-GOB-CTP-003",
+      "descripcion": "Actas de sesiones del CTPS",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas firmadas del CTPS",
+      "frecuencia": "Al menos 3 veces al año",
+      "criterio_cumple": "Mínimo 3 actas al año, incluyendo sesión de agosto con aprobación del POA"
+    },
+    {
+      "ver_id": "V-GG-GOB-CTP-004-01",
+      "lin_id": "GG-GOB-CTP-004",
+      "descripcion": "Acto administrativo de formalización del POA y constancia de remisión a la UApA",
+      "tipo_verificador": "documental",
+      "instrumento": "Acto administrativo + radicado de remisión",
+      "frecuencia": "anual",
+      "criterio_cumple": "Acto administrativo expedido y remisión a UApA realizados en agosto"
+    },
+    {
+      "ver_id": "V-GG-CON-EST-005-01",
+      "lin_id": "GG-CON-EST-005",
+      "descripcion": "Fecha de adjudicación y perfeccionamiento del contrato vs. fecha de inicio de calendario escolar",
+      "tipo_verificador": "documental",
+      "instrumento": "Contrato perfeccionado en SECOP + calendario escolar",
+      "frecuencia": "anual",
+      "criterio_cumple": "Fecha de perfeccionamiento y alistamiento anterior a la fecha de inicio del calendario escolar"
+    },
+    {
+      "ver_id": "V-GG-CON-EJE-001-01",
+      "lin_id": "GG-CON-EJE-001",
+      "descripcion": "Registro de estrategia PAE en SIMAT con todos los campos diligenciados",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Reporte SIMAT",
+      "frecuencia": "anual",
+      "criterio_cumple": "Estrategia registrada con: jerarquía, calendario, año, tipo, fecha inicio, fecha fin, periodicidad y cupos completos"
+    },
+    {
+      "ver_id": "V-GG-CON-EJE-002-01",
+      "lin_id": "GG-CON-EJE-002",
+      "descripcion": "Informe de alistamiento del operador con verificación de sedes",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de alistamiento / reconocimiento de sedes",
+      "frecuencia": "Al inicio de cada contrato",
+      "criterio_cumple": "Informe que evidencie reconocimiento de sedes, verificación de infraestructura, capacidad de almacenamiento y protocolos diseñados"
+    },
+    {
+      "ver_id": "V-GG-TRA-FOR-002-01",
+      "lin_id": "GG-TRA-FOR-002",
+      "descripcion": "Contratos laborales del personal manipulador de alimentos",
+      "tipo_verificador": "documental",
+      "instrumento": "Contratos laborales / nómina",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Personal manipulador con contrato laboral formal conforme a Ley 2466/2025 art. 69"
+    },
+    {
+      "ver_id": "V-GG-NOR-COM-001-01",
+      "lin_id": "GG-NOR-COM-001",
+      "descripcion": "Acto administrativo de determinación de zonas rurales de difícil acceso",
+      "tipo_verificador": "documental",
+      "instrumento": "Resolución o decreto de la ETC",
+      "frecuencia": "anual",
+      "criterio_cumple": "Acto administrativo expedido antes del 1 de noviembre (cal. A) o 1 de julio (cal. B), simultáneo al calendario académico"
+    },
+    {
+      "ver_id": "V-GG-EVA-EXP-001-01",
+      "lin_id": "GG-EVA-EXP-001",
+      "descripcion": "Informe de evaluación del PAE con análisis de objetivos, resultados e impactos",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de evaluación del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe existe con datos oficiales, visitas de campo e instrumentos de evaluación aplicados"
+    },
+    {
+      "ver_id": "V-GG-EVA-EXP-001-01",
+      "lin_id": "GG-EVA-EXP-001",
+      "descripcion": "Informe de evaluación del PAE con análisis de objetivos, resultados e impactos",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de evaluación del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe existe con datos oficiales, visitas de campo e instrumentos de evaluación aplicados"
+    },
+    {
+      "ver_id": "V-A1-DIA-CON-001-01",
+      "lin_id": "A1-DIA-CON-001",
+      "descripcion": "Verificar que la ETC elaboró el diagnóstico anual del PAE y que, en caso de ser departamento, fue articulado con las EtnoC.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento de diagnóstico PAE con firmas y fecha",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existe documento de diagnóstico PAE fechado en la vigencia correspondiente, con evidencia de articulación con EtnoC (si aplica)."
+    },
+    {
+      "ver_id": "V-A1-DIA-CON-002-01",
+      "lin_id": "A1-DIA-CON-002",
+      "descripcion": "Verificar que el diagnóstico contiene información del 2º semestre de la vigencia anterior y de la vigencia actual con corte a junio.",
+      "tipo_verificador": "documental",
+      "instrumento": "Revisión del documento de diagnóstico: fuentes de datos y periodos referenciados",
+      "frecuencia": "anual",
+      "criterio_cumple": "El documento referencia explícitamente datos del 2º semestre anterior y de la vigencia actual con corte a junio."
+    },
+    {
+      "ver_id": "V-A1-DIA-DAC-001-01",
+      "lin_id": "A1-DIA-DAC-001",
+      "descripcion": "Verificar que el DACO fue elaborado con el detalle requerido por sede educativa.",
+      "tipo_verificador": "documental",
+      "instrumento": "Formato DACO completado; cruce con listado de sedes educativas",
+      "frecuencia": "anual",
+      "criterio_cumple": "DACO contiene información de infraestructura, ubicación, dotación/menaje, servicios públicos y concepto sanitario para cada sede educativa con PAE."
+    },
+    {
+      "ver_id": "V-A1-DIA-DAC-003-01",
+      "lin_id": "A1-DIA-DAC-003",
+      "descripcion": "Verificar que el DACO fue cargado en los sistemas de información de la UApA.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Reporte de carga en sistema de información UApA",
+      "frecuencia": "anual",
+      "criterio_cumple": "Registro de DACO completo en el sistema de información de la UApA para la vigencia correspondiente."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-001-01",
+      "lin_id": "A1-DIA-BAL-001",
+      "descripcion": "Verificar que el diagnóstico contiene la composición de población beneficiaria con todas las desagregaciones requeridas.",
+      "tipo_verificador": "documental",
+      "instrumento": "Tablas de caracterización de población en el diagnóstico y sus anexos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Diagnóstico presenta: total matriculados, total beneficiarios PAE, distribución rural/urbana, enfoque diferencial (étnico, víctimas, discapacidad)."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-004-01",
+      "lin_id": "A1-DIA-BAL-004",
+      "descripcion": "Verificar que el diagnóstico presenta comparativo entre calendario académico y periodos de suministro, identificando interrupciones.",
+      "tipo_verificador": "documental",
+      "instrumento": "Tabla comparativa calendario académico vs. periodos de suministro por modelo de atención",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existe tabla comparativa que muestra fechas de calendario académico vs. fechas de suministro; se identifican y explican gaps si existen."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-006-01",
+      "lin_id": "A1-DIA-BAL-006",
+      "descripcion": "Verificar que el diagnóstico incluye información financiera discriminada por fuentes de financiación.",
+      "tipo_verificador": "documental",
+      "instrumento": "Sección financiera del diagnóstico con tablas de asignación/ejecución por fuente",
+      "frecuencia": "anual",
+      "criterio_cumple": "Diagnóstico incluye tabla con recursos asignados, uso y valor ejecutado, desagregado por cada fuente de financiación."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-009-01",
+      "lin_id": "A1-DIA-BAL-009",
+      "descripcion": "Verificar que el diagnóstico documenta el desempeño del operador, incluyendo información de personal y hallazgos de supervisión.",
+      "tipo_verificador": "documental",
+      "instrumento": "Sección de desempeño del operador en el diagnóstico",
+      "frecuencia": "anual",
+      "criterio_cumple": "Diagnóstico incluye: generalidades del contrato, personal (incluidas manipuladoras), alertas ETA, y hallazgos de supervisión/interventoría."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-011-01",
+      "lin_id": "A1-DIA-BAL-011",
+      "descripcion": "Verificar que el diagnóstico documenta el cumplimiento de compras públicas locales con todos los elementos requeridos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Sección de compras locales del diagnóstico; listado de productores ACFC",
+      "frecuencia": "anual",
+      "criterio_cumple": "Diagnóstico presenta: indicadores A4, listado productores ACFC, alimentos/cantidades, valores de compras locales vs. totales, dificultades y estrategias."
+    },
+    {
+      "ver_id": "V-A1-DIA-BAL-015-01",
+      "lin_id": "A1-DIA-BAL-015",
+      "descripcion": "Verificar que el documento de diagnóstico incluye los 5 anexos requeridos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Checklist de anexos del diagnóstico PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "El diagnóstico incluye los 5 anexos: (1) DACO, (2) caracterización poblacional, (3) modelos/modalidades por sede, (4) productores ACFC, (5) organizaciones de base, (6) certificación sanitaria."
+    },
+    {
+      "ver_id": "V-D1852-NOR-COM-001-01",
+      "lin_id": "D1852-NOR-COM-001",
+      "descripcion": "Verificar la existencia de lineamientos técnicos-administrativos vigentes expedidos por la UAPA.",
+      "tipo_verificador": "documental",
+      "instrumento": "Resolución o acto administrativo que adopta los lineamientos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de lineamientos vigentes publicados y notificados a las ETC."
+    },
+    {
+      "ver_id": "V-D1852-FIN-PLA-001-01",
+      "lin_id": "D1852-FIN-PLA-001",
+      "descripcion": "Verificar la existencia de criterios de distribución de recursos y evidencia de transferencias a ETC.",
+      "tipo_verificador": "documental",
+      "instrumento": "Resolución de distribución de recursos; comprobantes de transferencia",
+      "frecuencia": "anual",
+      "criterio_cumple": "Resolución de distribución emitida antes del inicio del calendario escolar; transferencias efectuadas."
+    },
+    {
+      "ver_id": "V-D1852-FIN-BOL-001-01",
+      "lin_id": "D1852-FIN-BOL-001",
+      "descripcion": "Verificar que la ETC ha apropiado recursos propios de concurrencia para el PAE en su presupuesto.",
+      "tipo_verificador": "documental",
+      "instrumento": "Presupuesto municipal/departamental aprobado; CDP",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de rubros presupuestales específicos para PAE con apropiación de recursos propios."
+    },
+    {
+      "ver_id": "V-D1852-CAL-BPM-001-01",
+      "lin_id": "D1852-CAL-BPM-001",
+      "descripcion": "Verificar el estado de la infraestructura de comedores escolares y la existencia de planes de mejoramiento cuando aplique.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Lista de chequeo de condiciones de comedores; Acta de visita",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Comedores cumplen condiciones de los lineamientos, o existe plan de mejoramiento suscrito con cronograma de cumplimiento."
+    },
+    {
+      "ver_id": "V-D1852-FIN-EJE-001-01",
+      "lin_id": "D1852-FIN-EJE-001",
+      "descripcion": "Verificar que los recursos de cofinanciación se destinan exclusivamente a los 9 rubros permitidos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Ejecución presupuestal; contratos suscritos; reportes CHIP",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "100% de los pagos con cargo a recursos de cofinanciación corresponden a los 9 destinos del art. 2.3.10.3.7."
+    },
+    {
+      "ver_id": "V-D1852-FIN-EJE-002-01",
+      "lin_id": "D1852-FIN-EJE-002",
+      "descripcion": "Verificar que la inversión en dotación o infraestructura no ha reducido coberturas ni calidad del servicio.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Comparativo de coberturas antes/después; indicadores de calidad",
+      "frecuencia": "anual",
+      "criterio_cumple": "Cobertura actual ≥ cobertura del periodo anterior; indicadores de calidad sin deterioro."
+    },
+    {
+      "ver_id": "V-D1852-DIA-CON-002-01",
+      "lin_id": "D1852-DIA-CON-002",
+      "descripcion": "Verificar que la ETC remitió la priorización de IE antes del 31 de octubre.",
+      "tipo_verificador": "documental",
+      "instrumento": "Oficio de remisión con fecha de radicación",
+      "frecuencia": "anual",
+      "criterio_cumple": "Fecha de radicación del documento de priorización ≤ 31 de octubre del año anterior al calendario escolar."
+    },
+    {
+      "ver_id": "V-D1852-CON-EJE-001-01",
+      "lin_id": "D1852-CON-EJE-001",
+      "descripcion": "Verificar que no existen dos operadores simultáneos en la misma IE en el mismo lugar/tiempo.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Visita de seguimiento; revisión de contratos vigentes por IE",
+      "frecuencia": "en cada visita",
+      "criterio_cumple": "Máximo 1 operador activo por lugar de preparación/entrega en cada IE; ningún beneficiario con 2 raciones en el mismo tiempo de consumo."
+    },
+    {
+      "ver_id": "V-D1852-CON-EJE-003-01",
+      "lin_id": "D1852-CON-EJE-003",
+      "descripcion": "Verificar que el PAE inició desde el primer día del calendario escolar.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Actas de inicio de operación; reportes de entrega de raciones",
+      "frecuencia": "al inicio de cada vigencia",
+      "criterio_cumple": "Fecha de inicio de entrega de raciones = primer día del calendario escolar aprobado."
+    },
+    {
+      "ver_id": "V-D1852-FIN-REP-002-01",
+      "lin_id": "D1852-FIN-REP-002",
+      "descripcion": "Verificar que la ETC reporta información del PAE en el CHIP oportunamente.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Reportes CHIP; fechas de cargue",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Reporte CHIP del PAE cargado dentro de los plazos establecidos por la UAPA/CGN."
+    },
+    {
+      "ver_id": "V-D1852-FIN-REP-004-01",
+      "lin_id": "D1852-FIN-REP-004",
+      "descripcion": "Verificar la remisión oportuna del reporte de NNA inscritos al Consejo de Política Social.",
+      "tipo_verificador": "documental",
+      "instrumento": "Oficio de remisión; acta del Consejo de Política Social",
+      "frecuencia": "posterior a cada inscripción",
+      "criterio_cumple": "Reporte entregado al Consejo de Política Social dentro de las 2 semanas siguientes a la inscripción en SIMAT."
+    },
+    {
+      "ver_id": "V-D1852-CON-IYV-002-01",
+      "lin_id": "D1852-CON-IYV-002",
+      "descripcion": "Verificar que el rector emite mensualmente el certificado de complementos alimentarios entregados.",
+      "tipo_verificador": "documental",
+      "instrumento": "Certificados mensuales firmados por el rector",
+      "frecuencia": "mensual",
+      "criterio_cumple": "Existencia de certificado mensual firmado por el rector para cada mes de operación, con datos de raciones entregadas."
+    },
+    {
+      "ver_id": "V-D1852-CAL-ALE-001-01",
+      "lin_id": "D1852-CAL-ALE-001",
+      "descripcion": "Verificar la existencia de mecanismo de reporte inmediato de irregularidades en alimentos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Protocolo de alertas; registros de reportes realizados",
+      "frecuencia": "permanente",
+      "criterio_cumple": "Existencia de protocolo de reporte; evidencia de reportes realizados ante irregularidades detectadas con tiempos de respuesta inmediatos."
+    },
+    {
+      "ver_id": "V-D1852-CON-EJE-008-01",
+      "lin_id": "D1852-CON-EJE-008",
+      "descripcion": "Verificar que los contratos del PAE incorporan las obligaciones de los lineamientos técnicos-administrativos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Contratos y pliegos de condiciones",
+      "frecuencia": "en cada proceso de contratación",
+      "criterio_cumple": "Obligaciones de los lineamientos vigentes de la UAPA están explícitamente incluidas en el clausulado del contrato."
+    },
+    {
+      "ver_id": "V-D1852-GOB-RDC-002-01",
+      "lin_id": "D1852-GOB-RDC-002",
+      "descripcion": "Verificar la publicación de condiciones del contrato, obligaciones y menús en IE y web del operador.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Visita a IE; revisión de página web del operador",
+      "frecuencia": "en cada visita",
+      "criterio_cumple": "Información visible en la IE (cartelera o similar) y en la página web del operador, con menús diarios actualizados."
+    },
+    {
+      "ver_id": "V-D1852-CAL-BPM-002-01",
+      "lin_id": "D1852-CAL-BPM-002",
+      "descripcion": "Verificar que IE cuentan con infraestructura adecuada o que existen planes de mejoramiento suscritos.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Lista de chequeo de infraestructura; planes de mejoramiento",
+      "frecuencia": "anual",
+      "criterio_cumple": "IE cumple condiciones de infraestructura, o tiene plan de mejoramiento suscrito con seguimiento documentado."
+    },
+    {
+      "ver_id": "V-D1852-CAL-BPM-003-01",
+      "lin_id": "D1852-CAL-BPM-003",
+      "descripcion": "Verificar que el operador garantiza cantidad, calidad, inocuidad y oportunidad de los alimentos.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Acta de visita de seguimiento; registros de entrega",
+      "frecuencia": "en cada visita",
+      "criterio_cumple": "Raciones entregadas corresponden al menú aprobado en cantidad, calidad e inocuidad, y son entregadas en el horario establecido."
+    },
+    {
+      "ver_id": "V-R0003-CON-EST-001-01",
+      "lin_id": "R0003-CON-EST-001",
+      "descripcion": "Verificar que existe documento técnico de priorización aprobado por el CTPS, elaborado usando sistemas de información oficiales.",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta de CTPS con aprobación de priorización; documento técnico de priorización",
+      "frecuencia": "anual",
+      "criterio_cumple": "Documento técnico de priorización existente + Acta de CTPS con firma de aprobación."
+    },
+    {
+      "ver_id": "V-R0003-CON-EST-002-01",
+      "lin_id": "R0003-CON-EST-002",
+      "descripcion": "Verificar que la priorización de beneficiarios sigue el orden estricto de los 5 criterios establecidos.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Cruce de bases: SIMAT vs. listados de beneficiarios PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "100% de beneficiarios del criterio N atendidos antes de avanzar al criterio N+1."
+    },
+    {
+      "ver_id": "V-R0003-ALI-NUT-001-01",
+      "lin_id": "R0003-ALI-NUT-001",
+      "descripcion": "Verificar que el aporte energético del complemento corresponde al porcentaje RIEN establecido según tipo (JM/JT=20%, Almuerzo=30%).",
+      "tipo_verificador": "medicion",
+      "instrumento": "Análisis nutricional de minutas patrón; resultados de laboratorio",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Aporte energético dentro del ±5% del valor RIEN establecido para cada tipo de complemento."
+    },
+    {
+      "ver_id": "V-R0003-ALI-NUT-002-01",
+      "lin_id": "R0003-ALI-NUT-002",
+      "descripcion": "Verificar que sedes en jornada única y zonas rurales de difícil acceso reciben complemento tipo almuerzo (30% RIEN).",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Cruce: listado de sedes JU/rural difícil acceso vs. tipo de complemento asignado",
+      "frecuencia": "semestral",
+      "criterio_cumple": "100% de sedes en JU y rural difícil acceso con complemento tipo almuerzo asignado."
+    },
+    {
+      "ver_id": "V-R0003-ALI-DIF-001-01",
+      "lin_id": "R0003-ALI-DIF-001",
+      "descripcion": "Verificar aporte nutricional del 50% o 70% según jornada para segundo ciclo de educación inicial.",
+      "tipo_verificador": "medicion",
+      "instrumento": "Análisis de minutas y registros de entrega por sede",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Sedes con jornada 6h → 50% aporte; sedes con jornada 8h → 70% aporte."
+    },
+    {
+      "ver_id": "V-R0003-CON-EJE-001-01",
+      "lin_id": "R0003-CON-EJE-001",
+      "descripcion": "Verificar existencia de plan de desmonte progresivo de modalidad industrializada e informe anual a UApA.",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de desmonte; informes anuales remitidos a UApA",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan de desmonte documentado + informe anual remitido. Meta: 0% industrializada a 2030."
+    },
+    {
+      "ver_id": "V-R0003-ALI-EME-001-01",
+      "lin_id": "R0003-ALI-EME-001",
+      "descripcion": "Verificar entrega de canasta PAE en casa durante receso estudiantil con aporte mínimo de 25% RIEN.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Actas de entrega; planillas de distribución; análisis nutricional de canasta",
+      "frecuencia": "por receso estudiantil",
+      "criterio_cumple": "Canasta entregada dentro de primera semana + análisis nutricional ≥ 25% RIEN."
+    },
+    {
+      "ver_id": "V-R0003-TRA-FOR-001-01",
+      "lin_id": "R0003-TRA-FOR-001",
+      "descripcion": "Verificar vinculación laboral formal de manipuladores con condiciones conformes a Ley 2466/2025 y priorización por experiencia.",
+      "tipo_verificador": "documental",
+      "instrumento": "Contratos laborales; certificados de experiencia; planilla de seguridad social",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Contratos laborales vigentes + afiliación a seguridad social + certificados de experiencia ≥ 3 años para personal priorizado."
+    },
+    {
+      "ver_id": "V-R0003-TRA-FOR-002-01",
+      "lin_id": "R0003-TRA-FOR-002",
+      "descripcion": "Verificar inexistencia de convenios de voluntariado para manipuladores de alimentos o dinamizadores auxiliares.",
+      "tipo_verificador": "documental",
+      "instrumento": "Revisión de contratos y convenios de vinculación del personal",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Cero convenios de voluntariado para manipuladores/dinamizadores. Todo personal con vinculación laboral formal."
+    },
+    {
+      "ver_id": "V-R0003-GOB-CTP-001-01",
+      "lin_id": "R0003-GOB-CTP-001",
+      "descripcion": "Verificar que el CTPS sesiona al menos 3 veces al año.",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas de sesión del CTPS",
+      "frecuencia": "anual",
+      "criterio_cumple": "≥ 3 actas de sesión del CTPS por vigencia."
+    },
+    {
+      "ver_id": "V-R0003-GOB-CAE-001-01",
+      "lin_id": "R0003-GOB-CAE-001",
+      "descripcion": "Verificar conformación anual del CAE en cada IE y sesiones bimestrales.",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas de conformación y sesiones del CAE",
+      "frecuencia": "bimestral",
+      "criterio_cumple": "Acta de conformación anual + ≥ 5 actas de sesión bimestral por vigencia."
+    },
+    {
+      "ver_id": "V-R0003-GOB-MES-001-01",
+      "lin_id": "R0003-GOB-MES-001",
+      "descripcion": "Verificar realización de al menos 2 Mesas Públicas por vigencia.",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas de Mesas Públicas; convocatorias; listados de asistencia",
+      "frecuencia": "semestral",
+      "criterio_cumple": "≥ 2 actas de Mesas Públicas con evidencia de convocatoria y participación."
+    },
+    {
+      "ver_id": "V-R0003-CAL-BPM-001-01",
+      "lin_id": "R0003-CAL-BPM-001",
+      "descripcion": "Verificar ejecución de programa de capacitación permanente para manipuladores en temas de BPM, inocuidad y alimentación saludable.",
+      "tipo_verificador": "documental",
+      "instrumento": "Registros de capacitación; certificados; listados de asistencia",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Programa de capacitación documentado + registros de asistencia del personal manipulador."
+    },
+    {
+      "ver_id": "V-A2-CON-EST-001-01",
+      "lin_id": "A2-CON-EST-001",
+      "descripcion": "Verificar existencia de documentos de planeación integral del PAE",
+      "tipo_verificador": "documental",
+      "instrumento": "POA del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "POA formulado y formalizado mediante acto administrativo"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-002-01",
+      "lin_id": "A2-CON-EST-002",
+      "descripcion": "Verificar remisión del POA a la UApA dentro del plazo",
+      "tipo_verificador": "documental",
+      "instrumento": "Acuse de recibo de la UApA",
+      "frecuencia": "anual",
+      "criterio_cumple": "POA remitido a la UApA antes del 31 de agosto"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-003-01",
+      "lin_id": "A2-CON-EST-003",
+      "descripcion": "Verificar que la operación del PAE inició el primer día del calendario escolar",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas de inicio de contrato; reportes SIMAT",
+      "frecuencia": "anual",
+      "criterio_cumple": "Fecha de inicio de operación ≤ Fecha de inicio del calendario escolar"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-004-01",
+      "lin_id": "A2-CON-EST-004",
+      "descripcion": "Verificar que la priorización sigue los criterios de la resolución vigente",
+      "tipo_verificador": "documental",
+      "instrumento": "Listado de sedes y grados priorizados; registro SIMAT",
+      "frecuencia": "anual",
+      "criterio_cumple": "Priorización documentada conforme a criterios vigentes"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-006-01",
+      "lin_id": "A2-CON-EST-006",
+      "descripcion": "Verificar que cada sede educativa tiene asignado un modelo de atención coherente con su población",
+      "tipo_verificador": "documental",
+      "instrumento": "Listado de sedes con modelo asignado; DACO",
+      "frecuencia": "anual",
+      "criterio_cumple": "Modelo de atención definido para el 100% de sedes beneficiarias"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-008-01",
+      "lin_id": "A2-CON-EST-008",
+      "descripcion": "Verificar cumplimiento de las 6 acciones mínimas para sedes rurales",
+      "tipo_verificador": "documental",
+      "instrumento": "POA sección rural; planes específicos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Documentos de las 6 acciones mínimas elaborados para sedes rurales"
+    },
+    {
+      "ver_id": "V-A2-CON-EQU-001-01",
+      "lin_id": "A2-CON-EQU-001",
+      "descripcion": "Verificar plan de conformación del equipo PAE con todos los elementos requeridos",
+      "tipo_verificador": "documental",
+      "instrumento": "POA sección equipo PAE; contratos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan de conformación con cantidad, perfiles, roles, modelo de vinculación y funciones definidos"
+    },
+    {
+      "ver_id": "V-A2-CON-EQU-005-01",
+      "lin_id": "A2-CON-EQU-005",
+      "descripcion": "Verificar que el equipo PAE permanece activo durante toda la vigencia",
+      "tipo_verificador": "documental",
+      "instrumento": "Contratos de vinculación del equipo PAE",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Integrantes del Equipo PAE activos ≥ Integrantes proyectados"
+    },
+    {
+      "ver_id": "V-A2-CON-IYV-001-01",
+      "lin_id": "A2-CON-IYV-001",
+      "descripcion": "Verificar que el Plan Anual de Desarrollo Educativo incluye el componente PAE",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan Anual de Desarrollo Educativo",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan aprobado que incluya sección específica de alimentación escolar"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-009-01",
+      "lin_id": "A2-CON-EST-009",
+      "descripcion": "Verificar que el POA contiene los 15 componentes mínimos",
+      "tipo_verificador": "documental",
+      "instrumento": "POA del PAE; acta CTPS de aprobación",
+      "frecuencia": "anual",
+      "criterio_cumple": "POA contiene todos los componentes listados de (a) a (o)"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-010-01",
+      "lin_id": "A2-CON-EST-010",
+      "descripcion": "Verificar acta CTPS de aprobación del POA y acto administrativo de formalización",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta CTPS; acto administrativo",
+      "frecuencia": "anual",
+      "criterio_cumple": "Acta de aprobación + acto administrativo emitido"
+    },
+    {
+      "ver_id": "V-A2-GOB-CTP-002-01",
+      "lin_id": "A2-GOB-CTP-002",
+      "descripcion": "Verificar acto administrativo de creación del CTPS",
+      "tipo_verificador": "documental",
+      "instrumento": "Acto administrativo de creación CTPS",
+      "frecuencia": "por única vez",
+      "criterio_cumple": "Acto administrativo vigente con integrantes, funciones, periodicidad y mecanismos de decisión"
+    },
+    {
+      "ver_id": "V-A2-GOB-CTP-003-01",
+      "lin_id": "A2-GOB-CTP-003",
+      "descripcion": "Verificar que las actas del CTPS registran asistencia de todos los integrantes obligatorios",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas CTPS con listas de asistencia",
+      "frecuencia": "cada sesión",
+      "criterio_cumple": "Asistencia de integrantes obligatorios documentada en actas"
+    },
+    {
+      "ver_id": "V-A2-GOB-CTP-005-01",
+      "lin_id": "A2-GOB-CTP-005",
+      "descripcion": "Verificar declaración de no conflicto de interés en actas del CTPS",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas CTPS con declaración expresa de no conflicto",
+      "frecuencia": "cada sesión",
+      "criterio_cumple": "Constancia expresa en cada acta de que integrantes no están incursos en conflicto de interés"
+    },
+    {
+      "ver_id": "V-A2-GOB-CTP-006-01",
+      "lin_id": "A2-GOB-CTP-006",
+      "descripcion": "Verificar que el CTPS sesionó al menos 3 veces al año con actas formales",
+      "tipo_verificador": "documental",
+      "instrumento": "Actas formales del CTPS",
+      "frecuencia": "anual",
+      "criterio_cumple": "Número de sesiones ≥ 3, incluida sesión de agosto; actas con lista de asistencia"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-013-01",
+      "lin_id": "A2-CON-EST-013",
+      "descripcion": "Verificar publicación del PAA en SECOP con procesos PAE incluidos",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "SECOP II",
+      "frecuencia": "anual",
+      "criterio_cumple": "PAA publicado y actualizado en SECOP II con procesos del PAE"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-021-01",
+      "lin_id": "A2-CON-EST-021",
+      "descripcion": "Verificar que estudios previos contienen los 13 componentes mínimos",
+      "tipo_verificador": "documental",
+      "instrumento": "Estudios y documentos previos publicados en SECOP",
+      "frecuencia": "por proceso",
+      "criterio_cumple": "Estudios previos contienen todos los componentes requeridos"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-022-01",
+      "lin_id": "A2-CON-EST-022",
+      "descripcion": "Verificar que el pliego de condiciones contiene los 14 elementos mínimos",
+      "tipo_verificador": "documental",
+      "instrumento": "Pliego de condiciones publicado en SECOP",
+      "frecuencia": "por proceso",
+      "criterio_cumple": "Pliego contiene todos los elementos requeridos"
+    },
+    {
+      "ver_id": "V-A2-CON-EJE-001-01",
+      "lin_id": "A2-CON-EJE-001",
+      "descripcion": "Verificar que la minuta contractual contiene las 12 obligaciones mínimas",
+      "tipo_verificador": "documental",
+      "instrumento": "Minuta del contrato de operación",
+      "frecuencia": "por contrato",
+      "criterio_cumple": "Minuta contiene todas las obligaciones listadas"
+    },
+    {
+      "ver_id": "V-A2-TRA-FOR-001-01",
+      "lin_id": "A2-TRA-FOR-001",
+      "descripcion": "Verificar porcentaje de padres de familia como manipuladores de alimentos",
+      "tipo_verificador": "documental",
+      "instrumento": "Contratos de manipuladores; listado de padres vinculados",
+      "frecuencia": "mensual",
+      "criterio_cumple": "Padres de familia ≥ 20% del total de manipuladores contratados"
+    },
+    {
+      "ver_id": "V-A2-CON-IYV-003-01",
+      "lin_id": "A2-CON-IYV-003",
+      "descripcion": "Verificar rendición de informes del interventor a la comunidad educativa",
+      "tipo_verificador": "documental",
+      "instrumento": "Informes semestrales/trimestrales del interventor",
+      "frecuencia": "semestral",
+      "criterio_cumple": "Informe semestral (o trimestral si contrato < 6 meses) entregado a comunidad educativa"
+    },
+    {
+      "ver_id": "V-A2-CPL-OBL-001-01",
+      "lin_id": "A2-CPL-OBL-001",
+      "descripcion": "Verificar porcentaje mensual de compra local a pequeños productores",
+      "tipo_verificador": "documental",
+      "instrumento": "Facturas y soportes de compra local; informe mensual",
+      "frecuencia": "mensual",
+      "criterio_cumple": "Compra local ≥ 30% del valor de compra de alimentos"
+    },
+    {
+      "ver_id": "V-A2-CON-EST-023-01",
+      "lin_id": "A2-CON-EST-023",
+      "descripcion": "Verificar publicación oportuna de documentos en SECOP",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "SECOP I o II",
+      "frecuencia": "mensual",
+      "criterio_cumple": "Documentos publicados dentro de los 3 días siguientes a su expedición"
+    },
+    {
+      "ver_id": "V-A2-CON-EJE-007-01",
+      "lin_id": "A2-CON-EJE-007",
+      "descripcion": "Verificar registro completo de estrategia PAE en SIMAT",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "SIMAT",
+      "frecuencia": "mensual",
+      "criterio_cumple": "Estrategia registrada con todos los campos diligenciados para todas las sedes"
+    },
+    {
+      "ver_id": "V-A2-CON-LIQ-001-01",
+      "lin_id": "A2-CON-LIQ-001",
+      "descripcion": "Verificar liquidación oportuna de contratos del PAE",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta de liquidación",
+      "frecuencia": "por contrato",
+      "criterio_cumple": "Acta de liquidación suscrita dentro del plazo establecido"
+    },
+    {
+      "ver_id": "V-A5-CAL-PLA-003-01",
+      "lin_id": "A5-CAL-PLA-003",
+      "descripcion": "Verificar existencia del acta de inspección sanitaria con concepto favorable o favorable con observaciones para cada sitio de almacenamiento, ensamble o producción del operador.",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta de inspección sanitaria emitida por autoridad sanitaria",
+      "frecuencia": "Al inicio de operación y en cada visita de seguimiento",
+      "criterio_cumple": "Concepto sanitario = favorable O favorable con observaciones, vigente durante toda la ejecución"
+    },
+    {
+      "ver_id": "V-A5-CAL-MUE-001-01",
+      "lin_id": "A5-CAL-MUE-001",
+      "descripcion": "Verificar existencia del plan de muestreo microbiológico y fisicoquímico diseñado por la ET con procedimiento de contramuestras.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento del plan de muestreo",
+      "frecuencia": "Al inicio de vigencia",
+      "criterio_cumple": "Plan documentado, aprobado, con cronograma, tipos de análisis, frecuencias y procedimiento de contramuestras"
+    },
+    {
+      "ver_id": "V-A5-CAL-PLA-009-01",
+      "lin_id": "A5-CAL-PLA-009",
+      "descripcion": "Verificar existencia del Plan de Saneamiento del operador con los 4 programas obligatorios para cada sede priorizada.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento Plan de Saneamiento aprobado por Equipo PAE",
+      "frecuencia": "Previo al inicio de operación",
+      "criterio_cumple": "Plan incluye: limpieza/desinfección, residuos, plagas, agua potable con objetivos, procedimientos, cronogramas, registros y responsables"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-004-01",
+      "lin_id": "A5-CAL-BPM-004",
+      "descripcion": "Verificar certificados médicos de aptitud para manipulación de alimentos de todo el personal, con vigencia no mayor a 1 año.",
+      "tipo_verificador": "documental",
+      "instrumento": "Certificados médicos individuales",
+      "frecuencia": "Anual y en visitas de seguimiento",
+      "criterio_cumple": "100% de manipuladores con certificado vigente (< 1 año de expedición)"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-005-01",
+      "lin_id": "A5-CAL-BPM-005",
+      "descripcion": "Verificar cumplimiento del plan de capacitación de manipuladores con mínimo 10 horas anuales.",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de capacitación, cronograma, listados de asistencia, registros de horas",
+      "frecuencia": "Trimestral",
+      "criterio_cumple": "Horas acumuladas de capacitación ≥ 10 horas/año por manipulador"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-007-01",
+      "lin_id": "A5-CAL-BPM-007",
+      "descripcion": "Verificar que el mantenimiento correctivo se ejecuta dentro del plazo de 5 días hábiles y que se dispone de equipo de reemplazo cuando aplique.",
+      "tipo_verificador": "documental",
+      "instrumento": "Registro de mantenimiento correctivo con fechas de solicitud y resolución",
+      "frecuencia": "En cada visita de seguimiento",
+      "criterio_cumple": "Fecha resolución - Fecha solicitud ≤ 5 días hábiles. Si equipo retirado, hay equipo sustituto funcionando."
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-008-01",
+      "lin_id": "A5-CAL-BPM-008",
+      "descripcion": "Verificar certificados de calibración vigentes de equipos de medición (balanzas, termómetros).",
+      "tipo_verificador": "documental",
+      "instrumento": "Certificados de calibración emitidos por laboratorio o empresa certificada",
+      "frecuencia": "Según frecuencia definida por fabricante",
+      "criterio_cumple": "Certificados vigentes para todos los equipos de medición listados en el programa"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-015-01",
+      "lin_id": "A5-CAL-BPM-015",
+      "descripcion": "Verificar temperaturas de refrigeración y congelación de alimentos perecederos.",
+      "tipo_verificador": "medicion",
+      "instrumento": "Termómetro calibrado; registros de temperatura de equipos de frío",
+      "frecuencia": "En cada visita de seguimiento",
+      "criterio_cumple": "Refrigeración: 0°C a 4°C (+/- 2°C). Congelación: ≤ -18°C"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-018-01",
+      "lin_id": "A5-CAL-BPM-018",
+      "descripcion": "Verificar temperatura de servido de alimentos calientes y temperatura interna de cocción.",
+      "tipo_verificador": "medicion",
+      "instrumento": "Termómetro calibrado; registros de temperatura de servido",
+      "frecuencia": "En cada visita de seguimiento",
+      "criterio_cumple": "Servido caliente ≥ 60°C. Cocción interna ≥ 70°C"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-020-01",
+      "lin_id": "A5-CAL-BPM-020",
+      "descripcion": "Verificar que la distribución de complementos en caliente transportada se realiza dentro de 1 hora posterior a la llegada.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Registro de hora de llegada y hora de distribución; observación directa",
+      "frecuencia": "En cada visita de seguimiento",
+      "criterio_cumple": "Hora de distribución - Hora de llegada ≤ 1 hora"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-021-01",
+      "lin_id": "A5-CAL-BPM-021",
+      "descripcion": "Verificar concepto sanitario favorable vigente de vehículos transportadores de alimentos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Concepto sanitario del vehículo",
+      "frecuencia": "Trimestral",
+      "criterio_cumple": "Concepto sanitario favorable vigente para cada vehículo utilizado"
+    },
+    {
+      "ver_id": "V-A5-CAL-MUE-006-01",
+      "lin_id": "A5-CAL-MUE-006",
+      "descripcion": "Verificar toma diaria de contramuestras debidamente rotuladas y almacenadas por mínimo 72 horas.",
+      "tipo_verificador": "observacion_campo",
+      "instrumento": "Inspección visual de contramuestras; formato de registro",
+      "frecuencia": "En cada visita de seguimiento",
+      "criterio_cumple": "Contramuestras presentes, rotuladas (fecha, hora, lote, modalidad, responsable), almacenadas ≥ 72 horas"
+    },
+    {
+      "ver_id": "V-A5-CAL-ALE-002-01",
+      "lin_id": "A5-CAL-ALE-002",
+      "descripcion": "Verificar activación de la ruta de notificación SGI ante casos de ≥ 2 beneficiarios con síntomas gastrointestinales en 24 horas.",
+      "tipo_verificador": "documental",
+      "instrumento": "Formato de notificación de alerta temprana; registros de comunicación",
+      "frecuencia": "Por evento",
+      "criterio_cumple": "Notificación activada dentro de 24 horas del primer caso identificado"
+    },
+    {
+      "ver_id": "V-A5-CAL-ALE-003-01",
+      "lin_id": "A5-CAL-ALE-003",
+      "descripcion": "Verificar envío del informe de trazabilidad del evento a UApA dentro de 24 horas.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de trazabilidad con formato de verificación y copia de informe ETS",
+      "frecuencia": "Por evento",
+      "criterio_cumple": "Informe enviado a UApA ≤ 24 horas después de la notificación de sede educativa"
+    },
+    {
+      "ver_id": "V-A5-CAL-ALE-004-01",
+      "lin_id": "A5-CAL-ALE-004",
+      "descripcion": "Verificar consolidación de informe ejecutivo ante novedades graves de calidad e inocuidad dentro de 48 horas.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe ejecutivo con estructura definida por UApA",
+      "frecuencia": "Por evento",
+      "criterio_cumple": "Informe ejecutivo consolidado ≤ 48 horas de la identificación del evento"
+    },
+    {
+      "ver_id": "V-A5-CAL-BPM-016-01",
+      "lin_id": "A5-CAL-BPM-016",
+      "descripcion": "Verificar implementación del sistema de trazabilidad del operador.",
+      "tipo_verificador": "documental",
+      "instrumento": "Registros de trazabilidad (lotes, proveedores, fechas, condiciones)",
+      "frecuencia": "Trimestral",
+      "criterio_cumple": "Para cualquier alimento en operación se puede identificar lote, proveedor, fecha de ingreso y condiciones de manejo"
+    },
+    {
+      "ver_id": "V-A5-CAL-RUR-003-01",
+      "lin_id": "A5-CAL-RUR-003",
+      "descripcion": "Verificar existencia y ejecución del Plan de Gestión de Riesgos para sedes rurales de difícil acceso con los 6 pasos requeridos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento del Plan de Gestión de Riesgos; formatos de seguimiento",
+      "frecuencia": "Al inicio de operación y trimestral",
+      "criterio_cumple": "Plan documentado con los 6 pasos, socializado con operador y rector, con evidencia de monitoreo"
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-002-01",
+      "lin_id": "A6-FIN-PLA-002",
+      "descripcion": "Verificar que la planeación financiera del PAE contenga los insumos mínimos requeridos: análisis de sector, cobertura proyectada, estudios de costos, diagnóstico anual, vigencias futuras, concertación de Bolsa Común y cronograma de contratación.",
+      "tipo_verificador": "documental",
+      "instrumento": "Checklist de insumos del PFT y documentos soporte",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia verificable de los 7 insumos mínimos señalados en la sección 1 del Anexo 6."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-006-01",
+      "lin_id": "A6-FIN-PLA-006",
+      "descripcion": "Verificar que la planeación financiera incluya los 6 componentes mínimos: diagnóstico financiero, estudio de sector, identificación de fuentes, programación presupuestal, Bolsa Común y vigencias futuras.",
+      "tipo_verificador": "documental",
+      "instrumento": "Checklist de componentes de la planeación financiera",
+      "frecuencia": "anual",
+      "criterio_cumple": "Los 6 componentes están documentados y son verificables."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-007-01",
+      "lin_id": "A6-FIN-PLA-007",
+      "descripcion": "Verificar que el diagnóstico financiero contenga recursos asignados, uso de recursos, valor ejecutado discriminado por fuente, y esquema de Bolsa Común (para departamentos).",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento de diagnóstico financiero del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de documento de diagnóstico con discriminación por fuente de financiación."
+    },
+    {
+      "ver_id": "V-A6-CON-EST-001-01",
+      "lin_id": "A6-CON-EST-001",
+      "descripcion": "Verificar que exista un estudio de sector completo que incluya análisis de entorno competitivo, riesgos, oferta/demanda y precios de referencia.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento de estudio de sector",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de estudio de sector conforme a la Guía de Colombia Compra Eficiente, con las 3 áreas cubiertas."
+    },
+    {
+      "ver_id": "V-A6-CON-EST-002-01",
+      "lin_id": "A6-CON-EST-002",
+      "descripcion": "Verificar que el estudio de sector aborde las 3 áreas requeridas: aspectos generales del mercado, estudio de la oferta, estudio de la demanda.",
+      "tipo_verificador": "documental",
+      "instrumento": "Tabla de contenido / checklist del estudio de sector",
+      "frecuencia": "anual",
+      "criterio_cumple": "Las 3 áreas están desarrolladas con los contenidos mínimos especificados en las secciones 1.1.1 del Anexo 6."
+    },
+    {
+      "ver_id": "V-A6-CON-EST-009-01",
+      "lin_id": "A6-CON-EST-009",
+      "descripcion": "Verificar que el estudio de sector incluya análisis de viabilidad de vinculación de pequeños productores locales conforme a Ley 2046/2020.",
+      "tipo_verificador": "documental",
+      "instrumento": "Sección de compras públicas locales en el estudio de sector",
+      "frecuencia": "anual",
+      "criterio_cumple": "Identificación de productos susceptibles de compra local, análisis de capacidad de abastecimiento, e impactos logísticos."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-012-01",
+      "lin_id": "A6-FIN-PLA-012",
+      "descripcion": "Verificar que el estudio de costos incluya costos laborales de formalización (art. 69 Ley 2466/2025), evaluación de modelos comunitarios y compras públicas locales.",
+      "tipo_verificador": "documental",
+      "instrumento": "Estructura de costos del PAE / Estudio de costos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Los 3 componentes obligatorios están incluidos en la estructura de costos."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-015-01",
+      "lin_id": "A6-FIN-PLA-015",
+      "descripcion": "Verificar que el estudio de costos se haya realizado siguiendo las 5 etapas: generalidades, estructura de costos, fuentes de información, estimación, y análisis del proceso.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento técnico de estudio de costos",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de documento técnico con las 5 etapas documentadas y evidenciadas."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-019-01",
+      "lin_id": "A6-FIN-PLA-019",
+      "descripcion": "Verificar que las fuentes de información del estudio de costos sean oficiales, verificables y estén documentadas con evidencias y soportes.",
+      "tipo_verificador": "documental",
+      "instrumento": "Soportes de fuentes de información (cotizaciones, consultas de portales, otros)",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de evidencias verificables para todas las fuentes de información usadas."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-021-01",
+      "lin_id": "A6-FIN-PLA-021",
+      "descripcion": "Verificar existencia de documento técnico que describa la metodología de estimación de costos con fuentes, criterios, estructura por modalidad, dificultades y conclusiones.",
+      "tipo_verificador": "documental",
+      "instrumento": "Documento técnico de análisis del proceso de costeo",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de documento técnico completo con todos los componentes señalados."
+    },
+    {
+      "ver_id": "V-A6-FIN-EJE-003-01",
+      "lin_id": "A6-FIN-EJE-003",
+      "descripcion": "Verificar que cuando la ETC presta directamente el servicio, al menos 80% de los recursos SGP de AE se destinen a compra de alimentos.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Reportes CHIP categoría UApA-PAE / ejecución presupuestal",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "(Valor ejecutado en compra de alimentos con SGP-AE / Total de recursos SGP-AE ejecutados) >= 80%."
+    },
+    {
+      "ver_id": "V-A6-FIN-EJE-005-01",
+      "lin_id": "A6-FIN-EJE-005",
+      "descripcion": "Verificar que cualquier cambio en la destinación de recursos del PGN cuente con solicitud previa de la ETC y autorización de la UApA.",
+      "tipo_verificador": "documental",
+      "instrumento": "Solicitud formal de cambio de destinación y acto administrativo de autorización",
+      "frecuencia": "por evento",
+      "criterio_cumple": "Existencia de solicitud formal y autorización de la UApA previo al cambio."
+    },
+    {
+      "ver_id": "V-A6-FIN-BOL-002-01",
+      "lin_id": "A6-FIN-BOL-002",
+      "descripcion": "Verificar que la Bolsa Común se haya conformado mediante convenio interadministrativo o acuerdo formal entre ETC y ETNoC.",
+      "tipo_verificador": "documental",
+      "instrumento": "Convenio o acuerdo de Bolsa Común suscrito",
+      "frecuencia": "anual",
+      "criterio_cumple": "Existencia de convenio o acuerdo suscrito con todos los municipios no certificados de la jurisdicción."
+    },
+    {
+      "ver_id": "V-A6-FIN-BOL-005-01",
+      "lin_id": "A6-FIN-BOL-005",
+      "descripcion": "Verificar que el mecanismo de Bolsa Común contenga los 20 aspectos mínimos obligatorios (literales a a t de la sección 1.7.2).",
+      "tipo_verificador": "documental",
+      "instrumento": "Checklist de contenido del convenio/acuerdo de Bolsa Común",
+      "frecuencia": "anual",
+      "criterio_cumple": "El documento contiene los 20 aspectos mínimos listados en la sección 1.7.2."
+    },
+    {
+      "ver_id": "V-A6-FIN-REP-001-01",
+      "lin_id": "A6-FIN-REP-001",
+      "descripcion": "Verificar que la ETC remita el extracto bancario con conciliaciones contables al cierre de vigencia a la UApA antes del 30 de enero.",
+      "tipo_verificador": "documental",
+      "instrumento": "Extracto bancario y conciliaciones contables al 31 de diciembre",
+      "frecuencia": "anual",
+      "criterio_cumple": "Radicación del extracto y conciliaciones antes del 30 de enero con los 7 ítems desagregados y certificados."
+    },
+    {
+      "ver_id": "V-A6-FIN-REP-003-01",
+      "lin_id": "A6-FIN-REP-003",
+      "descripcion": "Verificar que la ETC presente el PFT a la UApA en los tiempos establecidos en la Resolución 231 de 2025, con los 15 grupos de variables completos.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "PFT radicado ante la UApA",
+      "frecuencia": "anual (con actualizaciones)",
+      "criterio_cumple": "PFT radicado dentro del plazo con los 15 grupos de variables diligenciados."
+    },
+    {
+      "ver_id": "V-A6-FIN-REP-004-01",
+      "lin_id": "A6-FIN-REP-004",
+      "descripcion": "Verificar que la ETC y ETNoC reporten trimestralmente los 5 formularios de la categoría UApA-PAE en CHIP.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Sistema CHIP / plataforma de la Contaduría General de la Nación",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Los 5 formularios están reportados dentro del cronograma de la Resolución 332 de 2021."
+    },
+    {
+      "ver_id": "V-A6-FIN-REP-007-01",
+      "lin_id": "A6-FIN-REP-007",
+      "descripcion": "Verificar que la ETC cargue de forma constante la información de ejecución del PAE en el sistema SiPAE.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Plataforma SiPAE",
+      "frecuencia": "permanente",
+      "criterio_cumple": "Información actualizada y consistente en la plataforma SiPAE."
+    },
+    {
+      "ver_id": "V-A6-FIN-EJE-009-01",
+      "lin_id": "A6-FIN-EJE-009",
+      "descripcion": "Verificar que los ingresos del PAE estén clasificados según CCPET y que se coteje ingresos frente a gastos para garantizar financiación completa del calendario académico.",
+      "tipo_verificador": "documental",
+      "instrumento": "Presupuesto de ingresos y gastos del PAE / CCPET",
+      "frecuencia": "anual",
+      "criterio_cumple": "Clasificación correcta de ingresos según CCPET y cotejo de ingresos vs. gastos que demuestre financiación del calendario completo."
+    },
+    {
+      "ver_id": "V-A6-FIN-EJE-014-01",
+      "lin_id": "A6-FIN-EJE-014",
+      "descripcion": "Verificar que los recursos del PAE se administren exclusivamente en la cuenta maestra con manejo independiente por fuente.",
+      "tipo_verificador": "documental",
+      "instrumento": "Extractos bancarios de cuenta maestra y conciliación por fuente",
+      "frecuencia": "trimestral",
+      "criterio_cumple": "Todos los recursos del PAE se manejan a través de la cuenta maestra con discriminación por fuente."
+    },
+    {
+      "ver_id": "V-A6-TRA-FOR-001-01",
+      "lin_id": "A6-TRA-FOR-001",
+      "descripcion": "Verificar que la estructura de costos incluya los costos de formalización laboral progresiva del personal manipulador conforme a Ley 2466/2025.",
+      "tipo_verificador": "documental",
+      "instrumento": "Estructura de costos / componente mano de obra directa",
+      "frecuencia": "anual",
+      "criterio_cumple": "El componente de mano de obra directa incluye cálculo de costos de formalización laboral según metas 2025-2028."
+    },
+    {
+      "ver_id": "V-A6-FIN-PLA-028-01",
+      "lin_id": "A6-FIN-PLA-028",
+      "descripcion": "Verificar que la ETC priorice cobertura universal antes de invertir en doble complemento o aumento nutricional.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "PFT / reportes de cobertura del PAE",
+      "frecuencia": "anual",
+      "criterio_cumple": "Si no se alcanza cobertura universal, no hay asignación de recursos para doble complemento o aumento nutricional."
+    },
+    {
+      "ver_id": "V-A6-FIN-EJE-013-01",
+      "lin_id": "A6-FIN-EJE-013",
+      "descripcion": "Verificar que la ETC concilie recursos del balance y rendimientos con Secretaría de Hacienda y los incorpore al presupuesto antes del primer trimestre.",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta de conciliación / acto administrativo de incorporación",
+      "frecuencia": "anual",
+      "criterio_cumple": "Acta de conciliación firmada y acto administrativo de incorporación expedido dentro del primer trimestre."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-001-01",
+      "lin_id": "A8-EVA-EXA-001",
+      "descripcion": "Verificar que la evaluación ex ante se realizó dentro del período julio-enero previo a la vigencia.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de evaluación ex ante con fecha de elaboración",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe fechado entre julio y enero previo a la vigencia, con evidencia de revisión de los 6 pasos."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-002-01",
+      "lin_id": "A8-EVA-EXA-002",
+      "descripcion": "Verificar la existencia del POA aprobado con priorización basada en criterios normativos y carga en SIMAT.",
+      "tipo_verificador": "documental",
+      "instrumento": "POA aprobado; registros SIMAT",
+      "frecuencia": "anual",
+      "criterio_cumple": "POA aprobado por CTPS, con criterios de priorización documentados y estrategia cargada en SIMAT."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-003-01",
+      "lin_id": "A8-EVA-EXA-003",
+      "descripcion": "Verificar que el 100% de las sedes tienen modelo de atención y ciclo de menú definido.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Matriz de sedes con modelo asignado; ciclos de menú aprobados",
+      "frecuencia": "anual",
+      "criterio_cumple": "100% de sedes con modelo y ciclo de menú registrado; actas de concertación para sedes con modelo diferencial."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-004-01",
+      "lin_id": "A8-EVA-EXA-004",
+      "descripcion": "Verificar existencia del Plan de Proveeduría con oferta local ≥30% de la demanda.",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de Proveeduría o plan de compras",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan de Proveeduría aprobado con identificación de oferta local viable ≥30% de la demanda."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-005-01",
+      "lin_id": "A8-EVA-EXA-005",
+      "descripcion": "Verificar publicación de pliegos y cronograma que permita inicio desde el primer día del calendario.",
+      "tipo_verificador": "documental",
+      "instrumento": "Pliegos publicados; cronograma de contratación",
+      "frecuencia": "anual",
+      "criterio_cumple": "Pliegos publicados con cronograma que evidencie adjudicación antes del inicio del calendario académico."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-006-01",
+      "lin_id": "A8-EVA-EXA-006",
+      "descripcion": "Verificar radicación oportuna del PFT (0 días de retraso) y su validación.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "Radicado PFT; constancia de validación",
+      "frecuencia": "anual",
+      "criterio_cumple": "PFT radicado dentro del plazo establecido (0 días de retraso) y validado por UAPA."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-007-01",
+      "lin_id": "A8-EVA-EXA-007",
+      "descripcion": "Verificar acta CTPS de aprobación del POA y agenda de primera Mesa Pública.",
+      "tipo_verificador": "documental",
+      "instrumento": "Acta CTPS; agenda de Mesa Pública",
+      "frecuencia": "anual",
+      "criterio_cumple": "Acta CTPS con aprobación del POA y cronograma; agenda de primera Mesa Pública programada."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-001-01",
+      "lin_id": "A8-EVA-EXP-001",
+      "descripcion": "Verificar que la evaluación ex post se realizó entre diciembre y marzo.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de evaluación ex post",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe de evaluación ex post fechado entre diciembre y marzo, con los 5 componentes documentados."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-002-01",
+      "lin_id": "A8-EVA-EXP-002",
+      "descripcion": "Verificar existencia del informe técnico anual con indicadores de cobertura, continuidad, aceptabilidad y calidad.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe técnico anual",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe técnico anual completo con indicadores consolidados y socializado en CTPS."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-003-01",
+      "lin_id": "A8-EVA-EXP-003",
+      "descripcion": "Verificar informe financiero con conciliaciones de apropiación, compromisos, pagos, rendimientos y saldos.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe financiero y conciliaciones",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe financiero con conciliación completa (apropiación, compromisos, pagos, rendimientos, saldos, reservas)."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-004-01",
+      "lin_id": "A8-EVA-EXP-004",
+      "descripcion": "Verificar existencia del anexo diferencial con análisis por modelo de atención.",
+      "tipo_verificador": "documental",
+      "instrumento": "Anexo diferencial del informe técnico",
+      "frecuencia": "anual",
+      "criterio_cumple": "Anexo diferencial con análisis desagregado por modelo (indígena, NARP, rural difícil acceso, convencional)."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-005-01",
+      "lin_id": "A8-EVA-EXP-005",
+      "descripcion": "Verificar informe de participación y transparencia con sistematización de CTPS, Mesas Públicas y CAE.",
+      "tipo_verificador": "documental",
+      "instrumento": "Informe de análisis de participación y transparencia",
+      "frecuencia": "anual",
+      "criterio_cumple": "Informe con sistematización de sesiones CTPS, Mesas Públicas y CAE realizadas durante la vigencia."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXP-006-01",
+      "lin_id": "A8-EVA-EXP-006",
+      "descripcion": "Verificar existencia del plan de mejora oficial con acciones, responsables y cronograma.",
+      "tipo_verificador": "documental",
+      "instrumento": "Plan de mejora oficial aprobado",
+      "frecuencia": "anual",
+      "criterio_cumple": "Plan de mejora aprobado con acciones específicas, responsables asignados y cronograma definido."
+    },
+    {
+      "ver_id": "V-A8-EVA-EXA-009-01",
+      "lin_id": "A8-EVA-EXA-009",
+      "descripcion": "Verificar que la proyección de cobertura del POA alcanza ≥95% de la matrícula oficial.",
+      "tipo_verificador": "reporte_sistema",
+      "instrumento": "POA; datos SIMAT de matrícula",
+      "frecuencia": "anual",
+      "criterio_cumple": "Beneficiarios priorizados / matrícula oficial × 100 ≥ 95%."
+    }
+  ],
+  "subcategorias": [
+    {
+      "subcat_id": "NOR-DEF",
+      "cat_id": "NOR",
+      "nombre": "Definiciones y conceptos"
+    },
+    {
+      "subcat_id": "NOR-PRI",
+      "cat_id": "NOR",
+      "nombre": "Principios fundacionales"
+    },
+    {
+      "subcat_id": "NOR-COM",
+      "cat_id": "NOR",
+      "nombre": "Competencias y funciones de actores"
+    },
+    {
+      "subcat_id": "DIA-DAC",
+      "cat_id": "DIA",
+      "nombre": "DACO (Diagnóstico de Condiciones Operativas)"
+    },
+    {
+      "subcat_id": "DIA-CON",
+      "cat_id": "DIA",
+      "nombre": "Contexto territorial"
+    },
+    {
+      "subcat_id": "DIA-BAL",
+      "cat_id": "DIA",
+      "nombre": "Balance de vigencia anterior"
+    },
+    {
+      "subcat_id": "CON-EST",
+      "cat_id": "CON",
+      "nombre": "Estructuración contractual"
+    },
+    {
+      "subcat_id": "CON-SEL",
+      "cat_id": "CON",
+      "nombre": "Selección del operador"
+    },
+    {
+      "subcat_id": "CON-EJE",
+      "cat_id": "CON",
+      "nombre": "Ejecución contractual"
+    },
+    {
+      "subcat_id": "CON-LIQ",
+      "cat_id": "CON",
+      "nombre": "Liquidación"
+    },
+    {
+      "subcat_id": "CON-EQU",
+      "cat_id": "CON",
+      "nombre": "Equipo PAE"
+    },
+    {
+      "subcat_id": "CON-IYV",
+      "cat_id": "CON",
+      "nombre": "Inspección y vigilancia"
+    },
+    {
+      "subcat_id": "ALI-NUT",
+      "cat_id": "ALI",
+      "nombre": "Estándares nutricionales (RIEN, aportes, macronutrientes)"
+    },
+    {
+      "subcat_id": "ALI-MIN",
+      "cat_id": "ALI",
+      "nombre": "Minutas patrón"
+    },
+    {
+      "subcat_id": "ALI-CIC",
+      "cat_id": "ALI",
+      "nombre": "Ciclos de menús y planeación alimentaria"
+    },
+    {
+      "subcat_id": "ALI-EAN",
+      "cat_id": "ALI",
+      "nombre": "Educación alimentaria y nutricional"
+    },
+    {
+      "subcat_id": "ALI-DIF",
+      "cat_id": "ALI",
+      "nombre": "Atención diferencial alimentaria (preescolar 8h, residencias, rural, étnica)"
+    },
+    {
+      "subcat_id": "ALI-EME",
+      "cat_id": "ALI",
+      "nombre": "Situaciones excepcionales y emergencia"
+    },
+    {
+      "subcat_id": "CPL-PRO",
+      "cat_id": "CPL",
+      "nombre": "Plan de proveeduría"
+    },
+    {
+      "subcat_id": "CPL-ZON",
+      "cat_id": "CPL",
+      "nombre": "Zona geográfica de compra"
+    },
+    {
+      "subcat_id": "CPL-OBL",
+      "cat_id": "CPL",
+      "nombre": "Obligaciones de compra local (30%)"
+    },
+    {
+      "subcat_id": "CPL-ART",
+      "cat_id": "CPL",
+      "nombre": "Articulación intersectorial (mesas, agricultura)"
+    },
+    {
+      "subcat_id": "CAL-PLA",
+      "cat_id": "CAL",
+      "nombre": "Planes sanitarios y operativos"
+    },
+    {
+      "subcat_id": "CAL-BPM",
+      "cat_id": "CAL",
+      "nombre": "Buenas prácticas de manufactura"
+    },
+    {
+      "subcat_id": "CAL-MUE",
+      "cat_id": "CAL",
+      "nombre": "Muestreo y laboratorio"
+    },
+    {
+      "subcat_id": "CAL-ALE",
+      "cat_id": "CAL",
+      "nombre": "Alertas y ETA"
+    },
+    {
+      "subcat_id": "CAL-RUR",
+      "cat_id": "CAL",
+      "nombre": "Ruralidad diferencial en inocuidad"
+    },
+    {
+      "subcat_id": "FIN-PLA",
+      "cat_id": "FIN",
+      "nombre": "Planeación financiera (sector, costos, fuentes)"
+    },
+    {
+      "subcat_id": "FIN-EJE",
+      "cat_id": "FIN",
+      "nombre": "Ejecución presupuestal"
+    },
+    {
+      "subcat_id": "FIN-BOL",
+      "cat_id": "FIN",
+      "nombre": "Bolsa común"
+    },
+    {
+      "subcat_id": "FIN-REP",
+      "cat_id": "FIN",
+      "nombre": "Reportes financieros (PFT, CHIP, SiPAE)"
+    },
+    {
+      "subcat_id": "GOB-CTP",
+      "cat_id": "GOB",
+      "nombre": "CTPS"
+    },
+    {
+      "subcat_id": "GOB-CAE",
+      "cat_id": "GOB",
+      "nombre": "CAE (Comité de Alimentación Escolar)"
+    },
+    {
+      "subcat_id": "GOB-MES",
+      "cat_id": "GOB",
+      "nombre": "Mesas Públicas"
+    },
+    {
+      "subcat_id": "GOB-VEE",
+      "cat_id": "GOB",
+      "nombre": "Veedurías ciudadanas"
+    },
+    {
+      "subcat_id": "GOB-RDC",
+      "cat_id": "GOB",
+      "nombre": "Rendición de cuentas"
+    },
+    {
+      "subcat_id": "GOB-DIN",
+      "cat_id": "GOB",
+      "nombre": "Comités Dinamizadores PAE"
+    },
+    {
+      "subcat_id": "EVA-EXA",
+      "cat_id": "EVA",
+      "nombre": "Evaluación ex ante"
+    },
+    {
+      "subcat_id": "EVA-EXP",
+      "cat_id": "EVA",
+      "nombre": "Evaluación ex post"
+    },
+    {
+      "subcat_id": "EVA-IND",
+      "cat_id": "EVA",
+      "nombre": "Indicadores de resultado"
+    },
+    {
+      "subcat_id": "TRA-AMB",
+      "cat_id": "TRA",
+      "nombre": "Ambiental / Sostenibilidad"
+    },
+    {
+      "subcat_id": "TRA-ETN",
+      "cat_id": "TRA",
+      "nombre": "Enfoque diferencial / Étnico"
+    },
+    {
+      "subcat_id": "TRA-FOR",
+      "cat_id": "TRA",
+      "nombre": "Formalización laboral"
+    }
+  ],
+  "categorias": [
+    {
+      "cat_id": "NOR",
+      "nombre": "Marco Normativo"
+    },
+    {
+      "cat_id": "DIA",
+      "nombre": "Territorial / Diagnóstico"
+    },
+    {
+      "cat_id": "CON",
+      "nombre": "Contractual"
+    },
+    {
+      "cat_id": "ALI",
+      "nombre": "Técnico-Alimentario"
+    },
+    {
+      "cat_id": "CPL",
+      "nombre": "Compras Públicas Locales"
+    },
+    {
+      "cat_id": "CAL",
+      "nombre": "Calidad e Inocuidad"
+    },
+    {
+      "cat_id": "FIN",
+      "nombre": "Financiero"
+    },
+    {
+      "cat_id": "GOB",
+      "nombre": "Gobernanza / Participación"
+    },
+    {
+      "cat_id": "EVA",
+      "nombre": "Evaluación"
+    },
+    {
+      "cat_id": "TRA",
+      "nombre": "Transversal"
+    }
+  ]
+};
+
+// =====================================================================
+// CONDITION MAPPINGS
+// =====================================================================
+const CONDITION_MAPPINGS = {
+  'zona rural': { variable: 'zona', matches: ['Rural', 'Rural de difícil acceso'] },
+  'rural de difícil acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'zona rural de difícil acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'zona rural de dificil acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'rural_dificil_acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'zonas rurales de difícil acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'zona = rural_dificil_acceso': { variable: 'zona', matches: ['Rural de difícil acceso'] },
+  'industrializada': { variable: 'modalidad', matches: ['Industrializada'] },
+  'modalidad = industrializada': { variable: 'modalidad', matches: ['Industrializada'] },
+  'modalidad_actual = industrializada': { variable: 'modalidad', matches: ['Industrializada'] },
+  'preparada_en_sitio': { variable: 'modalidad', matches: ['Preparada en sitio'] },
+  'modalidad = preparada_en_sitio': { variable: 'modalidad', matches: ['Preparada en sitio'] },
+  'preparada en sitio': { variable: 'modalidad', matches: ['Preparada en sitio'] },
+  'caliente_transportada': { variable: 'modalidad', matches: ['Caliente transportada'] },
+  'modalidad = caliente_transportada': { variable: 'modalidad', matches: ['Caliente transportada'] },
+  'caliente transportada': { variable: 'modalidad', matches: ['Caliente transportada'] },
+  'tipo_ETC = departamental': { variable: 'tipoETC', matches: ['Departamental'] },
+  'ETC departamental': { variable: 'tipoETC', matches: ['Departamental'] },
+  'etc departamental': { variable: 'tipoETC', matches: ['Departamental'] },
+  'departamental': { variable: 'tipoETC', matches: ['Departamental'] },
+  'segundo_ciclo_educacion_inicial': { variable: 'nivelEscolar', matches: ['Preescolar / 2do ciclo ed. inicial'] },
+  'segundo ciclo de educación inicial': { variable: 'nivelEscolar', matches: ['Preescolar / 2do ciclo ed. inicial'] },
+  'nivel_escolar = segundo_ciclo_educacion_inicial': { variable: 'nivelEscolar', matches: ['Preescolar / 2do ciclo ed. inicial'] },
+  'nivel = segundo_ciclo_educacion_inicial': { variable: 'nivelEscolar', matches: ['Preescolar / 2do ciclo ed. inicial'] },
+  'jornada_unica': { variable: 'jornada', matches: ['Jornada única'] },
+  'jornada = jornada_unica': { variable: 'jornada', matches: ['Jornada única'] },
+  'jornada = 6h': { variable: 'jornada', matches: ['Completa (6h)'] },
+  'jornada = 8h': { variable: 'jornada', matches: ['Extendida (8h)'] },
+  'jornada >= 6h': { variable: 'jornada', matches: ['Completa (6h)', 'Extendida (8h)', 'Jornada única'] },
+  'indigena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'indígena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'territorio_indigena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'territorio indígena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'modelo diferencial indígena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'modelo_indigena': { variable: 'enfoqueDif', matches: ['Indígena'] },
+  'NARP': { variable: 'enfoqueDif', matches: ['NARP'] },
+  'narp': { variable: 'enfoqueDif', matches: ['NARP'] },
+  'modelo_NARP': { variable: 'enfoqueDif', matches: ['NARP'] },
+  'territorio_NARP': { variable: 'enfoqueDif', matches: ['NARP'] },
+  'sede_en_territorio_NARP': { variable: 'enfoqueDif', matches: ['NARP'] },
+  'receso_estudiantil': { variable: 'situacion', matches: ['Receso estudiantil'] },
+  'periodo = receso_estudiantil': { variable: 'situacion', matches: ['Receso estudiantil'] },
+  'receso estudiantil': { variable: 'situacion', matches: ['Receso estudiantil'] },
+  'emergencia_declarada': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'emergencia declarada': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'calamidad_publica': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'calamidad publica': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'desastre': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'emergencia_grave': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'emergencia grave': { variable: 'situacion', matches: ['Emergencia declarada'] },
+  'recursos SGR': { variable: 'financiacion', matches: ['SGR'] },
+  'recursos del SGR': { variable: 'financiacion', matches: ['SGR'] },
+  'financie con recursos SGR': { variable: 'financiacion', matches: ['SGR'] },
+  'financie con recursos del SGR': { variable: 'financiacion', matches: ['SGR'] },
+  'residencias_escolares': { variable: 'jornada', matches: ['Extendida (8h)'] },
+  'residencias escolares': { variable: 'jornada', matches: ['Extendida (8h)'] },
+};
+
+// =====================================================================
+// FILTER CONFIGURATION
+// =====================================================================
+const FILTER_CONFIG = [
+  { key: 'zona', label: 'Zona', options: ['Todas', 'Urbana', 'Rural', 'Rural de difícil acceso'] },
+  { key: 'modalidad', label: 'Modalidad', options: ['Todas', 'Preparada en sitio', 'Caliente transportada', 'Industrializada'] },
+  { key: 'tipoETC', label: 'Tipo ETC', options: ['Todos', 'Departamental', 'Municipal certificada'] },
+  { key: 'nivelEscolar', label: 'Nivel escolar', options: ['Todos', 'Preescolar / 2do ciclo ed. inicial', 'Primaria', 'Secundaria'] },
+  { key: 'jornada', label: 'Jornada', options: ['Todas', 'Media jornada', 'Completa (6h)', 'Extendida (8h)', 'Jornada única'] },
+  { key: 'enfoqueDif', label: 'Enfoque dif.', options: ['Todos', 'Ninguno', 'Indígena', 'NARP'] },
+  { key: 'situacion', label: 'Situación', options: ['Todas', 'Operación normal', 'Receso estudiantil', 'Emergencia declarada'] },
+  { key: 'financiacion', label: 'Financiación', options: ['Todas', 'SGP', 'SGR', 'Mixta'] },
+];
+
+const DEFAULT_FILTERS = {};
+FILTER_CONFIG.forEach(f => { DEFAULT_FILTERS[f.key] = f.options[0]; });
+
+// =====================================================================
+// CONSTANTS
+// =====================================================================
+const VALID_RISKS = ['critico', 'alto', 'medio', 'bajo'];
+const RISK_COLORS = { critico: '#DC2626', alto: '#EA580C', medio: '#CA8A04', bajo: '#16A34A' };
+const RISK_ICONS = { critico: '🔴', alto: '🟠', medio: '🟡', bajo: '🟢' };
+const RISK_DEFAULT_COLOR = '#6B7280';
+const RISK_DEFAULT_ICON = '⚪';
+
+const ETAPA_ORDER = ['planeacion', 'operacion', 'seguimiento', 'evaluacion', 'transversal'];
+const ETAPA_NAMES = {
+  planeacion: 'Planeación', operacion: 'Operación', seguimiento: 'Seguimiento',
+  evaluacion: 'Evaluación', transversal: 'Transversal'
+};
+const ETAPA_COLORS = {
+  planeacion: '#2563EB', operacion: '#059669', seguimiento: '#D97706',
+  evaluacion: '#DC2626', transversal: '#7C3AED'
+};
+
+// =====================================================================
+// HELPER FUNCTIONS
+// =====================================================================
+function normalizeRisk(r) {
+  if (!r) return '';
+  const low = r.toLowerCase().trim();
+  return VALID_RISKS.includes(low) ? low : '';
+}
+
+function getRiskColor(r) { return RISK_COLORS[r] || RISK_DEFAULT_COLOR; }
+function getRiskIcon(r) { return RISK_ICONS[r] || RISK_DEFAULT_ICON; }
+
+function evaluateCondition(condText, filters) {
+  if (!condText) return { status: 'universal', label: '' };
+  const hasActiveFilter = Object.entries(filters).some(([k, v]) => {
+    const cfg = FILTER_CONFIG.find(f => f.key === k);
+    return cfg && v !== cfg.options[0];
+  });
+  if (!hasActiveFilter) return { status: 'conditional', label: condText };
+
+  const lowerCond = condText.toLowerCase();
+  const isAnd = lowerCond.includes(' and ');
+  const isOr = lowerCond.includes(' or ') || lowerCond.includes(' o ');
+
+  const parts = isAnd
+    ? condText.split(/\s+AND\s+/i)
+    : isOr
+      ? condText.split(/\s+(?:OR|O)\s+/i)
+      : [condText];
+
+  const results = parts.map(part => {
+    const trimmed = part.trim();
+    const isNegated = /^(?:NOT|no aplica|no es|sin)\b/i.test(trimmed);
+    const cleanPart = trimmed.replace(/^(?:NOT|no aplica|no es|sin)\s+/i, '').trim();
+
+    let matched = false;
+    let hasMapping = false;
+
+    for (const [pattern, mapping] of Object.entries(CONDITION_MAPPINGS)) {
+      if (cleanPart.toLowerCase().includes(pattern.toLowerCase())) {
+        hasMapping = true;
+        const filterVal = filters[mapping.variable];
+        const cfg = FILTER_CONFIG.find(f => f.key === mapping.variable);
+        if (cfg && filterVal !== cfg.options[0]) {
+          const isMatch = mapping.matches.includes(filterVal);
+          matched = isNegated ? !isMatch : isMatch;
+        } else {
+          return 'unevaluable';
+        }
+        break;
+      }
+    }
+    if (!hasMapping) return 'unevaluable';
+    return matched ? 'match' : 'nomatch';
+  });
+
+  if (results.every(r => r === 'unevaluable')) {
+    return { status: 'verify', label: condText };
+  }
+
+  if (isAnd) {
+    if (results.some(r => r === 'nomatch')) return { status: 'noApplica', label: condText };
+    if (results.some(r => r === 'unevaluable')) return { status: 'verify', label: condText };
+    return { status: 'aplica', label: condText };
+  }
+
+  if (isOr) {
+    if (results.some(r => r === 'match')) return { status: 'aplica', label: condText };
+    if (results.every(r => r === 'nomatch')) return { status: 'noApplica', label: condText };
+    return { status: 'verify', label: condText };
+  }
+
+  const r = results[0];
+  if (r === 'match') return { status: 'aplica', label: condText };
+  if (r === 'nomatch') return { status: 'noApplica', label: condText };
+  return { status: 'verify', label: condText };
+}
+
+// =====================================================================
+// TREE BUILDER
+// =====================================================================
+function buildTree(data) {
+  const { lineamientos, verificadores, subcategorias, categorias } = data;
+  const subcatMap = {};
+  subcategorias.forEach(s => { subcatMap[s.subcat_id] = s; });
+  const catMap = {};
+  categorias.forEach(c => { catMap[c.cat_id] = c; });
+  const verByLin = {};
+  verificadores.forEach(v => {
+    if (!verByLin[v.lin_id]) verByLin[v.lin_id] = [];
+    verByLin[v.lin_id].push(v);
+  });
+
+  const enriched = lineamientos.map(l => ({
+    ...l,
+    risk: normalizeRisk(l.riesgo_incumplimiento),
+    verificadores: verByLin[l.lin_id] || [],
+    cat_id: subcatMap[l.subcat_id] ? subcatMap[l.subcat_id].cat_id : '',
+    cat_nombre: '',
+    subcat_nombre: subcatMap[l.subcat_id] ? subcatMap[l.subcat_id].nombre : l.subcat_id,
+    isConditional: !!l.condicion_activacion,
+  }));
+  enriched.forEach(l => {
+    l.cat_nombre = catMap[l.cat_id] ? catMap[l.cat_id].nombre : l.cat_id;
+  });
+
+  const tree = {};
+  ETAPA_ORDER.forEach(etapa => {
+    const etapaLins = enriched.filter(l => l.etapa_pae === etapa);
+    const cats = {};
+    etapaLins.forEach(l => {
+      if (!cats[l.cat_id]) cats[l.cat_id] = { id: l.cat_id, nombre: l.cat_nombre, subcats: {} };
+      if (!cats[l.cat_id].subcats[l.subcat_id]) {
+        cats[l.cat_id].subcats[l.subcat_id] = { id: l.subcat_id, nombre: l.subcat_nombre, lineamientos: [] };
+      }
+      cats[l.cat_id].subcats[l.subcat_id].lineamientos.push(l);
+    });
+    tree[etapa] = cats;
+  });
+
+  // Add transversal ghosts to other etapas
+  const transversalLins = enriched.filter(l => l.etapa_pae === 'transversal');
+  ['planeacion', 'operacion', 'seguimiento', 'evaluacion'].forEach(etapa => {
+    transversalLins.forEach(l => {
+      const ghost = { ...l, isGhost: true };
+      if (!tree[etapa][l.cat_id]) {
+        tree[etapa][l.cat_id] = { id: l.cat_id, nombre: l.cat_nombre, subcats: {} };
+      }
+      const catNode = tree[etapa][l.cat_id];
+      const ghostSubId = l.subcat_id + '_trans';
+      if (!catNode.subcats[ghostSubId]) {
+        catNode.subcats[ghostSubId] = {
+          id: ghostSubId, nombre: l.subcat_nombre + ' (Transversal)',
+          lineamientos: [], isGhost: true
+        };
+      }
+      catNode.subcats[ghostSubId].lineamientos.push(ghost);
+    });
+  });
+
+  return { tree, enriched, catMap, subcatMap };
+}
+
+// =====================================================================
+// COMPONENTS
+// =====================================================================
+
+// --- Risk Badge ---
+function RiskBadge({ risk }) {
+  const color = getRiskColor(risk);
+  const icon = getRiskIcon(risk);
+  const label = risk || 'sin dato';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 3,
+      fontSize: 11, fontWeight: 600, padding: '1px 6px', borderRadius: 10,
+      background: color + '18', color: color, border: `1px solid ${color}40`,
+    }}>
+      {icon} {label}
+    </span>
+  );
+}
+
+// --- Condition Badge ---
+function ConditionBadge({ evaluation }) {
+  if (!evaluation || evaluation.status === 'universal') return null;
+  const styles = {
+    conditional: { bg: '#EDE9FE', color: '#6D28D9', icon: '⚙', text: 'Condicional' },
+    aplica: { bg: '#D1FAE5', color: '#065F46', icon: '✓', text: 'Aplica' },
+    noApplica: { bg: '#FEE2E2', color: '#991B1B', icon: '✗', text: 'No aplica' },
+    verify: { bg: '#FEF3C7', color: '#92400E', icon: '⚠', text: 'Verificar' },
+  };
+  const s = styles[evaluation.status] || styles.conditional;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 3,
+      fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 10,
+      background: s.bg, color: s.color, whiteSpace: 'nowrap',
+    }}>
+      {s.icon} {s.text}
+    </span>
+  );
+}
+
+// --- Lineamiento Detail (Expanded) ---
+function LineamientoDetail({ lin }) {
+  const docNames = {
+    D998: 'Decreto 998 de 2025', D1852: 'Decreto 1852 de 2015',
+    GG: 'Guía General PAE', A1: 'Anexo 1: Diagnóstico', A2: 'Anexo 2: Estructuración y Contratación',
+    A3: 'Anexo 3: Alimentación Saludable', A4: 'Anexo 4: Compras Públicas Locales',
+    A5: 'Anexo 5: Calidad e Inocuidad', A6: 'Anexo 6: Planeación Financiera',
+    A7: 'Anexo 7: Participación Ciudadana', A8: 'Anexo 8: Evaluación',
+    R0003: 'Resolución 0003 de 2026'
+  };
+  const actorNames = {
+    UAPA: 'UAPA (Unidad Administrativa de Alimentación Escolar)',
+    ETC: 'Entidad Territorial Certificada', ETHNOC: 'Entidad Territorial No Certificada',
+    OPER: 'Operador del PAE', INTER: 'Interventoría', EQUPAE: 'Equipo PAE',
+    ORGCONT: 'Órganos de Control', CTPS: 'Comité Territorial de Planeación y Seguimiento',
+  };
+
+  return (
+    <div style={{
+      margin: '4px 0 8px 28px', padding: 14, background: '#FAFAFA',
+      border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 12, lineHeight: 1.7,
+    }}>
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 4 }}>Lineamiento:</div>
+        <div style={{ color: '#374151' }}>{lin.texto_lineamiento}</div>
+      </div>
+      {lin.condicion_activacion && (
+        <div style={{ marginBottom: 8, padding: '6px 10px', background: '#EDE9FE', borderRadius: 6 }}>
+          <strong style={{ color: '#6D28D9' }}>Condición:</strong>{' '}
+          <span style={{ color: '#4C1D95' }}>{lin.condicion_activacion}</span>
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', color: '#4B5563' }}>
+        <div><strong>Obligatoriedad:</strong> {lin.obligatoriedad || 'N/A'}</div>
+        <div><strong>Tipo regla:</strong> {(lin.tipo_regla || '').replace(/_/g, ' ')}</div>
+        <div><strong>Etapa:</strong> {ETAPA_NAMES[lin.etapa_pae] || lin.etapa_pae}</div>
+        <div><strong>Documento:</strong> {docNames[lin.doc_id] || lin.doc_id}</div>
+        <div><strong>Actor responsable:</strong> {actorNames[lin.actor_responsable] || lin.actor_responsable}</div>
+        <div><strong>Actor verificador:</strong> {actorNames[lin.actor_verificador] || lin.actor_verificador}</div>
+      </div>
+      {lin.verificadores.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{
+            fontWeight: 700, fontSize: 11, color: '#6B7280', textTransform: 'uppercase',
+            letterSpacing: 0.5, borderTop: '1px solid #E5E7EB', paddingTop: 10, marginBottom: 6,
+          }}>
+            Verificador(es) ({lin.verificadores.length})
+          </div>
+          {lin.verificadores.map(v => (
+            <div key={v.ver_id} style={{
+              padding: '8px 10px', background: '#fff', border: '1px solid #E5E7EB',
+              borderRadius: 6, marginBottom: 6, fontSize: 11.5,
+            }}>
+              <div style={{ fontWeight: 600, color: '#1F2937', marginBottom: 3 }}>{v.ver_id}</div>
+              <div style={{ color: '#4B5563', marginBottom: 3 }}>{v.descripcion}</div>
+              <div style={{ color: '#6B7280', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <span><em>Tipo:</em> {v.tipo_verificador}</span>
+                <span><em>Instrumento:</em> {v.instrumento}</span>
+                <span><em>Frecuencia:</em> {v.frecuencia}</span>
+              </div>
+              {v.criterio_cumple && (
+                <div style={{ color: '#065F46', marginTop: 4, fontSize: 11 }}>
+                  <em>Criterio:</em> {v.criterio_cumple}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Lineamiento Node (Leaf) ---
+function LineamientoNode({ lin, evaluation, isHidden, isGrey }) {
+  const [expanded, setExpanded] = useState(false);
+  const risk = lin.risk;
+  const riskColor = getRiskColor(risk);
+
+  if (isHidden) return null;
+
+  const opacity = (isGrey || lin.isGhost) ? 0.4 : 1;
+  const bg = expanded ? '#F3F4F6' : 'transparent';
+
+  return (
+    <div style={{ opacity }}>
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px',
+          cursor: 'pointer', borderRadius: 4, background: bg, fontSize: 12,
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => { if (!expanded) e.currentTarget.style.background = '#F9FAFB'; }}
+        onMouseLeave={e => { if (!expanded) e.currentTarget.style.background = 'transparent'; }}
+      >
+        <span style={{ color: '#9CA3AF', fontSize: 10, width: 12, flexShrink: 0 }}>
+          {expanded ? '▼' : '▶'}
+        </span>
+        <span style={{ color: riskColor, flexShrink: 0 }}>{getRiskIcon(risk)}</span>
+        <span style={{ fontWeight: 500, color: '#374151', fontFamily: 'monospace', fontSize: 11, flexShrink: 0 }}>
+          {lin.lin_id}
+        </span>
+        <span style={{ color: '#9CA3AF', fontSize: 10, flexShrink: 0 }}>|</span>
+        <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0 }}>
+          {lin.obligatoriedad || 'N/A'}
+        </span>
+        <RiskBadge risk={risk} />
+        <ConditionBadge evaluation={evaluation} />
+        {lin.isGhost && (
+          <span style={{
+            fontSize: 9, padding: '1px 5px', borderRadius: 8,
+            background: '#F3F4F6', color: '#9CA3AF', fontWeight: 500,
+          }}>fantasma</span>
+        )}
+        <span style={{
+          flex: 1, fontSize: 11, color: '#9CA3AF', overflow: 'hidden',
+          textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0,
+        }}>
+          {lin.texto_lineamiento ? lin.texto_lineamiento.substring(0, 80) + '...' : ''}
+        </span>
+      </div>
+      {expanded && <LineamientoDetail lin={lin} />}
+    </div>
+  );
+}
+
+// --- Subcategory Node ---
+function SubcategoryNode({ subcat, filters, uapaOnly, showOnlyApplicable, search, expandAll, collapseAll }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => { if (expandAll) setOpen(true); }, [expandAll]);
+  useEffect(() => { if (collapseAll) setOpen(false); }, [collapseAll]);
+
+  const evaluated = useMemo(() => {
+    return subcat.lineamientos.map(l => {
+      const ev = evaluateCondition(l.condicion_activacion, filters);
+      const isHidden = (uapaOnly && l.actor_verificador !== 'UAPA') ||
+        (showOnlyApplicable && ev.status === 'noApplica');
+      const isGrey = !uapaOnly && l.actor_verificador !== 'UAPA';
+      const matchesSearch = !search ||
+        l.lin_id.toLowerCase().includes(search) ||
+        (l.texto_lineamiento || '').toLowerCase().includes(search) ||
+        l.subcat_id.toLowerCase().includes(search);
+      return { lin: l, evaluation: ev, isHidden: isHidden || (search && !matchesSearch), isGrey };
+    });
+  }, [subcat.lineamientos, filters, uapaOnly, showOnlyApplicable, search]);
+
+  const visibleCount = evaluated.filter(e => !e.isHidden).length;
+  const uapaCount = subcat.lineamientos.filter(l => l.actor_verificador === 'UAPA').length;
+  const condCount = subcat.lineamientos.filter(l => l.isConditional).length;
+
+  useEffect(() => {
+    if (search && visibleCount > 0) setOpen(true);
+  }, [search, visibleCount]);
+
+  if (visibleCount === 0) return null;
+
+  return (
+    <div style={{ marginLeft: 24, borderLeft: '1px solid #E5E7EB', paddingLeft: 12 }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
+          cursor: 'pointer', borderRadius: 4, fontSize: 13, fontWeight: 500, color: '#374151',
+          transition: 'background 0.15s',
+          opacity: subcat.isGhost ? 0.5 : 1,
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+      >
+        <span style={{ color: '#9CA3AF', fontSize: 11, width: 14 }}>{open ? '▼' : '▶'}</span>
+        <span>{subcat.nombre}</span>
+        <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 400 }}>
+          ({visibleCount} lin. | {uapaCount} UAPA{condCount > 0 ? ` | ${condCount} cond.` : ''})
+        </span>
+      </div>
+      {open && (
+        <div style={{ marginLeft: 4 }}>
+          {evaluated.map(({ lin, evaluation, isHidden, isGrey }) => (
+            <LineamientoNode
+              key={lin.lin_id + (lin.isGhost ? '_ghost' : '')}
+              lin={lin} evaluation={evaluation} isHidden={isHidden} isGrey={isGrey}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Category Node ---
+function CategoryNode({ catId, catData, etapa, filters, uapaOnly, showOnlyApplicable, search, expandAll, collapseAll }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => { if (expandAll) setOpen(true); }, [expandAll]);
+  useEffect(() => { if (collapseAll) setOpen(false); }, [collapseAll]);
+
+  const allLins = useMemo(() => {
+    return Object.values(catData.subcats).flatMap(s => s.lineamientos);
+  }, [catData.subcats]);
+
+  const visibleLins = useMemo(() => {
+    return allLins.filter(l => {
+      const ev = evaluateCondition(l.condicion_activacion, filters);
+      if (uapaOnly && l.actor_verificador !== 'UAPA') return false;
+      if (showOnlyApplicable && ev.status === 'noApplica') return false;
+      if (search) {
+        const s = search.toLowerCase();
+        if (!l.lin_id.toLowerCase().includes(s) &&
+          !(l.texto_lineamiento || '').toLowerCase().includes(s) &&
+          !l.subcat_id.toLowerCase().includes(s)) return false;
+      }
+      return true;
+    });
+  }, [allLins, filters, uapaOnly, showOnlyApplicable, search]);
+
+  const uapaCount = allLins.filter(l => l.actor_verificador === 'UAPA').length;
+  const condCount = allLins.filter(l => l.isConditional).length;
+
+  useEffect(() => {
+    if (search && visibleLins.length > 0) setOpen(true);
+  }, [search, visibleLins.length]);
+
+  if (visibleLins.length === 0) return null;
+
+  const etapaColor = ETAPA_COLORS[etapa] || '#6B7280';
+
+  return (
+    <div style={{ marginLeft: 24, borderLeft: `1px solid ${etapaColor}30`, paddingLeft: 12 }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px',
+          cursor: 'pointer', borderRadius: 4, fontSize: 15, fontWeight: 600, color: '#1F2937',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+      >
+        <span style={{ color: etapaColor, fontSize: 12, width: 14 }}>{open ? '▼' : '▶'}</span>
+        <span style={{
+          display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
+          background: etapaColor, flexShrink: 0,
+        }} />
+        <span>{catData.nombre}</span>
+        <span style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 400 }}>
+          ({visibleLins.length} lin. | {uapaCount} UAPA{condCount > 0 ? ` | ${condCount} cond.` : ''})
+        </span>
+      </div>
+      {open && Object.entries(catData.subcats)
+        .sort(([, a], [, b]) => (a.isGhost ? 1 : 0) - (b.isGhost ? 1 : 0))
+        .map(([scId, sc]) => (
+          <SubcategoryNode
+            key={scId} subcat={sc}
+            filters={filters} uapaOnly={uapaOnly}
+            showOnlyApplicable={showOnlyApplicable}
+            search={search} expandAll={expandAll} collapseAll={collapseAll}
+          />
+        ))
+      }
+    </div>
+  );
+}
+
+// --- Etapa Node ---
+function EtapaNode({ etapa, cats, filters, uapaOnly, showOnlyApplicable, search, expandAll, collapseAll }) {
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => { if (expandAll) setOpen(true); }, [expandAll]);
+  useEffect(() => { if (collapseAll) setOpen(false); }, [collapseAll]);
+
+  const allLins = useMemo(() => {
+    return Object.values(cats).flatMap(c => Object.values(c.subcats).flatMap(s => s.lineamientos));
+  }, [cats]);
+
+  const visibleLins = useMemo(() => {
+    return allLins.filter(l => {
+      const ev = evaluateCondition(l.condicion_activacion, filters);
+      if (uapaOnly && l.actor_verificador !== 'UAPA') return false;
+      if (showOnlyApplicable && ev.status === 'noApplica') return false;
+      if (search) {
+        const s = search.toLowerCase();
+        if (!l.lin_id.toLowerCase().includes(s) &&
+          !(l.texto_lineamiento || '').toLowerCase().includes(s) &&
+          !l.subcat_id.toLowerCase().includes(s)) return false;
+      }
+      return true;
+    });
+  }, [allLins, filters, uapaOnly, showOnlyApplicable, search]);
+
+  const uapaCount = allLins.filter(l => l.actor_verificador === 'UAPA').length;
+  const condCount = allLins.filter(l => l.isConditional).length;
+
+  useEffect(() => {
+    if (search && visibleLins.length > 0) setOpen(true);
+  }, [search, visibleLins.length]);
+
+  if (visibleLins.length === 0) return null;
+
+  const color = ETAPA_COLORS[etapa];
+
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
+          cursor: 'pointer', borderRadius: 6, fontSize: 18, fontWeight: 700,
+          color: color, borderLeft: `4px solid ${color}`,
+          background: open ? `${color}08` : 'transparent',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = `${color}0D`}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.background = 'transparent'; }}
+      >
+        <span style={{ fontSize: 14, width: 16 }}>{open ? '▼' : '▶'}</span>
+        <span>{ETAPA_NAMES[etapa]}</span>
+        <span style={{ fontSize: 13, color: '#6B7280', fontWeight: 500 }}>
+          ({visibleLins.length} lineamientos | {uapaCount} UAPA | {condCount} condicionales)
+        </span>
+      </div>
+      {open && Object.entries(cats)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([catId, catData]) => (
+          <CategoryNode
+            key={catId} catId={catId} catData={catData} etapa={etapa}
+            filters={filters} uapaOnly={uapaOnly}
+            showOnlyApplicable={showOnlyApplicable}
+            search={search} expandAll={expandAll} collapseAll={collapseAll}
+          />
+        ))
+      }
+    </div>
+  );
+}
+
+// --- Statistics Panel ---
+function StatsPanel({ enriched, filters, uapaOnly, showOnlyApplicable, search }) {
+  const [open, setOpen] = useState(false);
+
+  const stats = useMemo(() => {
+    let visible = enriched;
+    if (uapaOnly) visible = visible.filter(l => l.actor_verificador === 'UAPA');
+    if (search) {
+      const s = search.toLowerCase();
+      visible = visible.filter(l =>
+        l.lin_id.toLowerCase().includes(s) ||
+        (l.texto_lineamiento || '').toLowerCase().includes(s) ||
+        l.subcat_id.toLowerCase().includes(s)
+      );
+    }
+    if (showOnlyApplicable) {
+      visible = visible.filter(l => {
+        const ev = evaluateCondition(l.condicion_activacion, filters);
+        return ev.status !== 'noApplica';
+      });
+    }
+    const byRisk = { critico: 0, alto: 0, medio: 0, bajo: 0, '': 0 };
+    const byEtapa = {};
+    let conditional = 0;
+    visible.forEach(l => {
+      byRisk[l.risk] = (byRisk[l.risk] || 0) + 1;
+      byEtapa[l.etapa_pae] = (byEtapa[l.etapa_pae] || 0) + 1;
+      if (l.isConditional) conditional++;
+    });
+    return { total: enriched.length, visible: visible.length, byRisk, byEtapa, conditional, universal: visible.length - conditional };
+  }, [enriched, filters, uapaOnly, showOnlyApplicable, search]);
+
+  const maxRisk = Math.max(...Object.values(stats.byRisk), 1);
+
+  return (
+    <div style={{
+      background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8,
+      marginBottom: 16, overflow: 'hidden',
+    }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px',
+          cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151',
+        }}
+      >
+        <span style={{ fontSize: 11 }}>{open ? '▼' : '▶'}</span>
+        Resumen estadístico
+        <span style={{ fontWeight: 400, color: '#9CA3AF' }}>
+          — {stats.visible} de {stats.total} lineamientos visibles
+        </span>
+      </div>
+      {open && (
+        <div style={{ padding: '0 14px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', marginBottom: 6 }}>
+              Por riesgo
+            </div>
+            {['critico', 'alto', 'medio', 'bajo'].map(r => (
+              <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                <span style={{ fontSize: 11, width: 50, textAlign: 'right', color: getRiskColor(r), fontWeight: 600 }}>
+                  {r} ({stats.byRisk[r] || 0})
+                </span>
+                <div style={{ flex: 1, height: 10, background: '#E5E7EB', borderRadius: 5, overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${((stats.byRisk[r] || 0) / maxRisk) * 100}%`,
+                    height: '100%', background: getRiskColor(r), borderRadius: 5, transition: 'width 0.3s',
+                  }} />
+                </div>
+              </div>
+            ))}
+            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+              Sin dato: {stats.byRisk[''] || 0}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', marginBottom: 6 }}>
+              Por etapa
+            </div>
+            {ETAPA_ORDER.map(e => (
+              <div key={e} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, fontSize: 11 }}>
+                <span style={{ width: 80, color: ETAPA_COLORS[e], fontWeight: 500 }}>
+                  {ETAPA_NAMES[e]}
+                </span>
+                <span style={{ color: '#6B7280' }}>{stats.byEtapa[e] || 0}</span>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', marginBottom: 6 }}>
+              Tipo
+            </div>
+            <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
+              <strong>{stats.universal}</strong> universales
+            </div>
+            <div style={{ fontSize: 12, color: '#6D28D9', marginBottom: 4 }}>
+              <strong>{stats.conditional}</strong> condicionales
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =====================================================================
+// MAIN APP
+// =====================================================================
+export default function ArbolDecisionesPAE() {
+  const [filters, setFilters] = useState({ ...DEFAULT_FILTERS });
+  const [uapaOnly, setUapaOnly] = useState(true);
+  const [showOnlyApplicable, setShowOnlyApplicable] = useState(false);
+  const [search, setSearch] = useState('');
+  const [expandAll, setExpandAll] = useState(0);
+  const [collapseAll, setCollapseAll] = useState(0);
+
+  const { tree, enriched } = useMemo(() => buildTree(DATA), []);
+
+  const handleFilterChange = useCallback((key, val) => {
+    setFilters(prev => ({ ...prev, [key]: val }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilters({ ...DEFAULT_FILTERS });
+    setShowOnlyApplicable(false);
+  }, []);
+
+  const searchLower = search.toLowerCase();
+
+  return (
+    <div style={{
+      fontFamily: "'Source Sans Pro', 'IBM Plex Sans', -apple-system, sans-serif",
+      maxWidth: 1200, margin: '0 auto', padding: '24px 20px', color: '#111827',
+      background: '#FFFFFF', minHeight: '100vh',
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1F2937', marginBottom: 4 }}>
+          Árbol de Lineamientos PAE — Inspección UAPA
+        </h1>
+        <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>
+          Navegador de decisiones condicionales del Programa de Alimentación Escolar
+        </p>
+        <p style={{ fontSize: 11, color: '#9CA3AF', margin: '4px 0 0' }}>
+          Última actualización del banco: Febrero 2026 · {DATA.lineamientos.length} lineamientos · {DATA.verificadores.length} verificadores
+        </p>
+      </div>
+
+      {/* UAPA Toggle + Expand/Collapse */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12,
+        padding: '8px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0',
+        borderRadius: 8, flexWrap: 'wrap',
+      }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#166534' }}>
+          <input type="checkbox" checked={uapaOnly} onChange={e => setUapaOnly(e.target.checked)}
+            style={{ accentColor: '#16A34A' }} />
+          Mostrar solo lineamientos UAPA
+        </label>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => setExpandAll(p => p + 1)} style={{
+          padding: '4px 10px', fontSize: 11, background: '#fff', border: '1px solid #D1D5DB',
+          borderRadius: 4, cursor: 'pointer', color: '#374151',
+        }}>Expandir todo</button>
+        <button onClick={() => setCollapseAll(p => p + 1)} style={{
+          padding: '4px 10px', fontSize: 11, background: '#fff', border: '1px solid #D1D5DB',
+          borderRadius: 4, cursor: 'pointer', color: '#374151',
+        }}>Colapsar todo</button>
+      </div>
+
+      {/* Filter Panel */}
+      <div style={{
+        padding: '14px 16px', background: '#F3F4F6', border: '1px solid #E5E7EB',
+        borderRadius: 8, marginBottom: 12, position: 'sticky', top: 0, zIndex: 10,
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Configuración del territorio / operación
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px 12px' }}>
+          {FILTER_CONFIG.map(f => (
+            <div key={f.key}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', display: 'block', marginBottom: 2 }}>
+                {f.label}
+              </label>
+              <select
+                value={filters[f.key]}
+                onChange={e => handleFilterChange(f.key, e.target.value)}
+                style={{
+                  width: '100%', padding: '5px 8px', fontSize: 12, border: '1px solid #D1D5DB',
+                  borderRadius: 4, background: '#fff', color: '#374151',
+                  fontWeight: filters[f.key] !== f.options[0] ? 600 : 400,
+                  borderColor: filters[f.key] !== f.options[0] ? '#7C3AED' : '#D1D5DB',
+                }}
+              >
+                {f.options.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <button onClick={clearFilters} style={{
+            padding: '5px 12px', fontSize: 11, background: '#fff', border: '1px solid #D1D5DB',
+            borderRadius: 4, cursor: 'pointer', color: '#6B7280',
+          }}>Limpiar filtros</button>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, cursor: 'pointer', color: '#6D28D9', fontWeight: 500 }}>
+            <input type="checkbox" checked={showOnlyApplicable} onChange={e => setShowOnlyApplicable(e.target.checked)}
+              style={{ accentColor: '#7C3AED' }} />
+            Mostrar solo lineamientos aplicables
+          </label>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div style={{ marginBottom: 16 }}>
+        <input
+          type="text" placeholder="Buscar por ID, texto o subcategoría..."
+          value={search} onChange={e => setSearch(e.target.value)}
+          style={{
+            width: '100%', padding: '8px 12px', fontSize: 13, border: '1px solid #D1D5DB',
+            borderRadius: 6, background: '#fff', color: '#374151',
+            outline: 'none',
+          }}
+          onFocus={e => e.target.style.borderColor = '#7C3AED'}
+          onBlur={e => e.target.style.borderColor = '#D1D5DB'}
+        />
+      </div>
+
+      {/* Stats Panel */}
+      <StatsPanel
+        enriched={enriched} filters={filters}
+        uapaOnly={uapaOnly} showOnlyApplicable={showOnlyApplicable} search={searchLower}
+      />
+
+      {/* Tree */}
+      <div style={{ border: '1px solid #E5E7EB', borderRadius: 8, padding: '12px 8px', background: '#fff' }}>
+        <div style={{
+          fontSize: 14, fontWeight: 700, color: '#1F2937', padding: '4px 12px 12px',
+          borderBottom: '1px solid #E5E7EB', marginBottom: 8,
+        }}>
+          🏫 Sistema PAE
+        </div>
+        {ETAPA_ORDER.map(etapa => (
+          <EtapaNode
+            key={etapa} etapa={etapa} cats={tree[etapa] || {}}
+            filters={filters} uapaOnly={uapaOnly}
+            showOnlyApplicable={showOnlyApplicable}
+            search={searchLower} expandAll={expandAll} collapseAll={collapseAll}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
