@@ -801,9 +801,132 @@ body {
   .etapa-card { max-width: unset; min-height: 100px; }
   .etapa-arrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
 }
+
+/* ========== KNOWLEDGE MANAGEMENT POPUP ========== */
+.gc-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #6b46c1, #805ad5);
+  color: #fff; font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 12px; cursor: pointer;
+  transition: all .2s ease; white-space: nowrap;
+}
+.gc-badge:hover { background: linear-gradient(135deg, #553c9a, #6b46c1); transform: scale(1.05); }
+.gc-badge .gc-icon { font-size: 13px; }
+
+.gc-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 2000;
+  justify-content: center; align-items: center;
+  animation: gcFadeIn .2s ease;
+}
+.gc-overlay.open { display: flex; }
+@keyframes gcFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.gc-popup {
+  background: #fff; border-radius: 14px;
+  width: 90%; max-width: 680px; max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  animation: gcSlideUp .25s ease;
+  overflow: hidden;
+}
+@keyframes gcSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gc-popup-header {
+  padding: 20px 24px 16px;
+  background: linear-gradient(135deg, #6b46c1, #805ad5);
+  color: #fff; display: flex; justify-content: space-between; align-items: flex-start;
+}
+.gc-popup-header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+.gc-popup-header .gc-subtitle { font-size: 12px; opacity: .85; margin-top: 4px; }
+.gc-popup-close {
+  background: rgba(255,255,255,.2); border: none; color: #fff;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .2s;
+}
+.gc-popup-close:hover { background: rgba(255,255,255,.35); }
+
+.gc-popup-body {
+  padding: 20px 24px; overflow-y: auto; flex: 1;
+}
+
+.gc-cap-card {
+  background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 16px;
+}
+.gc-cap-title { font-size: 13px; font-weight: 600; color: var(--primary-dark); margin-bottom: 6px; }
+.gc-cap-meta { font-size: 11px; color: #718096; line-height: 1.5; }
+.gc-cap-meta strong { color: #4a5568; }
+
+.gc-apr-card {
+  border-left: 3px solid #805ad5; background: #faf5ff;
+  border-radius: 0 8px 8px 0; padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.gc-apr-card.tipo-recomendacion_practica { border-left-color: #38b2ac; background: #e6fffa; }
+
+.gc-apr-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px; flex-wrap: wrap;
+}
+.gc-apr-tipo {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 10px; letter-spacing: .3px;
+}
+.gc-apr-tipo.idea_clave { background: #e9d8fd; color: #553c9a; }
+.gc-apr-tipo.recomendacion_practica { background: #b2f5ea; color: #234e52; }
+.gc-apr-urgencia {
+  font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px;
+}
+.gc-apr-urgencia.alto { background: #fed7d7; color: #9b2c2c; }
+.gc-apr-urgencia.medio { background: #fefcbf; color: #975a16; }
+.gc-apr-urgencia.bajo { background: #c6f6d5; color: #276749; }
+.gc-apr-insp {
+  font-size: 10px; font-weight: 500; color: #2f855a;
+}
+
+.gc-apr-text { font-size: 12.5px; color: #2d3748; line-height: 1.6; margin-bottom: 6px; }
+.gc-apr-context { font-size: 11.5px; color: #718096; font-style: italic; line-height: 1.5; margin-bottom: 6px; }
+.gc-apr-actions {
+  font-size: 11.5px; color: #2b6cb0; line-height: 1.5;
+  padding: 6px 10px; background: rgba(43,108,176,.06);
+  border-radius: 6px; margin-top: 4px;
+}
+.gc-apr-actions strong { font-size: 10px; text-transform: uppercase; letter-spacing: .3px; }
+
+.gc-empty { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
+
+/* Badge in lineamiento cards (level 2) */
+.mlc-gc-row {
+  margin-top: 6px; display: flex; align-items: center;
+}
+
+@media (max-width: 600px) {
+  .gc-popup { width: 95%; max-height: 90vh; border-radius: 10px; }
+  .gc-popup-header { padding: 16px; }
+  .gc-popup-body { padding: 14px; }
+}
 </style>
 </head>
 <body>
+
+<!-- Knowledge Management Popup -->
+<div class="gc-overlay" id="gcOverlay">
+  <div class="gc-popup">
+    <div class="gc-popup-header">
+      <div>
+        <h3 id="gcPopupTitle">Gestion del Conocimiento</h3>
+        <div class="gc-subtitle" id="gcPopupSubtitle"></div>
+      </div>
+      <button class="gc-popup-close" id="gcPopupClose">&times;</button>
+    </div>
+    <div class="gc-popup-body" id="gcPopupBody"></div>
+  </div>
+</div>
 
 <!-- Mobile menu toggle -->
 <button class="menu-toggle" id="menuToggle">&#9776;</button>
@@ -1094,6 +1217,85 @@ body {
   D.VERIFICADORES.forEach(function(v) {
     if (!verByLin[v.lin_id]) verByLin[v.lin_id] = [];
     verByLin[v.lin_id].push(v);
+  });
+
+  // Precompute knowledge management: aprendizajes by lineamiento
+  var capMap = {};
+  if (D.CAPACITACIONES) {
+    D.CAPACITACIONES.forEach(function(c) { capMap[c.cap_id] = c; });
+  }
+  var aprByLin = {};
+  if (D.APRENDIZAJES) {
+    D.APRENDIZAJES.forEach(function(a) {
+      if (!a.lin_id) return;
+      // lin_id can contain multiple IDs separated by " / "
+      var ids = a.lin_id.split(/\s*\/\s*/);
+      ids.forEach(function(id) {
+        id = id.trim();
+        if (!id) return;
+        if (!aprByLin[id]) aprByLin[id] = [];
+        aprByLin[id].push(a);
+      });
+    });
+  }
+
+  // Knowledge popup functions
+  function openGcPopup(linId) {
+    var aprs = aprByLin[linId] || [];
+    if (aprs.length === 0) return;
+
+    var overlay = byId('gcOverlay');
+    var body = byId('gcPopupBody');
+    byId('gcPopupSubtitle').textContent = linId + ' — ' + aprs.length + ' aprendizaje' + (aprs.length > 1 ? 's' : '');
+
+    var html = '';
+
+    // Group aprendizajes by capacitacion
+    var grouped = {};
+    aprs.forEach(function(a) {
+      if (!grouped[a.cap_id]) grouped[a.cap_id] = [];
+      grouped[a.cap_id].push(a);
+    });
+
+    Object.keys(grouped).forEach(function(capId) {
+      var cap = capMap[capId];
+      if (cap) {
+        html += '<div class="gc-cap-card">' +
+          '<div class="gc-cap-title">' + escHtml(cap.titulo || '') + '</div>' +
+          '<div class="gc-cap-meta">' +
+            '<strong>Formador:</strong> ' + escHtml(cap.formador || '') + '<br>' +
+            '<strong>Temas:</strong> ' + escHtml(cap.temas || '') +
+            (cap.notas ? '<br><strong>Notas:</strong> ' + escHtml(cap.notas) : '') +
+          '</div>' +
+        '</div>';
+      }
+
+      grouped[capId].forEach(function(a) {
+        var tipoClass = a.tipo || '';
+        html += '<div class="gc-apr-card tipo-' + escHtml(tipoClass) + '">' +
+          '<div class="gc-apr-header">' +
+            '<span class="gc-apr-tipo ' + escHtml(tipoClass) + '">' + escHtml((a.tipo || '').replace(/_/g, ' ')) + '</span>' +
+            (a.urgencia ? '<span class="gc-apr-urgencia ' + escHtml(a.urgencia) + '">urgencia: ' + escHtml(a.urgencia) + '</span>' : '') +
+            (a.relevante_inspeccion === 'si' || a.relevante_inspeccion === 'sí' ? '<span class="gc-apr-insp">&#10003; Relevante para inspeccion</span>' : '') +
+          '</div>' +
+          '<div class="gc-apr-text">' + escHtml(a.texto || '') + '</div>' +
+          (a.contexto ? '<div class="gc-apr-context">' + escHtml(a.contexto) + '</div>' : '') +
+          (a.acciones_sugeridas ? '<div class="gc-apr-actions"><strong>Acciones sugeridas:</strong> ' + escHtml(a.acciones_sugeridas) + '</div>' : '') +
+        '</div>';
+      });
+    });
+
+    body.innerHTML = html;
+    overlay.classList.add('open');
+  }
+
+  function closeGcPopup() {
+    byId('gcOverlay').classList.remove('open');
+  }
+
+  byId('gcPopupClose').addEventListener('click', closeGcPopup);
+  byId('gcOverlay').addEventListener('click', function(e) {
+    if (e.target === byId('gcOverlay')) closeGcPopup();
   });
 
   // color palettes
@@ -1596,8 +1798,18 @@ body {
           (l.actor_responsable ? '<span class="badge badge-tipo">' + escHtml(l.actor_responsable) + '</span>' : '') +
         '</div>' +
         '<div class="mlc-doc">' + escHtml(docName) + '</div>' +
+        ((aprByLin[l.lin_id] && aprByLin[l.lin_id].length > 0) ?
+          '<div class="mlc-gc-row"><span class="gc-badge" data-gclin="' + escHtml(l.lin_id) + '"><span class="gc-icon">&#128218;</span> Gestion del Conocimiento (' + aprByLin[l.lin_id].length + ')</span></div>' : '') +
       '</div>';
     }).join('');
+
+    // Bind click on knowledge badges (stop propagation to prevent card click)
+    cardsEl.querySelectorAll('.gc-badge').forEach(function(badge) {
+      badge.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openGcPopup(badge.dataset.gclin);
+      });
+    });
 
     // Bind click on cards
     cardsEl.querySelectorAll('.mapa-lin-card').forEach(function(card) {
@@ -1721,7 +1933,23 @@ body {
       });
     }
 
+    // Gestion del Conocimiento
+    var gcAprs = aprByLin[lin.lin_id] || [];
+    if (gcAprs.length > 0) {
+      html += '<h4 style="color:#6b46c1;">&#128218; Gestion del Conocimiento (' + gcAprs.length + ')</h4>';
+      html += '<p style="font-size:12px;color:#718096;margin-bottom:8px;">Aprendizajes de capacitaciones vinculados a este lineamiento.</p>';
+      html += '<button class="gc-badge" id="gcDetailBtn" style="margin-bottom:12px;padding:6px 14px;font-size:12px;">' +
+        '<span class="gc-icon">&#128218;</span> Ver aprendizajes (' + gcAprs.length + ')' +
+      '</button>';
+    }
+
     body.innerHTML = html;
+
+    // Bind knowledge popup button in detail panel
+    var gcBtn = byId('gcDetailBtn');
+    if (gcBtn) {
+      gcBtn.addEventListener('click', function() { openGcPopup(lin.lin_id); });
+    }
 
     // Bind click on connection items to navigate to that lineamiento
     body.querySelectorAll('.det-con-item[data-target-lin]').forEach(function(el) {
@@ -2292,10 +2520,21 @@ body {
           '<strong>Consecuencia incumplimiento:</strong> ' + escHtml(l.consecuencia_incumplimiento || 'N/A') + '<br>' +
           '<strong>Notas:</strong> ' + escHtml(l.notas || 'N/A') +
           verHtml +
+          ((aprByLin[l.lin_id] && aprByLin[l.lin_id].length > 0) ?
+            '<div style="margin-top:10px;"><span class="gc-badge" data-gclin="' + escHtml(l.lin_id) + '" style="padding:5px 12px;font-size:12px;">' +
+            '<span class="gc-icon">&#128218;</span> Gestion del Conocimiento (' + aprByLin[l.lin_id].length + ' aprendizajes)</span></div>' : '') +
         '</div></td></tr>';
       }
     });
     byId('linTableBody').innerHTML = html;
+
+    // Bind click on knowledge badges in table
+    $$('#linTableBody .gc-badge').forEach(function(badge) {
+      badge.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openGcPopup(badge.dataset.gclin);
+      });
+    });
 
     // click to expand
     $$('#linTableBody .expandable').forEach(function(tr) {
