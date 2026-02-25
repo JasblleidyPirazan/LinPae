@@ -6214,6 +6214,7 @@ const DATA = {
 // CONDITION MAPPINGS
 // =====================================================================
 const CONDITION_MAPPINGS = {
+  // --- Zona ---
   'zona rural': {
     variable: 'zona',
     matches: ['Rural', 'Rural de difícil acceso']
@@ -6242,6 +6243,23 @@ const CONDITION_MAPPINGS = {
     variable: 'zona',
     matches: ['Rural de difícil acceso']
   },
+  'sedes en zonas rurales de difícil acceso': {
+    variable: 'zona',
+    matches: ['Rural de difícil acceso']
+  },
+  'sede educativa = ubicada en zona rural de difícil acceso': {
+    variable: 'zona',
+    matches: ['Rural de difícil acceso']
+  },
+  'sede educativa = zona rural de difícil acceso': {
+    variable: 'zona',
+    matches: ['Rural de difícil acceso']
+  },
+  'sede = zona rural de difícil acceso': {
+    variable: 'zona',
+    matches: ['Rural de difícil acceso']
+  },
+  // --- Modalidad ---
   'industrializada': {
     variable: 'modalidad',
     matches: ['Industrializada']
@@ -6278,6 +6296,31 @@ const CONDITION_MAPPINGS = {
     variable: 'modalidad',
     matches: ['Caliente transportada']
   },
+  'canasta pae en casa': {
+    variable: 'modalidad',
+    matches: ['Canasta PAE en Casa']
+  },
+  'canasta_pae_en_casa': {
+    variable: 'modalidad',
+    matches: ['Canasta PAE en Casa']
+  },
+  'bono alimentario': {
+    variable: 'modalidad',
+    matches: ['Bono Alimentario']
+  },
+  'bono_alimentario': {
+    variable: 'modalidad',
+    matches: ['Bono Alimentario']
+  },
+  // --- Tipo ETC ---
+  'etc sea departamental con operación descentralizada': {
+    variable: 'tipoETC',
+    matches: ['Departamental']
+  },
+  'etc departamental con operación descentralizada': {
+    variable: 'tipoETC',
+    matches: ['Departamental']
+  },
   'tipo_ETC = departamental': {
     variable: 'tipoETC',
     matches: ['Departamental']
@@ -6294,14 +6337,7 @@ const CONDITION_MAPPINGS = {
     variable: 'tipoETC',
     matches: ['Departamental']
   },
-  'segundo_ciclo_educacion_inicial': {
-    variable: 'nivelEscolar',
-    matches: ['Preescolar / 2do ciclo ed. inicial']
-  },
-  'segundo ciclo de educación inicial': {
-    variable: 'nivelEscolar',
-    matches: ['Preescolar / 2do ciclo ed. inicial']
-  },
+  // --- Nivel escolar ---
   'nivel_escolar = segundo_ciclo_educacion_inicial': {
     variable: 'nivelEscolar',
     matches: ['Preescolar / 2do ciclo ed. inicial']
@@ -6310,6 +6346,15 @@ const CONDITION_MAPPINGS = {
     variable: 'nivelEscolar',
     matches: ['Preescolar / 2do ciclo ed. inicial']
   },
+  'segundo_ciclo_educacion_inicial': {
+    variable: 'nivelEscolar',
+    matches: ['Preescolar / 2do ciclo ed. inicial']
+  },
+  'segundo ciclo de educación inicial': {
+    variable: 'nivelEscolar',
+    matches: ['Preescolar / 2do ciclo ed. inicial']
+  },
+  // --- Jornada ---
   'jornada_unica': {
     variable: 'jornada',
     matches: ['Jornada única']
@@ -6330,27 +6375,12 @@ const CONDITION_MAPPINGS = {
     variable: 'jornada',
     matches: ['Completa (6h)', 'Extendida (8h)', 'Jornada única']
   },
+  // --- Enfoque diferencial (población) ---
   'indigena': {
     variable: 'enfoqueDif',
     matches: ['Indígena']
   },
   'indígena': {
-    variable: 'enfoqueDif',
-    matches: ['Indígena']
-  },
-  'territorio_indigena': {
-    variable: 'enfoqueDif',
-    matches: ['Indígena']
-  },
-  'territorio indígena': {
-    variable: 'enfoqueDif',
-    matches: ['Indígena']
-  },
-  'modelo diferencial indígena': {
-    variable: 'enfoqueDif',
-    matches: ['Indígena']
-  },
-  'modelo_indigena': {
     variable: 'enfoqueDif',
     matches: ['Indígena']
   },
@@ -6362,18 +6392,76 @@ const CONDITION_MAPPINGS = {
     variable: 'enfoqueDif',
     matches: ['NARP']
   },
+  // --- Modelo de atención (operativo) ---
+  'modelo diferencial indígena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
+  'modelo_indigena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
+  'modelo indígena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
+  'territorio_indigena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
+  'territorio indígena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
+  'poblacion_mayoritariamente_indigena': {
+    variable: 'modeloAtencion',
+    matches: ['Pueblos indígenas']
+  },
   'modelo_NARP': {
-    variable: 'enfoqueDif',
-    matches: ['NARP']
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'modelo_narp': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'modelo NARP': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
   },
   'territorio_NARP': {
-    variable: 'enfoqueDif',
-    matches: ['NARP']
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'territorio_narp': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
   },
   'sede_en_territorio_NARP': {
-    variable: 'enfoqueDif',
-    matches: ['NARP']
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
   },
+  'sede_en_territorio_narp': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'matricula_narp > 50%': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'sede_con_pec': {
+    variable: 'modeloAtencion',
+    matches: ['Comunidades NARP']
+  },
+  'residencias_escolares': {
+    variable: 'modeloAtencion',
+    matches: ['Residencias escolares']
+  },
+  'residencias escolares': {
+    variable: 'modeloAtencion',
+    matches: ['Residencias escolares']
+  },
+  // --- Situación ---
   'receso_estudiantil': {
     variable: 'situacion',
     matches: ['Receso estudiantil']
@@ -6414,6 +6502,19 @@ const CONDITION_MAPPINGS = {
     variable: 'situacion',
     matches: ['Emergencia declarada']
   },
+  'fuerza_mayor': {
+    variable: 'situacion',
+    matches: ['Emergencia declarada']
+  },
+  'caso_fortuito': {
+    variable: 'situacion',
+    matches: ['Emergencia declarada']
+  },
+  'grave_perturbacion_orden_publico': {
+    variable: 'situacion',
+    matches: ['Emergencia declarada']
+  },
+  // --- Financiación ---
   'recursos SGR': {
     variable: 'financiacion',
     matches: ['SGR']
@@ -6430,15 +6531,31 @@ const CONDITION_MAPPINGS = {
     variable: 'financiacion',
     matches: ['SGR']
   },
-  'residencias_escolares': {
-    variable: 'jornada',
-    matches: ['Extendida (8h)']
+  'recursos del PGN': {
+    variable: 'financiacion',
+    matches: ['PGN']
   },
-  'residencias escolares': {
-    variable: 'jornada',
-    matches: ['Extendida (8h)']
+  'recursos PGN': {
+    variable: 'financiacion',
+    matches: ['PGN']
+  },
+  // --- Tipo operador ---
+  'se vincule organizaciones de base comunitaria como operadores': {
+    variable: 'tipoOperador',
+    matches: ['Organización de base comunitaria']
+  },
+  'organizaciones de base comunitaria como operadores': {
+    variable: 'tipoOperador',
+    matches: ['Organización de base comunitaria']
+  },
+  'organizaciones de base comunitaria': {
+    variable: 'tipoOperador',
+    matches: ['Organización de base comunitaria']
   }
 };
+
+// Patterns ordenados de más largo a más corto para priorizar matches específicos
+const CONDITION_PATTERNS_SORTED = Object.keys(CONDITION_MAPPINGS).sort((a, b) => b.length - a.length);
 
 // =====================================================================
 // FILTER CONFIGURATION
@@ -6450,7 +6567,7 @@ const FILTER_CONFIG = [{
 }, {
   key: 'modalidad',
   label: 'Modalidad',
-  options: ['Todas', 'Preparada en sitio', 'Caliente transportada', 'Industrializada']
+  options: ['Todas', 'Preparada en sitio', 'Caliente transportada', 'Industrializada', 'Canasta PAE en Casa', 'Bono Alimentario']
 }, {
   key: 'tipoETC',
   label: 'Tipo ETC',
@@ -6468,13 +6585,21 @@ const FILTER_CONFIG = [{
   label: 'Enfoque dif.',
   options: ['Todos', 'Ninguno', 'Indígena', 'NARP']
 }, {
+  key: 'modeloAtencion',
+  label: 'Modelo atención',
+  options: ['Todos', 'Convencional', 'Pueblos indígenas', 'Comunidades NARP', 'Rural difícil acceso', 'Residencias escolares']
+}, {
   key: 'situacion',
   label: 'Situación',
   options: ['Todas', 'Operación normal', 'Receso estudiantil', 'Emergencia declarada']
 }, {
   key: 'financiacion',
   label: 'Financiación',
-  options: ['Todas', 'SGP', 'SGR', 'Mixta']
+  options: ['Todas', 'SGP', 'SGR', 'PGN', 'Mixta']
+}, {
+  key: 'tipoOperador',
+  label: 'Tipo operador',
+  options: ['Todos', 'Operador convencional', 'Organización de base comunitaria', 'FSE / AMPF']
 }];
 const DEFAULT_FILTERS = {};
 FILTER_CONFIG.forEach(f => {
@@ -6529,6 +6654,75 @@ function getRiskColor(r) {
 function getRiskIcon(r) {
   return RISK_ICONS[r] || RISK_DEFAULT_ICON;
 }
+
+// Evalúa UNA sola parte atómica (sin AND/OR) contra los filtros
+function evaluateSinglePart(partText, filters) {
+  const trimmed = partText.trim();
+  // Handle placeholders from resolved parentheses
+  if (trimmed === '__MATCH__') return 'match';
+  if (trimmed === '__NOMATCH__') return 'nomatch';
+  if (trimmed === '__UNEVALUABLE__') return 'unevaluable';
+  const isNegated = /^(?:NOT|no aplica|no es|sin)\b/i.test(trimmed);
+  const cleanPart = trimmed.replace(/^(?:NOT|no aplica|no es|sin)\s+/i, '').trim();
+  const lowerPart = cleanPart.toLowerCase();
+  let matched = false;
+  let hasMapping = false;
+
+  // Iterate patterns sorted longest-first for priority
+  for (const pattern of CONDITION_PATTERNS_SORTED) {
+    if (lowerPart.includes(pattern.toLowerCase())) {
+      hasMapping = true;
+      const mapping = CONDITION_MAPPINGS[pattern];
+      const filterVal = filters[mapping.variable];
+      const cfg = FILTER_CONFIG.find(f => f.key === mapping.variable);
+      if (cfg && filterVal !== cfg.options[0]) {
+        const isMatch = mapping.matches.includes(filterVal);
+        matched = isNegated ? !isMatch : isMatch;
+      } else {
+        return 'unevaluable';
+      }
+      break;
+    }
+  }
+  if (!hasMapping) return 'unevaluable';
+  return matched ? 'match' : 'nomatch';
+}
+
+// Resuelve paréntesis recursivamente de dentro hacia fuera
+function resolveParentheses(text, filters) {
+  let result = text;
+  let safety = 20; // prevent infinite loops
+  // Keep resolving innermost parentheses until none remain
+  while (result.includes('(') && safety-- > 0) {
+    // Match the innermost parentheses: content with no parens inside
+    const match = result.match(/(?:(?:NOT|no aplica)\s+)?\(([^()]+)\)/i);
+    if (!match) break;
+    const fullMatch = match[0];
+    const innerContent = match[1];
+    const hasNot = /^(?:NOT|no aplica)\s+/i.test(fullMatch);
+
+    // Evaluate the inner content as OR parts
+    const orParts = innerContent.split(/\s+(?:OR|O)\s+/i);
+    const results = orParts.map(p => evaluateSinglePart(p.trim(), filters));
+
+    // OR logic: any match → match, all nomatch → nomatch, else unevaluable
+    let resolved;
+    if (results.some(r => r === 'match')) resolved = 'match';else if (results.every(r => r === 'nomatch')) resolved = 'nomatch';else resolved = 'unevaluable';
+
+    // Apply NOT inversion
+    if (hasNot) {
+      if (resolved === 'match') resolved = 'nomatch';else if (resolved === 'nomatch') resolved = 'match';
+      // unevaluable stays unevaluable
+    }
+
+    // Replace the full match with a placeholder
+    const placeholder = resolved === 'match' ? '__MATCH__' : resolved === 'nomatch' ? '__NOMATCH__' : '__UNEVALUABLE__';
+    result = result.replace(fullMatch, placeholder);
+  }
+  return result;
+}
+
+// Orquestadora principal: evalúa condición completa con soporte AND/OR/NOT/paréntesis
 function evaluateCondition(condText, filters) {
   if (!condText) return {
     status: 'universal',
@@ -6542,39 +6736,30 @@ function evaluateCondition(condText, filters) {
     status: 'conditional',
     label: condText
   };
-  const lowerCond = condText.toLowerCase();
-  const isAnd = lowerCond.includes(' and ');
-  const isOr = lowerCond.includes(' or ') || lowerCond.includes(' o ');
-  const parts = isAnd ? condText.split(/\s+AND\s+/i) : isOr ? condText.split(/\s+(?:OR|O)\s+/i) : [condText];
-  const results = parts.map(part => {
-    const trimmed = part.trim();
-    const isNegated = /^(?:NOT|no aplica|no es|sin)\b/i.test(trimmed);
-    const cleanPart = trimmed.replace(/^(?:NOT|no aplica|no es|sin)\s+/i, '').trim();
-    let matched = false;
-    let hasMapping = false;
-    for (const [pattern, mapping] of Object.entries(CONDITION_MAPPINGS)) {
-      if (cleanPart.toLowerCase().includes(pattern.toLowerCase())) {
-        hasMapping = true;
-        const filterVal = filters[mapping.variable];
-        const cfg = FILTER_CONFIG.find(f => f.key === mapping.variable);
-        if (cfg && filterVal !== cfg.options[0]) {
-          const isMatch = mapping.matches.includes(filterVal);
-          matched = isNegated ? !isMatch : isMatch;
-        } else {
-          return 'unevaluable';
-        }
-        break;
-      }
-    }
-    if (!hasMapping) return 'unevaluable';
-    return matched ? 'match' : 'nomatch';
-  });
+
+  // Step 1: Resolve parentheses first
+  const resolved = resolveParentheses(condText, filters);
+
+  // Step 2: Determine top-level operator
+  const lowerResolved = resolved.toLowerCase();
+  const isAnd = lowerResolved.includes(' and ');
+  const isOr = lowerResolved.includes(' or ') || lowerResolved.includes(' o ');
+
+  // Step 3: Split by top-level operator
+  const parts = isAnd ? resolved.split(/\s+AND\s+/i) : isOr ? resolved.split(/\s+(?:OR|O)\s+/i) : [resolved];
+
+  // Step 4: Evaluate each part
+  const results = parts.map(part => evaluateSinglePart(part.trim(), filters));
+
+  // Step 5: All unevaluable → verify
   if (results.every(r => r === 'unevaluable')) {
     return {
       status: 'verify',
       label: condText
     };
   }
+
+  // Step 6: Apply AND/OR logic
   if (isAnd) {
     if (results.some(r => r === 'nomatch')) return {
       status: 'noApplica',
@@ -6603,6 +6788,8 @@ function evaluateCondition(condText, filters) {
       label: condText
     };
   }
+
+  // Single part
   const r = results[0];
   if (r === 'match') return {
     status: 'aplica',
@@ -7285,6 +7472,111 @@ function EtapaNode({
   })));
 }
 
+// --- Filter Incompatibility Rules ---
+const FILTER_INCOMPATIBILITIES = [{
+  id: 'rural_dificil_vs_indigena',
+  check: f => f.zona === 'Rural de difícil acceso' && f.enfoqueDif === 'Indígena',
+  message: 'El modelo rural difícil acceso solo aplica en sedes que NO cumplan criterios del modelo indígena. Si la sede es indígena, aplica el modelo PAE para pueblos indígenas.',
+  severity: 'warning',
+  ref: 'R0003-ALI-DIF-003'
+}, {
+  id: 'rural_dificil_vs_narp',
+  check: f => f.zona === 'Rural de difícil acceso' && f.enfoqueDif === 'NARP',
+  message: 'El modelo rural difícil acceso solo aplica en sedes que NO cumplan criterios del modelo NARP. Si la sede es NARP, aplica el modelo PAE para comunidades NARP.',
+  severity: 'warning',
+  ref: 'R0003-ALI-DIF-003'
+}, {
+  id: 'modelo_vs_enfoque_indigena',
+  check: f => f.modeloAtencion === 'Pueblos indígenas' && f.enfoqueDif !== 'Todos' && f.enfoqueDif !== 'Indígena',
+  message: 'El modelo de pueblos indígenas requiere que el enfoque diferencial sea Indígena.',
+  severity: 'error',
+  ref: 'R0003-ALI-DIF-001'
+}, {
+  id: 'modelo_vs_enfoque_narp',
+  check: f => f.modeloAtencion === 'Comunidades NARP' && f.enfoqueDif !== 'Todos' && f.enfoqueDif !== 'NARP',
+  message: 'El modelo de comunidades NARP requiere que el enfoque diferencial sea NARP.',
+  severity: 'error',
+  ref: 'R0003-ALI-DIF-001'
+}, {
+  id: 'preescolar_industrializada',
+  check: f => f.nivelEscolar === 'Preescolar / 2do ciclo ed. inicial' && (f.jornada === 'Completa (6h)' || f.jornada === 'Extendida (8h)') && f.modalidad === 'Industrializada',
+  message: 'Para preescolar con jornadas de 6h u 8h, las únicas modalidades permitidas son Preparada en sitio y Caliente transportada.',
+  severity: 'error',
+  ref: 'R0003-ALI-DIF-004'
+}, {
+  id: 'rural_dificil_industrializada',
+  check: f => f.zona === 'Rural de difícil acceso' && f.modalidad === 'Industrializada',
+  message: 'En zonas rurales de difícil acceso las únicas modalidades permitidas son Preparada en sitio y Caliente transportada.',
+  severity: 'error',
+  ref: 'R0003-ALI-DIF-004'
+}, {
+  id: 'residencias_no_almuerzo',
+  check: f => f.modeloAtencion === 'Residencias escolares' && f.modalidad !== 'Todas' && f.modalidad !== 'Preparada en sitio' && f.modalidad !== 'Caliente transportada',
+  message: 'En residencias escolares se debe garantizar el 100% RIEN; las modalidades Industrializada, Canasta o Bono no son adecuadas para este modelo.',
+  severity: 'warning',
+  ref: 'R0003-ALI-DIF-002'
+}, {
+  id: 'canasta_sin_emergencia_ni_receso',
+  check: f => f.modalidad === 'Canasta PAE en Casa' && f.situacion !== 'Todas' && f.situacion !== 'Receso estudiantil' && f.situacion !== 'Emergencia declarada',
+  message: 'La modalidad Canasta PAE en Casa solo se autoriza durante receso estudiantil o emergencia declarada.',
+  severity: 'error',
+  ref: 'R0003-ALI-EME'
+}, {
+  id: 'bono_sin_emergencia',
+  check: f => f.modalidad === 'Bono Alimentario' && f.situacion !== 'Todas' && f.situacion !== 'Emergencia declarada',
+  message: 'La modalidad Bono Alimentario solo se autoriza ante emergencia declarada que afecte la prestación por más de 10 días.',
+  severity: 'error',
+  ref: 'R0003-ALI-EME-003'
+}];
+function checkFilterIncompatibilities(filters) {
+  return FILTER_INCOMPATIBILITIES.filter(rule => rule.check(filters));
+}
+function FilterIncompatibilityWarnings({
+  filters
+}) {
+  const warnings = useMemo(() => checkFilterIncompatibilities(filters), [filters]);
+  if (warnings.length === 0) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 6
+    }
+  }, warnings.map(w => /*#__PURE__*/React.createElement("div", {
+    key: w.id,
+    style: {
+      padding: '10px 14px',
+      borderRadius: 8,
+      fontSize: 12,
+      lineHeight: 1.5,
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 8,
+      background: w.severity === 'error' ? '#FEE2E2' : '#FEF3C7',
+      border: `1px solid ${w.severity === 'error' ? '#FECACA' : '#FDE68A'}`,
+      color: w.severity === 'error' ? '#991B1B' : '#92400E'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      flexShrink: 0,
+      lineHeight: 1
+    }
+  }, w.severity === 'error' ? '🚫' : '⚠️'), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      marginBottom: 2
+    }
+  }, w.severity === 'error' ? 'Combinación no permitida' : 'Advertencia de compatibilidad'), /*#__PURE__*/React.createElement("div", null, w.message), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      marginTop: 4,
+      opacity: 0.7
+    }
+  }, "Ref: ", w.ref)))));
+}
+
 // --- Statistics Panel ---
 function StatsPanel({
   enriched,
@@ -7603,7 +7895,7 @@ function ArbolDecisionesPAE() {
   }, "Configuraci\xF3n del territorio / operaci\xF3n"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
+      gridTemplateColumns: 'repeat(5, 1fr)',
       gap: '8px 12px'
     }
   }, FILTER_CONFIG.map(f => /*#__PURE__*/React.createElement("div", {
@@ -7667,7 +7959,9 @@ function ArbolDecisionesPAE() {
     style: {
       accentColor: '#7C3AED'
     }
-  }), "Mostrar solo lineamientos aplicables"))), /*#__PURE__*/React.createElement("div", {
+  }), "Mostrar solo lineamientos aplicables"))), /*#__PURE__*/React.createElement(FilterIncompatibilityWarnings, {
+    filters: filters
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 16
     }
