@@ -1352,6 +1352,7 @@ body {
 
   navLinks.forEach(function(a) {
     a.addEventListener('click', function(e) {
+      if (!a.dataset.section) return; // allow normal navigation (e.g. arbol.html)
       e.preventDefault();
       switchSection(a.dataset.section);
       byId('sidebar').classList.remove('open');
