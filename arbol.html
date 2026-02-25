@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -24,86 +24,12 @@
     transition: background 0.2s;
   }
   .back-link:hover { background: #2b6cb0; }
-  #debug-panel {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    max-height: 40vh; overflow-y: auto;
-    background: #1a1a2e; color: #0f0; font-family: monospace;
-    font-size: 12px; padding: 10px 14px; border-top: 3px solid #e94560;
-    display: none;
-  }
-  #debug-panel.visible { display: block; }
-  #debug-panel .err { color: #ff4444; }
-  #debug-panel .warn { color: #ffaa00; }
-  #debug-panel .ok { color: #44ff44; }
-  #debug-panel .info { color: #44aaff; }
-  #debug-toggle {
-    position: fixed; bottom: 10px; right: 10px; z-index: 10000;
-    padding: 6px 12px; background: #e94560; color: #fff;
-    border: none; border-radius: 6px; font-size: 11px; font-weight: 700;
-    cursor: pointer;
-  }
 </style>
 </head>
 <body>
 <a href="index.html" class="back-link">&#9664; Volver al Dashboard</a>
 <div id="root"></div>
-<div id="debug-panel" class="visible"></div>
-<button id="debug-toggle" onclick="document.getElementById('debug-panel').classList.toggle('visible')">Debug</button>
-
 <script>
-// ===================== ERROR TRACKER =====================
-var _dbg = document.getElementById('debug-panel');
-var _dbgCount = { ok: 0, err: 0, warn: 0 };
-function dbg(msg, type) {
-  type = type || 'info';
-  if (type === 'ok') _dbgCount.ok++;
-  if (type === 'err') _dbgCount.err++;
-  if (type === 'warn') _dbgCount.warn++;
-  var line = document.createElement('div');
-  line.className = type;
-  var ts = new Date().toLocaleTimeString();
-  line.textContent = '[' + ts + '] ' + (type === 'ok' ? '  OK ' : type === 'err' ? ' ERR ' : type === 'warn' ? 'WARN ' : 'INFO ') + msg;
-  _dbg.appendChild(line);
-  _dbg.scrollTop = _dbg.scrollHeight;
-  console.log('[DBG ' + type.toUpperCase() + ']', msg);
-}
-
-// Catch global errors
-window.onerror = function(msg, src, line, col, err) {
-  dbg('GLOBAL ERROR: ' + msg + ' (linea ' + line + ', col ' + col + ')', 'err');
-  if (err && err.stack) dbg('Stack: ' + err.stack.substring(0, 500), 'err');
-  // Show error visually in root too
-  var root = document.getElementById('root');
-  if (root && !root.innerHTML.trim()) {
-    root.innerHTML = '<div style="padding:40px;color:red;font-family:monospace;font-size:14px;">' +
-      '<h2>Error al cargar el Arbol</h2><p>' + msg + '</p><p>Linea: ' + line + '</p>' +
-      '<p>Ver panel de debug abajo para mas detalles.</p></div>';
-  }
-  return false;
-};
-window.addEventListener('unhandledrejection', function(e) {
-  dbg('PROMISE REJECTION: ' + (e.reason ? e.reason.message || e.reason : 'unknown'), 'err');
-});
-
-// ===================== CHECK CDN DEPENDENCIES =====================
-dbg('Iniciando diagnostico...');
-dbg('URL actual: ' + window.location.href);
-dbg('User Agent: ' + navigator.userAgent.substring(0, 80));
-
-if (typeof React === 'undefined') {
-  dbg('React NO cargado - el CDN unpkg.com puede estar bloqueado', 'err');
-} else {
-  dbg('React cargado OK - version ' + React.version, 'ok');
-}
-if (typeof ReactDOM === 'undefined') {
-  dbg('ReactDOM NO cargado - el CDN unpkg.com puede estar bloqueado', 'err');
-} else {
-  dbg('ReactDOM cargado OK', 'ok');
-}
-
-// ===================== COMPONENT CODE =====================
-try {
-dbg('Parseando destructuring de React hooks...');
 const { useState, useMemo, useCallback, useRef, useEffect } = React;
 
 // =====================================================================
@@ -8018,171 +7944,8 @@ function ArbolDecisionesPAE() {
 }
 
 
-dbg('Todas las funciones/componentes definidos correctamente', 'ok');
-
-// Validar DATA
-dbg('Verificando DATA...');
-if (typeof DATA === 'undefined') {
-  dbg('DATA no esta definida', 'err');
-} else {
-  dbg('DATA.lineamientos: ' + (DATA.lineamientos ? DATA.lineamientos.length + ' elementos' : 'NO EXISTE'), DATA.lineamientos ? 'ok' : 'err');
-  dbg('DATA.subcategorias: ' + (DATA.subcategorias ? DATA.subcategorias.length + ' elementos' : 'NO EXISTE'), DATA.subcategorias ? 'ok' : 'err');
-  dbg('DATA.categorias: ' + (DATA.categorias ? DATA.categorias.length + ' elementos' : 'NO EXISTE'), DATA.categorias ? 'ok' : 'err');
-  dbg('DATA.verificadores: ' + (DATA.verificadores ? DATA.verificadores.length + ' elementos' : 'NO EXISTE'), DATA.verificadores ? 'ok' : 'err');
-}
-
-// Validar funciones criticas
-dbg('Verificando componentes criticos...');
-var _compChecks = [
-  ['ArbolDecisionesPAE', typeof ArbolDecisionesPAE],
-  ['EtapaNode', typeof EtapaNode],
-  ['CategoryNode', typeof CategoryNode],
-  ['SubcategoryNode', typeof SubcategoryNode],
-  ['LineamientoNode', typeof LineamientoNode],
-  ['StatsPanel', typeof StatsPanel],
-  ['buildTree', typeof buildTree],
-  ['evaluateCondition', typeof evaluateCondition],
-  ['FILTER_CONFIG', typeof FILTER_CONFIG],
-  ['CONDITION_MAPPINGS', typeof CONDITION_MAPPINGS],
-];
-_compChecks.forEach(function(c) {
-  if (c[1] === 'function' || c[1] === 'object') dbg('  ' + c[0] + ': ' + c[1] + ' OK', 'ok');
-  else dbg('  ' + c[0] + ': ' + c[1] + ' (esperaba function/object)', 'err');
-});
-
-// Verificar CONDITION_MAPPINGS content
-if (typeof CONDITION_MAPPINGS === 'object') {
-  var mappingKeys = Object.keys(CONDITION_MAPPINGS);
-  dbg('  CONDITION_MAPPINGS tiene ' + mappingKeys.length + ' entradas', mappingKeys.length > 0 ? 'ok' : 'warn');
-  if (mappingKeys.length > 0) {
-    dbg('  Ejemplo: "' + mappingKeys[0] + '" -> variable=' + CONDITION_MAPPINGS[mappingKeys[0]].variable, 'info');
-  }
-}
-
-// Verificar FILTER_CONFIG content
-if (Array.isArray(FILTER_CONFIG)) {
-  dbg('  FILTER_CONFIG tiene ' + FILTER_CONFIG.length + ' filtros: ' + FILTER_CONFIG.map(function(f){return f.key}).join(', '), 'ok');
-}
-
-// Verificar DEFAULT_FILTERS
-if (typeof DEFAULT_FILTERS === 'object') {
-  dbg('  DEFAULT_FILTERS: ' + JSON.stringify(DEFAULT_FILTERS), 'ok');
-}
-
-// Test evaluateCondition with some data
-dbg('Verificando evaluateCondition...');
-try {
-  var testResult = evaluateCondition('', DEFAULT_FILTERS);
-  dbg('  evaluateCondition("", defaults) = ' + JSON.stringify(testResult), 'ok');
-  // Find a lineamiento with condition
-  var linWithCond = DATA.lineamientos.find(function(l) { return l.condicion_activacion && l.condicion_activacion.length > 0; });
-  if (linWithCond) {
-    dbg('  Ejemplo condicion: "' + linWithCond.condicion_activacion.substring(0, 80) + '..."', 'info');
-    var testResult2 = evaluateCondition(linWithCond.condicion_activacion, DEFAULT_FILTERS);
-    dbg('  evaluateCondition con defaults = ' + JSON.stringify(testResult2), 'info');
-    var testFilters = Object.assign({}, DEFAULT_FILTERS, {zona: 'Rural'});
-    var testResult3 = evaluateCondition(linWithCond.condicion_activacion, testFilters);
-    dbg('  evaluateCondition con zona=Rural = ' + JSON.stringify(testResult3), 'info');
-  } else {
-    dbg('  No se encontro ningun lineamiento con condicion_activacion', 'warn');
-  }
-} catch(evalErr) {
-  dbg('  ERROR en evaluateCondition: ' + evalErr.message, 'err');
-}
-
-// Render
-dbg('Intentando render de React...');
-var rootEl = document.getElementById('root');
-if (!rootEl) {
-  dbg('Elemento #root NO encontrado en DOM', 'err');
-} else {
-  dbg('Elemento #root encontrado OK', 'ok');
-  try {
-    var reactRoot = ReactDOM.createRoot(rootEl);
-    dbg('ReactDOM.createRoot exitoso', 'ok');
-    reactRoot.render(React.createElement(ArbolDecisionesPAE));
-    dbg('root.render() ejecutado sin error sincrono', 'ok');
-
-    // Monitor DOM interactions after render
-    setTimeout(function() {
-      if (rootEl.innerHTML.trim()) {
-        dbg('El componente genero contenido HTML (' + rootEl.innerHTML.length + ' chars)', 'ok');
-
-        // Count rendered elements
-        var selects = rootEl.querySelectorAll('select');
-        var checkboxes = rootEl.querySelectorAll('input[type="checkbox"]');
-        var buttons = rootEl.querySelectorAll('button');
-        var searchInput = rootEl.querySelector('input[type="text"]');
-        dbg('DOM: ' + selects.length + ' selects, ' + checkboxes.length + ' checkboxes, ' + buttons.length + ' botones', 'info');
-        dbg('DOM: input de busqueda ' + (searchInput ? 'encontrado' : 'NO encontrado'), searchInput ? 'ok' : 'err');
-
-        // Monitor select changes
-        selects.forEach(function(sel, i) {
-          sel.addEventListener('change', function() {
-            dbg('SELECT[' + i + '] cambio a: "' + sel.value + '"', 'info');
-          });
-        });
-
-        // Monitor checkboxes
-        checkboxes.forEach(function(cb, i) {
-          cb.addEventListener('change', function() {
-            dbg('CHECKBOX[' + i + '] cambio a: ' + cb.checked, 'info');
-          });
-        });
-
-        // Monitor clicks
-        buttons.forEach(function(btn, i) {
-          btn.addEventListener('click', function() {
-            dbg('BUTTON[' + i + '] clicked: "' + (btn.textContent || '').substring(0,30) + '"', 'info');
-          });
-        });
-
-        if (searchInput) {
-          searchInput.addEventListener('input', function() {
-            dbg('SEARCH input: "' + searchInput.value + '"', 'info');
-          });
-        }
-
-        // Monitor React fiber for state changes
-        var fiberKey = Object.keys(rootEl).find(function(k) { return k.startsWith('__reactFiber'); });
-        dbg('React fiber key: ' + (fiberKey ? 'encontrado' : 'NO encontrado'), fiberKey ? 'ok' : 'warn');
-
-        // Check after interaction - monitor DOM mutations
-        var observer = new MutationObserver(function(mutations) {
-          var addedNodes = 0, removedNodes = 0, attrChanges = 0;
-          mutations.forEach(function(m) {
-            addedNodes += m.addedNodes.length;
-            removedNodes += m.removedNodes.length;
-            if (m.type === 'attributes') attrChanges++;
-          });
-          if (addedNodes > 0 || removedNodes > 0) {
-            dbg('DOM MUTATION: +' + addedNodes + ' nodos, -' + removedNodes + ' nodos, ' + attrChanges + ' attrs', 'info');
-          }
-        });
-        observer.observe(rootEl, { childList: true, subtree: true, attributes: true });
-        dbg('MutationObserver activado - monitoreando cambios en DOM', 'ok');
-
-        dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===',
-            _dbgCount.err > 0 ? 'err' : 'ok');
-        dbg('>>> Ahora interactua con los filtros y revisa los mensajes que aparecen aqui <<<', 'warn');
-      } else {
-        dbg('PROBLEMA: El #root sigue vacio despues del render.', 'err');
-        dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===', 'err');
-      }
-    }, 2000);
-  } catch(renderErr) {
-    dbg('Error en render: ' + renderErr.message, 'err');
-    if (renderErr.stack) dbg('Stack: ' + renderErr.stack.substring(0, 500), 'err');
-  }
-}
-
-} catch(_globalErr) {
-  dbg('ERROR FATAL al parsear/ejecutar el codigo del componente: ' + _globalErr.message, 'err');
-  if (_globalErr.stack) dbg('Stack: ' + _globalErr.stack.substring(0, 800), 'err');
-  var _r = document.getElementById('root');
-  if (_r) _r.innerHTML = '<div style="padding:40px;color:red;font-family:monospace;">' +
-    '<h2>Error Fatal</h2><pre>' + _globalErr.message + '</pre></div>';
-}
+var root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(ArbolDecisionesPAE));
 </script>
 </body>
 </html>
