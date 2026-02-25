@@ -7734,7 +7734,7 @@ if (typeof DATA === 'undefined') {
   dbg('DATA.lineamientos: ' + (DATA.lineamientos ? DATA.lineamientos.length + ' elementos' : 'NO EXISTE'), DATA.lineamientos ? 'ok' : 'err');
   dbg('DATA.subcategorias: ' + (DATA.subcategorias ? DATA.subcategorias.length + ' elementos' : 'NO EXISTE'), DATA.subcategorias ? 'ok' : 'err');
   dbg('DATA.categorias: ' + (DATA.categorias ? DATA.categorias.length + ' elementos' : 'NO EXISTE'), DATA.categorias ? 'ok' : 'err');
-  dbg('DATA.documentos: ' + (DATA.documentos ? DATA.documentos.length + ' elementos' : 'NO EXISTE'), DATA.documentos ? 'ok' : 'err');
+  dbg('DATA.verificadores: ' + (DATA.verificadores ? DATA.verificadores.length + ' elementos' : 'NO EXISTE'), DATA.verificadores ? 'ok' : 'err');
 }
 
 // Validar funciones criticas
@@ -7742,17 +7742,59 @@ dbg('Verificando componentes criticos...');
 var _compChecks = [
   ['ArbolDecisionesPAE', typeof ArbolDecisionesPAE],
   ['EtapaNode', typeof EtapaNode],
-  ['CategoriaNode', typeof CategoriaNode],
-  ['SubcategoriaNode', typeof SubcategoriaNode],
-  ['LineamientoCard', typeof LineamientoCard],
+  ['CategoryNode', typeof CategoryNode],
+  ['SubcategoryNode', typeof SubcategoryNode],
+  ['LineamientoNode', typeof LineamientoNode],
   ['StatsPanel', typeof StatsPanel],
-  ['enrichLineamientos', typeof enrichLineamientos],
   ['buildTree', typeof buildTree],
+  ['evaluateCondition', typeof evaluateCondition],
+  ['FILTER_CONFIG', typeof FILTER_CONFIG],
+  ['CONDITION_MAPPINGS', typeof CONDITION_MAPPINGS],
 ];
 _compChecks.forEach(function(c) {
-  if (c[1] === 'function') dbg('  ' + c[0] + ': function OK', 'ok');
-  else dbg('  ' + c[0] + ': ' + c[1] + ' (esperaba function)', 'err');
+  if (c[1] === 'function' || c[1] === 'object') dbg('  ' + c[0] + ': ' + c[1] + ' OK', 'ok');
+  else dbg('  ' + c[0] + ': ' + c[1] + ' (esperaba function/object)', 'err');
 });
+
+// Verificar CONDITION_MAPPINGS content
+if (typeof CONDITION_MAPPINGS === 'object') {
+  var mappingKeys = Object.keys(CONDITION_MAPPINGS);
+  dbg('  CONDITION_MAPPINGS tiene ' + mappingKeys.length + ' entradas', mappingKeys.length > 0 ? 'ok' : 'warn');
+  if (mappingKeys.length > 0) {
+    dbg('  Ejemplo: "' + mappingKeys[0] + '" -> variable=' + CONDITION_MAPPINGS[mappingKeys[0]].variable, 'info');
+  }
+}
+
+// Verificar FILTER_CONFIG content
+if (Array.isArray(FILTER_CONFIG)) {
+  dbg('  FILTER_CONFIG tiene ' + FILTER_CONFIG.length + ' filtros: ' + FILTER_CONFIG.map(function(f){return f.key}).join(', '), 'ok');
+}
+
+// Verificar DEFAULT_FILTERS
+if (typeof DEFAULT_FILTERS === 'object') {
+  dbg('  DEFAULT_FILTERS: ' + JSON.stringify(DEFAULT_FILTERS), 'ok');
+}
+
+// Test evaluateCondition with some data
+dbg('Verificando evaluateCondition...');
+try {
+  var testResult = evaluateCondition('', DEFAULT_FILTERS);
+  dbg('  evaluateCondition("", defaults) = ' + JSON.stringify(testResult), 'ok');
+  // Find a lineamiento with condition
+  var linWithCond = DATA.lineamientos.find(function(l) { return l.condicion_activacion && l.condicion_activacion.length > 0; });
+  if (linWithCond) {
+    dbg('  Ejemplo condicion: "' + linWithCond.condicion_activacion.substring(0, 80) + '..."', 'info');
+    var testResult2 = evaluateCondition(linWithCond.condicion_activacion, DEFAULT_FILTERS);
+    dbg('  evaluateCondition con defaults = ' + JSON.stringify(testResult2), 'info');
+    var testFilters = Object.assign({}, DEFAULT_FILTERS, {zona: 'Rural'});
+    var testResult3 = evaluateCondition(linWithCond.condicion_activacion, testFilters);
+    dbg('  evaluateCondition con zona=Rural = ' + JSON.stringify(testResult3), 'info');
+  } else {
+    dbg('  No se encontro ningun lineamiento con condicion_activacion', 'warn');
+  }
+} catch(evalErr) {
+  dbg('  ERROR en evaluateCondition: ' + evalErr.message, 'err');
+}
 
 // Render
 dbg('Intentando render de React...');
@@ -7766,15 +7808,71 @@ if (!rootEl) {
     dbg('ReactDOM.createRoot exitoso', 'ok');
     reactRoot.render(React.createElement(ArbolDecisionesPAE));
     dbg('root.render() ejecutado sin error sincrono', 'ok');
-    // Check if something rendered after a small delay
+
+    // Monitor DOM interactions after render
     setTimeout(function() {
       if (rootEl.innerHTML.trim()) {
         dbg('El componente genero contenido HTML (' + rootEl.innerHTML.length + ' chars)', 'ok');
+
+        // Count rendered elements
+        var selects = rootEl.querySelectorAll('select');
+        var checkboxes = rootEl.querySelectorAll('input[type="checkbox"]');
+        var buttons = rootEl.querySelectorAll('button');
+        var searchInput = rootEl.querySelector('input[type="text"]');
+        dbg('DOM: ' + selects.length + ' selects, ' + checkboxes.length + ' checkboxes, ' + buttons.length + ' botones', 'info');
+        dbg('DOM: input de busqueda ' + (searchInput ? 'encontrado' : 'NO encontrado'), searchInput ? 'ok' : 'err');
+
+        // Monitor select changes
+        selects.forEach(function(sel, i) {
+          sel.addEventListener('change', function() {
+            dbg('SELECT[' + i + '] cambio a: "' + sel.value + '"', 'info');
+          });
+        });
+
+        // Monitor checkboxes
+        checkboxes.forEach(function(cb, i) {
+          cb.addEventListener('change', function() {
+            dbg('CHECKBOX[' + i + '] cambio a: ' + cb.checked, 'info');
+          });
+        });
+
+        // Monitor clicks
+        buttons.forEach(function(btn, i) {
+          btn.addEventListener('click', function() {
+            dbg('BUTTON[' + i + '] clicked: "' + (btn.textContent || '').substring(0,30) + '"', 'info');
+          });
+        });
+
+        if (searchInput) {
+          searchInput.addEventListener('input', function() {
+            dbg('SEARCH input: "' + searchInput.value + '"', 'info');
+          });
+        }
+
+        // Monitor React fiber for state changes
+        var fiberKey = Object.keys(rootEl).find(function(k) { return k.startsWith('__reactFiber'); });
+        dbg('React fiber key: ' + (fiberKey ? 'encontrado' : 'NO encontrado'), fiberKey ? 'ok' : 'warn');
+
+        // Check after interaction - monitor DOM mutations
+        var observer = new MutationObserver(function(mutations) {
+          var addedNodes = 0, removedNodes = 0, attrChanges = 0;
+          mutations.forEach(function(m) {
+            addedNodes += m.addedNodes.length;
+            removedNodes += m.removedNodes.length;
+            if (m.type === 'attributes') attrChanges++;
+          });
+          if (addedNodes > 0 || removedNodes > 0) {
+            dbg('DOM MUTATION: +' + addedNodes + ' nodos, -' + removedNodes + ' nodos, ' + attrChanges + ' attrs', 'info');
+          }
+        });
+        observer.observe(rootEl, { childList: true, subtree: true, attributes: true });
+        dbg('MutationObserver activado - monitoreando cambios en DOM', 'ok');
+
         dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===',
             _dbgCount.err > 0 ? 'err' : 'ok');
+        dbg('>>> Ahora interactua con los filtros y revisa los mensajes que aparecen aqui <<<', 'warn');
       } else {
-        dbg('PROBLEMA: El #root sigue vacio despues del render. El componente no genero HTML.', 'err');
-        dbg('Esto puede indicar un error dentro del componente React (ver consola del navegador F12).', 'warn');
+        dbg('PROBLEMA: El #root sigue vacio despues del render.', 'err');
         dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===', 'err');
       }
     }, 2000);
@@ -7785,7 +7883,6 @@ if (!rootEl) {
 }
 
 } catch(_globalErr) {
-  // This catches errors from the entire component code block
   dbg('ERROR FATAL al parsear/ejecutar el codigo del componente: ' + _globalErr.message, 'err');
   if (_globalErr.stack) dbg('Stack: ' + _globalErr.stack.substring(0, 800), 'err');
   var _r = document.getElementById('root');
