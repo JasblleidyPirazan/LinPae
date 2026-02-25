@@ -24,12 +24,86 @@
     transition: background 0.2s;
   }
   .back-link:hover { background: #2b6cb0; }
+  #debug-panel {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    max-height: 40vh; overflow-y: auto;
+    background: #1a1a2e; color: #0f0; font-family: monospace;
+    font-size: 12px; padding: 10px 14px; border-top: 3px solid #e94560;
+    display: none;
+  }
+  #debug-panel.visible { display: block; }
+  #debug-panel .err { color: #ff4444; }
+  #debug-panel .warn { color: #ffaa00; }
+  #debug-panel .ok { color: #44ff44; }
+  #debug-panel .info { color: #44aaff; }
+  #debug-toggle {
+    position: fixed; bottom: 10px; right: 10px; z-index: 10000;
+    padding: 6px 12px; background: #e94560; color: #fff;
+    border: none; border-radius: 6px; font-size: 11px; font-weight: 700;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 <a href="index.html" class="back-link">&#9664; Volver al Dashboard</a>
 <div id="root"></div>
+<div id="debug-panel" class="visible"></div>
+<button id="debug-toggle" onclick="document.getElementById('debug-panel').classList.toggle('visible')">Debug</button>
+
 <script>
+// ===================== ERROR TRACKER =====================
+var _dbg = document.getElementById('debug-panel');
+var _dbgCount = { ok: 0, err: 0, warn: 0 };
+function dbg(msg, type) {
+  type = type || 'info';
+  if (type === 'ok') _dbgCount.ok++;
+  if (type === 'err') _dbgCount.err++;
+  if (type === 'warn') _dbgCount.warn++;
+  var line = document.createElement('div');
+  line.className = type;
+  var ts = new Date().toLocaleTimeString();
+  line.textContent = '[' + ts + '] ' + (type === 'ok' ? '  OK ' : type === 'err' ? ' ERR ' : type === 'warn' ? 'WARN ' : 'INFO ') + msg;
+  _dbg.appendChild(line);
+  _dbg.scrollTop = _dbg.scrollHeight;
+  console.log('[DBG ' + type.toUpperCase() + ']', msg);
+}
+
+// Catch global errors
+window.onerror = function(msg, src, line, col, err) {
+  dbg('GLOBAL ERROR: ' + msg + ' (linea ' + line + ', col ' + col + ')', 'err');
+  if (err && err.stack) dbg('Stack: ' + err.stack.substring(0, 500), 'err');
+  // Show error visually in root too
+  var root = document.getElementById('root');
+  if (root && !root.innerHTML.trim()) {
+    root.innerHTML = '<div style="padding:40px;color:red;font-family:monospace;font-size:14px;">' +
+      '<h2>Error al cargar el Arbol</h2><p>' + msg + '</p><p>Linea: ' + line + '</p>' +
+      '<p>Ver panel de debug abajo para mas detalles.</p></div>';
+  }
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  dbg('PROMISE REJECTION: ' + (e.reason ? e.reason.message || e.reason : 'unknown'), 'err');
+});
+
+// ===================== CHECK CDN DEPENDENCIES =====================
+dbg('Iniciando diagnostico...');
+dbg('URL actual: ' + window.location.href);
+dbg('User Agent: ' + navigator.userAgent.substring(0, 80));
+
+if (typeof React === 'undefined') {
+  dbg('React NO cargado - el CDN unpkg.com puede estar bloqueado', 'err');
+} else {
+  dbg('React cargado OK - version ' + React.version, 'ok');
+}
+if (typeof ReactDOM === 'undefined') {
+  dbg('ReactDOM NO cargado - el CDN unpkg.com puede estar bloqueado', 'err');
+} else {
+  dbg('ReactDOM cargado OK', 'ok');
+}
+
+// ===================== COMPONENT CODE =====================
+try {
+dbg('Parseando destructuring de React hooks...');
 const { useState, useMemo, useCallback, useRef, useEffect } = React;
 
 // =====================================================================
@@ -7650,9 +7724,74 @@ function ArbolDecisionesPAE() {
 }
 
 
+dbg('Todas las funciones/componentes definidos correctamente', 'ok');
+
+// Validar DATA
+dbg('Verificando DATA...');
+if (typeof DATA === 'undefined') {
+  dbg('DATA no esta definida', 'err');
+} else {
+  dbg('DATA.lineamientos: ' + (DATA.lineamientos ? DATA.lineamientos.length + ' elementos' : 'NO EXISTE'), DATA.lineamientos ? 'ok' : 'err');
+  dbg('DATA.subcategorias: ' + (DATA.subcategorias ? DATA.subcategorias.length + ' elementos' : 'NO EXISTE'), DATA.subcategorias ? 'ok' : 'err');
+  dbg('DATA.categorias: ' + (DATA.categorias ? DATA.categorias.length + ' elementos' : 'NO EXISTE'), DATA.categorias ? 'ok' : 'err');
+  dbg('DATA.documentos: ' + (DATA.documentos ? DATA.documentos.length + ' elementos' : 'NO EXISTE'), DATA.documentos ? 'ok' : 'err');
+}
+
+// Validar funciones criticas
+dbg('Verificando componentes criticos...');
+var _compChecks = [
+  ['ArbolDecisionesPAE', typeof ArbolDecisionesPAE],
+  ['EtapaNode', typeof EtapaNode],
+  ['CategoriaNode', typeof CategoriaNode],
+  ['SubcategoriaNode', typeof SubcategoriaNode],
+  ['LineamientoCard', typeof LineamientoCard],
+  ['StatsPanel', typeof StatsPanel],
+  ['enrichLineamientos', typeof enrichLineamientos],
+  ['buildTree', typeof buildTree],
+];
+_compChecks.forEach(function(c) {
+  if (c[1] === 'function') dbg('  ' + c[0] + ': function OK', 'ok');
+  else dbg('  ' + c[0] + ': ' + c[1] + ' (esperaba function)', 'err');
+});
+
 // Render
-var root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(ArbolDecisionesPAE));
+dbg('Intentando render de React...');
+var rootEl = document.getElementById('root');
+if (!rootEl) {
+  dbg('Elemento #root NO encontrado en DOM', 'err');
+} else {
+  dbg('Elemento #root encontrado OK', 'ok');
+  try {
+    var reactRoot = ReactDOM.createRoot(rootEl);
+    dbg('ReactDOM.createRoot exitoso', 'ok');
+    reactRoot.render(React.createElement(ArbolDecisionesPAE));
+    dbg('root.render() ejecutado sin error sincrono', 'ok');
+    // Check if something rendered after a small delay
+    setTimeout(function() {
+      if (rootEl.innerHTML.trim()) {
+        dbg('El componente genero contenido HTML (' + rootEl.innerHTML.length + ' chars)', 'ok');
+        dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===',
+            _dbgCount.err > 0 ? 'err' : 'ok');
+      } else {
+        dbg('PROBLEMA: El #root sigue vacio despues del render. El componente no genero HTML.', 'err');
+        dbg('Esto puede indicar un error dentro del componente React (ver consola del navegador F12).', 'warn');
+        dbg('=== DIAGNOSTICO COMPLETO: ' + _dbgCount.ok + ' OK, ' + _dbgCount.warn + ' WARN, ' + _dbgCount.err + ' ERR ===', 'err');
+      }
+    }, 2000);
+  } catch(renderErr) {
+    dbg('Error en render: ' + renderErr.message, 'err');
+    if (renderErr.stack) dbg('Stack: ' + renderErr.stack.substring(0, 500), 'err');
+  }
+}
+
+} catch(_globalErr) {
+  // This catches errors from the entire component code block
+  dbg('ERROR FATAL al parsear/ejecutar el codigo del componente: ' + _globalErr.message, 'err');
+  if (_globalErr.stack) dbg('Stack: ' + _globalErr.stack.substring(0, 800), 'err');
+  var _r = document.getElementById('root');
+  if (_r) _r.innerHTML = '<div style="padding:40px;color:red;font-family:monospace;">' +
+    '<h2>Error Fatal</h2><pre>' + _globalErr.message + '</pre></div>';
+}
 </script>
 </body>
 </html>
