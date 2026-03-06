@@ -910,9 +910,158 @@ body {
   .gc-popup-header { padding: 16px; }
   .gc-popup-body { padding: 14px; }
 }
+
+/* ========== LANDING PAGE - SELECTOR DE RESOLUCIÓN ========== */
+.landing-overlay {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #38b2ac 100%);
+  z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.landing-overlay.hidden {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.landing-content {
+  text-align: center; color: #fff; padding: 40px 20px;
+  max-width: 900px; width: 100%;
+}
+.landing-title {
+  font-size: 36px; font-weight: 800; margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+.landing-subtitle {
+  font-size: 16px; opacity: 0.85; margin-bottom: 48px; font-weight: 400;
+}
+.landing-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  max-width: 760px; margin: 0 auto;
+}
+@media (max-width: 700px) {
+  .landing-cards { grid-template-columns: 1fr; gap: 20px; }
+  .landing-title { font-size: 26px; }
+}
+.landing-card {
+  background: rgba(255,255,255,.12);
+  border: 2px solid rgba(255,255,255,.25);
+  border-radius: 16px;
+  padding: 32px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-align: left;
+}
+.landing-card:hover {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.5);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.2);
+}
+.landing-card.disabled {
+  opacity: 0.45; cursor: not-allowed;
+}
+.landing-card.disabled:hover {
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.25);
+  transform: none; box-shadow: none;
+}
+.landing-card-icon {
+  font-size: 32px; margin-bottom: 12px;
+}
+.landing-card-name {
+  font-size: 20px; font-weight: 700; margin-bottom: 4px;
+}
+.landing-card-desc {
+  font-size: 13px; opacity: 0.75; margin-bottom: 16px; line-height: 1.5;
+}
+.landing-card-sections {
+  list-style: none; padding: 0; margin: 0;
+}
+.landing-card-sections li {
+  font-size: 13px; padding: 4px 0; opacity: 0.8;
+  display: flex; align-items: center; gap: 8px;
+}
+.landing-card-sections li .lcs-icon { font-size: 14px; width: 20px; text-align: center; }
+.landing-card-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.2);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.landing-card-badge.empty {
+  background: rgba(255,200,50,.25);
+}
+
+/* Sidebar resolution indicator */
+.sidebar-res-indicator {
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-res-name {
+  font-size: 12px; font-weight: 600; color: #e6fffa; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar-res-back {
+  background: rgba(255,255,255,.15);
+  border: none; color: #fff;
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; cursor: pointer;
+  transition: background 0.2s;
+}
+.sidebar-res-back:hover { background: rgba(255,255,255,.25); }
 </style>
 </head>
 <body>
+
+<!-- ========== LANDING: SELECTOR DE RESOLUCIÓN ========== -->
+<div class="landing-overlay" id="landingOverlay">
+  <div class="landing-content">
+    <div class="landing-title">Lineamientos PAE Colombia</div>
+    <div class="landing-subtitle">Programa de Alimentacion Escolar — Seleccione la resolucion a consultar</div>
+    <div class="landing-cards">
+      <!-- Resolución 003 de 2026 -->
+      <div class="landing-card" id="landingRes003" data-res="res003">
+        <div class="landing-card-icon">&#128220;</div>
+        <div class="landing-card-badge">395 lineamientos</div>
+        <div class="landing-card-name">Resolucion 003 de 2026</div>
+        <div class="landing-card-desc">Nueva resolucion del PAE con lineamientos actualizados, guia general y 8 anexos tecnicos.</div>
+        <ul class="landing-card-sections">
+          <li><span class="lcs-icon">&#127760;</span> Mapa Conceptual</li>
+          <li><span class="lcs-icon">&#9635;</span> Resumen General</li>
+          <li><span class="lcs-icon">&#128196;</span> Documentos y Normativa</li>
+          <li><span class="lcs-icon">&#128193;</span> Categorias y Subcategorias</li>
+          <li><span class="lcs-icon">&#128220;</span> Lineamientos</li>
+          <li><span class="lcs-icon">&#128279;</span> Red de Conexiones</li>
+          <li><span class="lcs-icon">&#128101;</span> Actores</li>
+          <li><span class="lcs-icon">&#128200;</span> Indicadores</li>
+          <li><span class="lcs-icon">&#128214;</span> Conceptos</li>
+        </ul>
+      </div>
+      <!-- Resolución 335 de 2021 -->
+      <div class="landing-card disabled" id="landingRes335" data-res="res335">
+        <div class="landing-card-icon">&#128209;</div>
+        <div class="landing-card-badge empty">Pendiente de datos</div>
+        <div class="landing-card-name">Resolucion 335 de 2021</div>
+        <div class="landing-card-desc">Resolucion anterior del PAE. Plantilla Excel disponible para cargar lineamientos.</div>
+        <ul class="landing-card-sections">
+          <li><span class="lcs-icon">&#127760;</span> Mapa Conceptual</li>
+          <li><span class="lcs-icon">&#9635;</span> Resumen General</li>
+          <li><span class="lcs-icon">&#128196;</span> Documentos y Normativa</li>
+          <li><span class="lcs-icon">&#128193;</span> Categorias y Subcategorias</li>
+          <li><span class="lcs-icon">&#128220;</span> Lineamientos</li>
+          <li><span class="lcs-icon">&#128279;</span> Red de Conexiones</li>
+          <li><span class="lcs-icon">&#128101;</span> Actores</li>
+          <li><span class="lcs-icon">&#128200;</span> Indicadores</li>
+          <li><span class="lcs-icon">&#128214;</span> Conceptos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Knowledge Management Popup -->
 <div class="gc-overlay" id="gcOverlay">
@@ -937,6 +1086,10 @@ body {
   <div class="sidebar-header">
     <h1>PAE Colombia</h1>
     <p>Programa de Alimentacion Escolar</p>
+  </div>
+  <div class="sidebar-res-indicator" id="sidebarResIndicator">
+    <span class="sidebar-res-name" id="sidebarResName">Resolucion 003 de 2026</span>
+    <button class="sidebar-res-back" id="sidebarResBack">Cambiar</button>
   </div>
   <nav>
     <a href="#mapa" class="nav-link active" data-section="sec-mapa">
@@ -1180,10 +1333,27 @@ body {
 
 </div><!-- /main -->
 
-<script src="data.js"></script>
+<script src="data_res003.js"></script>
+<script src="data_res335.js"></script>
 <script>
 (function() {
   'use strict';
+
+  // ===== RESOLUTION REGISTRY =====
+  var RESOLUCIONES = {
+    res003: {
+      data: DATA_RES003,
+      nombre: 'Resolucion 003 de 2026',
+      descripcion: 'Nueva resolucion del PAE'
+    },
+    res335: {
+      data: DATA_RES335,
+      nombre: 'Resolucion 335 de 2021',
+      descripcion: 'Resolucion anterior del PAE'
+    }
+  };
+
+  var activeResId = null; // current resolution key
 
   // ===== HELPERS =====
   var $$ = function(s) { return document.querySelectorAll(s); };
@@ -1210,37 +1380,41 @@ body {
     return div.innerHTML;
   }
 
-  var D = DATA;
-  var docMap = {}; D.DOCUMENTOS.forEach(function(d) { docMap[d.doc_id] = d; });
-  var catMap = {}; D.CATEGORIAS.forEach(function(c) { catMap[c.cat_id] = c; });
-  var subcatMap = {}; D.SUBCATEGORIAS.forEach(function(s) { subcatMap[s.subcat_id] = s; });
-  var actorMap = {}; D.ACTORES.forEach(function(a) { actorMap[a.actor_id] = a; });
+  var D, docMap, catMap, subcatMap, actorMap;
 
-  // Precompute verifiers by lineamiento
-  var verByLin = {};
-  D.VERIFICADORES.forEach(function(v) {
-    if (!verByLin[v.lin_id]) verByLin[v.lin_id] = [];
-    verByLin[v.lin_id].push(v);
-  });
+  var verByLin, capMap, aprByLin;
 
-  // Precompute knowledge management: aprendizajes by lineamiento
-  var capMap = {};
-  if (D.CAPACITACIONES) {
-    D.CAPACITACIONES.forEach(function(c) { capMap[c.cap_id] = c; });
-  }
-  var aprByLin = {};
-  if (D.APRENDIZAJES) {
-    D.APRENDIZAJES.forEach(function(a) {
-      if (!a.lin_id) return;
-      // lin_id can contain multiple IDs separated by " / "
-      var ids = a.lin_id.split(/\s*\/\s*/);
-      ids.forEach(function(id) {
-        id = id.trim();
-        if (!id) return;
-        if (!aprByLin[id]) aprByLin[id] = [];
-        aprByLin[id].push(a);
-      });
+  function buildMaps() {
+    docMap = {}; D.DOCUMENTOS.forEach(function(d) { docMap[d.doc_id] = d; });
+    catMap = {}; D.CATEGORIAS.forEach(function(c) { catMap[c.cat_id] = c; });
+    subcatMap = {}; D.SUBCATEGORIAS.forEach(function(s) { subcatMap[s.subcat_id] = s; });
+    actorMap = {}; D.ACTORES.forEach(function(a) { actorMap[a.actor_id] = a; });
+
+    // Precompute verifiers by lineamiento
+    verByLin = {};
+    D.VERIFICADORES.forEach(function(v) {
+      if (!verByLin[v.lin_id]) verByLin[v.lin_id] = [];
+      verByLin[v.lin_id].push(v);
     });
+
+    // Precompute knowledge management: aprendizajes by lineamiento
+    capMap = {};
+    if (D.CAPACITACIONES) {
+      D.CAPACITACIONES.forEach(function(c) { capMap[c.cap_id] = c; });
+    }
+    aprByLin = {};
+    if (D.APRENDIZAJES) {
+      D.APRENDIZAJES.forEach(function(a) {
+        if (!a.lin_id) return;
+        var ids = a.lin_id.split(/\s*\/\s*/);
+        ids.forEach(function(id) {
+          id = id.trim();
+          if (!id) return;
+          if (!aprByLin[id]) aprByLin[id] = [];
+          aprByLin[id].push(a);
+        });
+      });
+    }
   }
 
   // Knowledge popup functions
@@ -1393,40 +1567,47 @@ body {
 
   // Mapa state — new hierarchy: etapa → categoria → lineamientos → detalle
   var mapa = {
-    level: 0,              // 0=etapas, 1=categorias, 2=lineamientos, 3=detail
-    selectedEtapa: null,   // etapa_pae value
-    selectedCat: null,     // cat_id
-    selectedLin: null,     // lin_id
-    filteredLins: D.LINEAMIENTOS.slice(),
+    level: 0,
+    selectedEtapa: null,
+    selectedCat: null,
+    selectedLin: null,
+    filteredLins: [],
     simulation: null
   };
 
-  // Precompute subcategories by category
-  var subcatsByCat = {};
-  D.SUBCATEGORIAS.forEach(function(s) {
-    if (!subcatsByCat[s.cat_id]) subcatsByCat[s.cat_id] = [];
-    subcatsByCat[s.cat_id].push(s);
-  });
+  var subcatsByCat, connByLin, indBySubcat;
 
-  // Precompute connections by lineamiento
-  var connByLin = {};
-  D.CONEXIONES.forEach(function(c) {
-    if (c.lin_id_origen) {
-      if (!connByLin[c.lin_id_origen]) connByLin[c.lin_id_origen] = [];
-      connByLin[c.lin_id_origen].push(c);
-    }
-    if (c.lin_id_destino && c.lin_id_destino.indexOf('*') === -1) {
-      if (!connByLin[c.lin_id_destino]) connByLin[c.lin_id_destino] = [];
-      connByLin[c.lin_id_destino].push(c);
-    }
-  });
+  function buildPrecomputed() {
+    mapa.filteredLins = D.LINEAMIENTOS.slice();
+    mapa.level = 0;
+    mapa.selectedEtapa = null;
+    mapa.selectedCat = null;
+    mapa.selectedLin = null;
 
-  // Precompute indicators by subcat
-  var indBySubcat = {};
-  D.INDICADORES.forEach(function(ind) {
-    if (!indBySubcat[ind.subcat_id]) indBySubcat[ind.subcat_id] = [];
-    indBySubcat[ind.subcat_id].push(ind);
-  });
+    subcatsByCat = {};
+    D.SUBCATEGORIAS.forEach(function(s) {
+      if (!subcatsByCat[s.cat_id]) subcatsByCat[s.cat_id] = [];
+      subcatsByCat[s.cat_id].push(s);
+    });
+
+    connByLin = {};
+    D.CONEXIONES.forEach(function(c) {
+      if (c.lin_id_origen) {
+        if (!connByLin[c.lin_id_origen]) connByLin[c.lin_id_origen] = [];
+        connByLin[c.lin_id_origen].push(c);
+      }
+      if (c.lin_id_destino && c.lin_id_destino.indexOf('*') === -1) {
+        if (!connByLin[c.lin_id_destino]) connByLin[c.lin_id_destino] = [];
+        connByLin[c.lin_id_destino].push(c);
+      }
+    });
+
+    indBySubcat = {};
+    D.INDICADORES.forEach(function(ind) {
+      if (!indBySubcat[ind.subcat_id]) indBySubcat[ind.subcat_id] = [];
+      indBySubcat[ind.subcat_id].push(ind);
+    });
+  }
 
   // --- Helper: get filtered lineamiento counts per etapa ---
   function getLinCountsByEtapa() {
@@ -2364,7 +2545,7 @@ body {
   // SECTION 4: LINEAMIENTOS TABLE
   // =============================================
   var linState = {
-    filtered: D.LINEAMIENTOS.slice(),
+    filtered: [],
     page: 1,
     perPage: 20,
     sortCol: null,
@@ -3032,15 +3213,112 @@ body {
     renderGlossary();
   }
 
-  // ===== INIT ALL =====
-  initMapa();
-  initResumen();
-  initDocumentos();
-  initCategorias();
-  initLineamientos();
-  initActores();
-  initIndicadores();
-  initConceptos();
+  // ===== RESOLUTION LOADING =====
+  function loadResolution(resId) {
+    var res = RESOLUCIONES[resId];
+    if (!res) return;
+
+    // Check if resolution has data
+    if (!res.data || !res.data.LINEAMIENTOS || res.data.LINEAMIENTOS.length === 0) {
+      alert('Esta resolucion aun no tiene datos cargados.\nPor favor complete la plantilla Excel correspondiente.');
+      return;
+    }
+
+    activeResId = resId;
+    D = res.data;
+
+    // Build all lookup maps
+    buildMaps();
+    buildPrecomputed();
+
+    // Reset linState
+    linState.filtered = D.LINEAMIENTOS.slice();
+    linState.page = 1;
+    linState.sortCol = null;
+    linState.sortAsc = true;
+    linState.expanded = {};
+
+    // Reset network
+    networkInited = false;
+    // Clear SVG contents
+    d3.select('#network-svg').selectAll('*').remove();
+
+    // Update sidebar resolution indicator
+    byId('sidebarResName').textContent = res.nombre;
+
+    // Update section descriptions with counts
+    var linDesc = byId('sec-lineamientos').querySelector('.main-header p');
+    if (linDesc) linDesc.textContent = 'Tabla interactiva con los ' + D.LINEAMIENTOS.length + ' lineamientos del PAE';
+    var conDesc = byId('sec-conceptos').querySelector('.main-header p');
+    if (conDesc) conDesc.textContent = 'Definiciones clave del sistema PAE (' + D.CONCEPTOS.length + ' conceptos)';
+
+    // Clear and reinit all sections
+    // Clear mapa filter dropdowns (keep only first option)
+    ['mfDoc','mfEtapa','mfActor','mfRiesgo'].forEach(function(id) {
+      var el = byId(id);
+      if (el) {
+        while (el.options.length > 1) el.remove(1);
+        el.value = '';
+      }
+    });
+    if (byId('mfSearch')) byId('mfSearch').value = '';
+
+    // Hide landing, show dashboard
+    byId('landingOverlay').classList.add('hidden');
+
+    // Reset to first section
+    switchSection('sec-mapa');
+
+    // Init all sections
+    initMapa();
+    initResumen();
+    initDocumentos();
+    initCategorias();
+    initLineamientos();
+    initActores();
+    initIndicadores();
+    initConceptos();
+  }
+
+  function showLanding() {
+    activeResId = null;
+    byId('landingOverlay').classList.remove('hidden');
+  }
+
+  // ===== LANDING PAGE EVENTS =====
+  byId('landingRes003').addEventListener('click', function() {
+    loadResolution('res003');
+  });
+  byId('landingRes335').addEventListener('click', function() {
+    if (this.classList.contains('disabled')) return;
+    loadResolution('res335');
+  });
+
+  // Back button in sidebar
+  byId('sidebarResBack').addEventListener('click', function() {
+    showLanding();
+  });
+
+  // Update landing card states based on data availability
+  function updateLandingCards() {
+    Object.keys(RESOLUCIONES).forEach(function(resId) {
+      var res = RESOLUCIONES[resId];
+      var card = byId('landingRes' + resId.replace('res', 'Res'));
+      if (!card) return;
+      var hasData = res.data && res.data.LINEAMIENTOS && res.data.LINEAMIENTOS.length > 0;
+      if (hasData) {
+        card.classList.remove('disabled');
+        var badge = card.querySelector('.landing-card-badge');
+        if (badge) {
+          badge.textContent = res.data.LINEAMIENTOS.length + ' lineamientos';
+          badge.classList.remove('empty');
+        }
+      }
+    });
+  }
+  updateLandingCards();
+
+  // Show landing on start (don't auto-load any resolution)
 
 })();
 </script>

@@ -1,0 +1,13 @@
+var DATA_RES335 = {
+  "DOCUMENTOS": [],
+  "CATEGORIAS": [],
+  "SUBCATEGORIAS": [],
+  "ACTORES": [],
+  "LINEAMIENTOS": [],
+  "VERIFICADORES": [],
+  "CONEXIONES": [],
+  "INDICADORES": [],
+  "CONCEPTOS": [],
+  "CAPACITACIONES": [],
+  "APRENDIZAJES": []
+};

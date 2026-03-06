@@ -1,4 +1,4 @@
-const DATA = {
+var DATA_RES003 = {
   "DOCUMENTOS": [
     {
       "doc_id": "D1852",
