@@ -1042,9 +1042,9 @@ body {
         </ul>
       </div>
       <!-- Resolución 335 de 2021 -->
-      <div class="landing-card disabled" id="landingRes335" data-res="res335">
+      <div class="landing-card" id="landingRes335" data-res="res335">
         <div class="landing-card-icon">&#128209;</div>
-        <div class="landing-card-badge empty">Pendiente de datos</div>
+        <div class="landing-card-badge">450 lineamientos</div>
         <div class="landing-card-name">Resolucion 335 de 2021</div>
         <div class="landing-card-desc">Lineamientos Tecnico-Administrativos del PAE. Resolucion vigente con estandares de operacion, calidad y seguimiento.</div>
         <ul class="landing-card-sections">
@@ -3290,7 +3290,6 @@ body {
     loadResolution('res003');
   });
   byId('landingRes335').addEventListener('click', function() {
-    if (this.classList.contains('disabled')) return;
     loadResolution('res335');
   });
 
