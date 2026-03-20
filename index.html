@@ -1013,6 +1013,32 @@ body {
   transition: background 0.2s;
 }
 .sidebar-res-back:hover { background: rgba(255,255,255,.25); }
+
+/* ===== ANALYTICS PANEL ===== */
+.analytics-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:3000; display:flex; align-items:center; justify-content:center; }
+.analytics-overlay.hidden { display:none; }
+.analytics-panel { background:#1a1a2e; color:#e2e8f0; border-radius:16px; width:94%; max-width:680px; max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.analytics-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px 12px; border-bottom:1px solid rgba(255,255,255,.1); }
+.analytics-header h2 { margin:0; font-size:20px; color:#c4b5fd; }
+.analytics-close { background:none; border:none; color:#94a3b8; font-size:28px; cursor:pointer; padding:0 4px; }
+.analytics-close:hover { color:#fff; }
+.analytics-body { padding:16px 24px 24px; }
+.analytics-section { margin-bottom:20px; }
+.analytics-section h3 { font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#86efac; margin:0 0 10px; }
+.analytics-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; }
+.analytics-stat { background:rgba(255,255,255,.06); border-radius:10px; padding:14px; text-align:center; }
+.analytics-stat .an-val { font-size:26px; font-weight:700; color:#c4b5fd; }
+.analytics-stat .an-lbl { font-size:11px; color:#94a3b8; margin-top:4px; }
+.analytics-bars .an-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.analytics-bars .an-bar-label { width:140px; font-size:12px; color:#cbd5e1; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.analytics-bars .an-bar-track { flex:1; background:rgba(255,255,255,.08); border-radius:6px; height:22px; position:relative; overflow:hidden; }
+.analytics-bars .an-bar-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,#7c3aed,#a78bfa); transition:width .4s ease; }
+.analytics-bars .an-bar-count { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; color:#fff; font-weight:600; }
+.analytics-list { max-height:180px; overflow-y:auto; }
+.analytics-list .an-list-item { padding:6px 10px; font-size:12px; color:#cbd5e1; border-bottom:1px solid rgba(255,255,255,.05); display:flex; justify-content:space-between; }
+.analytics-list .an-list-item .an-time { color:#64748b; font-size:11px; }
+.analytics-clear-btn { background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); border-radius:8px; padding:8px 20px; cursor:pointer; font-size:13px; }
+.analytics-clear-btn:hover { background:rgba(239,68,68,.25); }
 </style>
 </head>
 <body>
@@ -1123,8 +1149,56 @@ body {
     <a href="arbol.html" class="nav-link" style="color:#c4b5fd;">
       <span class="nav-icon">&#127795;</span> Arbol de Decisiones
     </a>
+    <a href="#analytics" class="nav-link" id="navAnalytics" style="color:#86efac;">
+      <span class="nav-icon">&#128202;</span> Rastreador de Uso
+    </a>
   </nav>
 </aside>
+
+<!-- ANALYTICS PANEL OVERLAY -->
+<div class="analytics-overlay hidden" id="analyticsOverlay">
+  <div class="analytics-panel">
+    <div class="analytics-header">
+      <h2>&#128202; Rastreador de Uso</h2>
+      <button class="analytics-close" id="analyticsClose">&times;</button>
+    </div>
+    <div class="analytics-body" id="analyticsBody">
+      <!-- Session info -->
+      <div class="analytics-section">
+        <h3>Sesion Actual</h3>
+        <div class="analytics-grid" id="anSessionGrid"></div>
+      </div>
+      <!-- Sections heatmap -->
+      <div class="analytics-section">
+        <h3>Secciones Visitadas</h3>
+        <div class="analytics-bars" id="anSectionBars"></div>
+      </div>
+      <!-- Resolutions -->
+      <div class="analytics-section">
+        <h3>Resoluciones Consultadas</h3>
+        <div class="analytics-bars" id="anResBars"></div>
+      </div>
+      <!-- Searches -->
+      <div class="analytics-section">
+        <h3>Busquedas Recientes</h3>
+        <div class="analytics-list" id="anSearchList"></div>
+      </div>
+      <!-- Activity log -->
+      <div class="analytics-section">
+        <h3>Actividad Reciente</h3>
+        <div class="analytics-list" id="anActivityLog"></div>
+      </div>
+      <!-- Accumulated stats -->
+      <div class="analytics-section">
+        <h3>Estadisticas Acumuladas</h3>
+        <div class="analytics-grid" id="anAccumGrid"></div>
+      </div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="analytics-clear-btn" id="analyticsClear">Limpiar historial</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MAIN CONTENT -->
 <div class="main" id="mainContent">
@@ -1339,6 +1413,64 @@ body {
 (function() {
   'use strict';
 
+  // ===== USAGE TRACKER =====
+  var Tracker = (function() {
+    var STORAGE_KEY = 'linpae_analytics';
+    var SESSION_KEY = 'linpae_session';
+    var MAX_LOG = 200;
+    var sessionStart = Date.now();
+
+    function getData() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData(); }
+      catch(e) { return defaultData(); }
+    }
+    function defaultData() {
+      return { sections: {}, resolutions: {}, searches: [], activity: [], totalSessions: 0, totalTime: 0, firstVisit: new Date().toISOString() };
+    }
+    function save(d) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {}
+    }
+    function initSession() {
+      var d = getData();
+      var s = sessionStorage.getItem(SESSION_KEY);
+      if (!s) {
+        d.totalSessions = (d.totalSessions || 0) + 1;
+        sessionStorage.setItem(SESSION_KEY, '1');
+        save(d);
+      }
+    }
+    function track(type, detail) {
+      var d = getData();
+      // Count sections
+      if (type === 'section') {
+        d.sections[detail] = (d.sections[detail] || 0) + 1;
+      }
+      // Count resolutions
+      if (type === 'resolution') {
+        d.resolutions[detail] = (d.resolutions[detail] || 0) + 1;
+      }
+      // Searches
+      if (type === 'search' && detail) {
+        d.searches.unshift({ q: detail, t: new Date().toISOString() });
+        if (d.searches.length > 50) d.searches.length = 50;
+      }
+      // Activity log
+      d.activity.unshift({ type: type, detail: detail, t: new Date().toISOString() });
+      if (d.activity.length > MAX_LOG) d.activity.length = MAX_LOG;
+      // Accumulated time
+      d.totalTime = (d.totalTime || 0);
+      save(d);
+    }
+    function getSessionMinutes() {
+      return Math.round((Date.now() - sessionStart) / 60000);
+    }
+    function clearAll() {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    initSession();
+    return { track: track, getData: getData, getSessionMinutes: getSessionMinutes, clearAll: clearAll };
+  })();
+
   // ===== RESOLUTION REGISTRY =====
   var RESOLUCIONES = {
     res003: {
@@ -1510,6 +1642,7 @@ body {
     if (sec) sec.classList.add('active');
     var link = document.querySelector('[data-section="' + secId + '"]');
     if (link) link.classList.add('active');
+    Tracker.track('section', secId);
     if (secId === 'sec-red' && !networkInited) {
       networkInited = true;
       setTimeout(initNetwork, 150);
@@ -2240,6 +2373,8 @@ body {
       var fActor = byId('mfActor').value;
       var fRiesgo = byId('mfRiesgo').value;
       var fSearch = (byId('mfSearch').value || '').trim().toLowerCase();
+      if (fSearch.length > 2) Tracker.track('search', 'mapa: ' + fSearch);
+      if (fDoc || fEtapa || fActor || fRiesgo) Tracker.track('filter', 'mapa');
 
       mapa.filteredLins = D.LINEAMIENTOS.filter(function(l) {
         if (fDoc && l.doc_id !== fDoc) return false;
@@ -2621,11 +2756,13 @@ body {
 
   function applyLinFilters() {
     var search = (byId('linSearch').value || '').toLowerCase();
+    if (search.length > 2) Tracker.track('search', 'lineamientos: ' + search);
     var filters = {};
     filterFields.forEach(function(f) {
       var v = byId('linFilter_' + f.key).value;
       if (v) filters[f.key] = v;
     });
+    if (Object.keys(filters).length) Tracker.track('filter', 'lineamientos');
 
     var result = D.LINEAMIENTOS.filter(function(l) {
       var keys = Object.keys(filters);
@@ -3173,6 +3310,7 @@ body {
 
     function renderGlossary() {
       var search = (byId('glossarySearch').value||'').toLowerCase();
+      if (search.length > 2) Tracker.track('search', 'conceptos: ' + search);
       var filtered = sorted;
       if (activeFilter) {
         filtered = filtered.filter(function(c) {
@@ -3226,6 +3364,7 @@ body {
 
     activeResId = resId;
     D = res.data;
+    Tracker.track('resolution', resId);
 
     // Build all lookup maps
     buildMaps();
@@ -3318,6 +3457,117 @@ body {
   updateLandingCards();
 
   // Show landing on start (don't auto-load any resolution)
+
+  // ===== ANALYTICS PANEL =====
+  var SECTION_LABELS = {
+    'sec-mapa': 'Mapa Conceptual',
+    'sec-resumen': 'Resumen General',
+    'sec-documentos': 'Documentos',
+    'sec-categorias': 'Categorias',
+    'sec-lineamientos': 'Lineamientos',
+    'sec-red': 'Red de Conexiones',
+    'sec-actores': 'Actores',
+    'sec-indicadores': 'Indicadores',
+    'sec-conceptos': 'Conceptos'
+  };
+  var RES_LABELS = { res003: 'Res. 003/2026', res335: 'Res. 335/2021' };
+
+  function renderAnalytics() {
+    var d = Tracker.getData();
+
+    // Session stats
+    var sessionMin = Tracker.getSessionMinutes();
+    byId('anSessionGrid').innerHTML =
+      '<div class="analytics-stat"><div class="an-val">' + sessionMin + ' min</div><div class="an-lbl">Tiempo esta sesion</div></div>' +
+      '<div class="analytics-stat"><div class="an-val">' + (d.totalSessions || 1) + '</div><div class="an-lbl">Sesiones totales</div></div>' +
+      '<div class="analytics-stat"><div class="an-val">' + d.activity.length + '</div><div class="an-lbl">Acciones registradas</div></div>';
+
+    // Section bars
+    var secEntries = Object.keys(SECTION_LABELS).map(function(k) {
+      return { label: SECTION_LABELS[k], count: d.sections[k] || 0 };
+    }).sort(function(a,b) { return b.count - a.count; });
+    var maxSec = Math.max.apply(null, secEntries.map(function(e) { return e.count; }).concat([1]));
+    byId('anSectionBars').innerHTML = secEntries.map(function(e) {
+      var pct = Math.round(e.count / maxSec * 100);
+      return '<div class="an-bar-row">' +
+        '<span class="an-bar-label">' + e.label + '</span>' +
+        '<div class="an-bar-track"><div class="an-bar-fill" style="width:' + pct + '%"></div>' +
+        '<span class="an-bar-count">' + e.count + '</span></div></div>';
+    }).join('');
+
+    // Resolution bars
+    var resEntries = Object.keys(RES_LABELS).map(function(k) {
+      return { label: RES_LABELS[k], count: d.resolutions[k] || 0 };
+    });
+    var maxRes = Math.max.apply(null, resEntries.map(function(e) { return e.count; }).concat([1]));
+    byId('anResBars').innerHTML = resEntries.map(function(e) {
+      var pct = Math.round(e.count / maxRes * 100);
+      return '<div class="an-bar-row">' +
+        '<span class="an-bar-label">' + e.label + '</span>' +
+        '<div class="an-bar-track"><div class="an-bar-fill" style="width:' + pct + '%"></div>' +
+        '<span class="an-bar-count">' + e.count + '</span></div></div>';
+    }).join('');
+
+    // Searches
+    var searches = (d.searches || []).slice(0, 20);
+    byId('anSearchList').innerHTML = searches.length === 0
+      ? '<div class="an-list-item" style="color:#64748b;">Sin busquedas registradas</div>'
+      : searches.map(function(s) {
+        var time = new Date(s.t);
+        var hm = time.getHours().toString().padStart(2,'0') + ':' + time.getMinutes().toString().padStart(2,'0');
+        return '<div class="an-list-item"><span>' + escHtml(s.q) + '</span><span class="an-time">' + hm + '</span></div>';
+      }).join('');
+
+    // Activity log
+    var acts = (d.activity || []).slice(0, 30);
+    var TYPE_ICONS = { section: '&#128205;', resolution: '&#128209;', search: '&#128269;', filter: '&#9881;' };
+    byId('anActivityLog').innerHTML = acts.length === 0
+      ? '<div class="an-list-item" style="color:#64748b;">Sin actividad registrada</div>'
+      : acts.map(function(a) {
+        var time = new Date(a.t);
+        var hm = time.getHours().toString().padStart(2,'0') + ':' + time.getMinutes().toString().padStart(2,'0');
+        var icon = TYPE_ICONS[a.type] || '&#9679;';
+        var label = a.type === 'section' ? (SECTION_LABELS[a.detail] || a.detail)
+          : a.type === 'resolution' ? (RES_LABELS[a.detail] || a.detail)
+          : (a.detail || a.type);
+        return '<div class="an-list-item"><span>' + icon + ' ' + escHtml(label) + '</span><span class="an-time">' + hm + '</span></div>';
+      }).join('');
+
+    // Accumulated stats
+    var totalSecVisits = Object.values(d.sections).reduce(function(a,b) { return a+b; }, 0);
+    var totalSearches = (d.searches || []).length;
+    byId('anAccumGrid').innerHTML =
+      '<div class="analytics-stat"><div class="an-val">' + totalSecVisits + '</div><div class="an-lbl">Total visitas a secciones</div></div>' +
+      '<div class="analytics-stat"><div class="an-val">' + totalSearches + '</div><div class="an-lbl">Total busquedas</div></div>' +
+      '<div class="analytics-stat"><div class="an-val">' + (d.firstVisit ? new Date(d.firstVisit).toLocaleDateString() : '-') + '</div><div class="an-lbl">Primera visita</div></div>';
+  }
+
+  function escHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  // Analytics panel events
+  byId('navAnalytics').addEventListener('click', function(e) {
+    e.preventDefault();
+    renderAnalytics();
+    byId('analyticsOverlay').classList.remove('hidden');
+    byId('sidebar').classList.remove('open');
+    byId('overlay').classList.remove('show');
+  });
+  byId('analyticsClose').addEventListener('click', function() {
+    byId('analyticsOverlay').classList.add('hidden');
+  });
+  byId('analyticsOverlay').addEventListener('click', function(e) {
+    if (e.target === this) byId('analyticsOverlay').classList.add('hidden');
+  });
+  byId('analyticsClear').addEventListener('click', function() {
+    if (confirm('Se eliminara todo el historial de uso. Continuar?')) {
+      Tracker.clearAll();
+      renderAnalytics();
+    }
+  });
 
 })();
 </script>
